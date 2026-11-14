@@ -112,7 +112,7 @@
           <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
-          <a href="https://udify.app/workflow/0G10NJCU3giGzHLV" target="_blank" class="btn-gold" style="text-decoration:none;background:#D6A84F;color:#071426;">⚡ AI Doc Checker</a>
+          <a href="https://udify.app" target="_blank" class="btn-gold" style="text-decoration:none;background:#D6A84F;color:#071426;">⚡ AI Doc Checker</a>
           <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
           <button class="btn-out" onclick="doLogout()">Logout</button>
         </div>
@@ -140,7 +140,7 @@
   </div>
 
   <script>
-    const DIFY_URL = "https://udify.app/workflow/0G10NJCU3giGzHLV";
+    const DIFY_URL = "https://udify.app";
     const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
     let list = [
       { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge", truck: "AGH 4821", milestone_step: 5, status: "Pending" },
@@ -149,6 +149,11 @@
     let page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
     let docs = [{ id: "DOC-101", ref: "BF-101", name: "ZIMRA Bill of Entry (SAD 500)", status: "Verified" }, { id: "DOC-102", ref: "BF-101", name: "SADC Certificate of Origin", status: "Pending" }];
     const bdg = s => s === "Cleared" || s === "Verified" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
+
+    function sendWhatsApp(ref, truck, border, stage) {
+      const msg = encodeURIComponent(`*BorderFlow Live Update*\nShipment: ${ref}\nTruck: ${truck}\nBorder: ${border}\nStatus: ${stage}\n\nVerify documents: ${DIFY_URL}`);
+      window.open(`https://wa.me{msg}`, "_blank");
+    }
 
     function showAuth(signup) {
       if (currentUser) return enterApp();
@@ -221,8 +226,10 @@
         t.innerText = page.toUpperCase() + " — BorderFlow Live";
         el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
           <div class="card"><div class="card-h"><span>Active Consignments (${list.length})</span></div>
-          <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td><td><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button></td></tr>`).join("")}</tbody></table></div>`;
+          <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td>
+          <td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button>
+          <button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step]}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("")}</tbody></table></div>`;
       }
     }
     if (currentUser) enterApp();
