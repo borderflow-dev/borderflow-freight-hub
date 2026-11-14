@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BorderFlow Freight Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+    body { background: #F4F6FA; color: #1E293B; min-height: 100vh; }
+    .auth-wrap { min-height: 100vh; background: #071426; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-box { background: #fff; width: 100%; max-width: 390px; border-radius: 10px; padding: 28px; box-shadow: 0 20px 25px rgba(0,0,0,0.3); }
+    .auth-logo { width: 40px; height: 40px; background: #D6A84F; color: #071426; font-weight: 900; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-bottom: 12px; }
+    .field { margin-bottom: 11px; }
+    .field label { display: block; font-size: 11px; font-weight: 700; color: #071426; margin-bottom: 4px; }
+    input, select { width: 100%; padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12.5px; }
+    .btn-full { width: 100%; background: #071426; color: #D6A84F; border: none; padding: 11px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 6px; }
+    .app-shell { display: none; min-height: 100vh; }
+    .app-shell.active { display: flex; }
+    aside { width: 250px; background: #071426; color: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
+    .brand { padding: 20px; border-bottom: 1px solid #0B1B30; }
+    .logo { width: 32px; height: 32px; background: #D6A84F; color: #071426; font-weight: 900; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; }
+    nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-btn { width: 100%; text-align: left; background: transparent; border: none; color: #CBD5E1; padding: 9px 12px; border-radius: 6px; font-size: 12.5px; cursor: pointer; }
+    .nav-btn.active { background: #0B1B30; color: #D6A84F; font-weight: 700; border-left: 3px solid #D6A84F; }
+    .main-wrap { flex: 1; display: flex; flex-direction: column; }
+    header { background: #fff; border-bottom: 1px solid #E2E8F0; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-gold { background: #071426; color: #D6A84F; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .btn-out { background: #FEE2E2; color: #991B1B; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 11.5px; cursor: pointer; }
+    main { padding: 24px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .kpi { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid #071426; }
+    .kpi.g { border-left-color: #10B981; } .kpi.a { border-left-color: #F59E0B; } .kpi.r { border-left-color: #EF4444; }
+    .kpi small { font-size: 11px; color: #64748B; text-transform: uppercase; font-weight: 700; }
+    .kpi div { font-size: 24px; font-weight: 800; margin-top: 6px; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; }
+    .card-h { padding: 14px 18px; border-bottom: 1px solid #E2E8F0; font-weight: 700; font-size: 14px; color: #071426; display: flex; justify-content: space-between; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left; }
+    thead { background: #0B1B30; color: #fff; }
+    th, td { padding: 12px 16px; border-bottom: 1px solid #F1F5F9; }
+    .b { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+    .bg { background: #D1FAE5; color: #065F46; } .ba { background: #FEF3C7; color: #92400E; } .br { background: #FEE2E2; color: #991B1B; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+    .st { padding: 8px; border-radius: 6px; font-size: 11px; border: 1px solid #E2E8F0; background: #F8FAFC; color: #64748B; }
+    .st.ok { background: #ECFDF5; border-color: #6EE7B7; color: #065F46; font-weight: 700; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(7,20,38,0.65); align-items: center; justify-content: center; z-index: 999; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #fff; padding: 24px; border-radius: 10px; width: 480px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  </style>
+</head>
+<body>
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">BF</div>
+      <h2 id="authHeading" style="color:#071426;font-size:20px;">Sign In to BorderFlow</h2>
+      <p style="color:#64748B;font-size:12px;margin:4px 0 16px;">Every Shipment. Every Border. One Operating System.</p>
+      <div id="signupFields" style="display:none;">
+        <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
+        <div class="field"><label>Role</label><select id="aRole"><option>Company Owner</option><option>Clearing Agent</option><option>Transport Manager</option><option>Driver</option><option>Client</option></select></div>
+      </div>
+      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="agent@company.co.zw" /></div>
+      <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="••••••••" /></div>
+      <button id="authSubmitBtn" class="btn-full">Sign In</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#475569;">
+        <span id="authPrompt">New clearing company?</span>
+        <button id="toggleAuthBtn" type="button" style="background:none;border:none;color:#071426;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell">
+    <aside>
+      <div class="brand">
+        <div><span class="logo">BF</span><strong style="font-size:17px;">BorderFlow</strong></div>
+        <div id="companyBadge" style="font-size:11px;color:#D6A84F;margin-top:6px;">Workspace</div>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-p="overview">1. Overview</button>
+        <button class="nav-btn" data-p="shipments">2. Shipments</button>
+        <button class="nav-btn" data-p="documents">3. Documents</button>
+        <button class="nav-btn" data-p="clearance">4. Clearance Management</button>
+        <button class="nav-btn" data-p="borders">5. Border Network</button>
+        <button class="nav-btn" data-p="fleet">6. Vehicles & Drivers</button>
+        <button class="nav-btn" data-p="delays">7. Delay Management</button>
+        <button class="nav-btn" data-p="expenses">8. Payments & Expenses</button>
+        <button class="nav-btn" data-p="clients">9. Clients</button>
+        <button class="nav-btn" data-p="communication">10. Communication</button>
+        <button class="nav-btn" data-p="reports">11. Reports & Analytics</button>
+        <button class="nav-btn" data-p="settings">12. Settings</button>
+      </nav>
+    </aside>
+
+    <div class="main-wrap">
+      <header>
+        <div>
+          <small id="userLabel" style="color:#64748B;font-weight:700;font-size:10px;">AUTHENTICATED</small>
+          <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button id="openBtn" class="btn-gold">+ Create Shipment</button>
+          <button id="logoutBtn" class="btn-out">Logout</button>
+        </div>
+      </header>
+      <main id="app"></main>
+    </div>
+  </div>
+
+  <div id="m" class="modal-bg">
+    <div class="modal">
+      <strong style="color:#071426;">Create Cross-Border Shipment</strong>
+      <div class="grid2">
+        <input id="c1" placeholder="Client (e.g. Harare Mining)" />
+        <select id="c2"><option>Mining Equipment</option><option>FMCG / Groceries</option><option>Fuel & Chemicals</option></select>
+        <input id="c3" placeholder="Origin (e.g. Johannesburg, ZA)" />
+        <input id="c4" placeholder="Destination (e.g. Harare, ZW)" />
+        <select id="c5"><option>Beitbridge</option><option>Chirundu</option><option>Forbes</option><option>Plumtree</option><option>Kazungula</option></select>
+        <input id="c6" placeholder="Truck Reg (e.g. AGH 4821)" />
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="cancelBtn" style="padding:8px 12px;">Cancel</button>
+        <button id="saveBtn" class="btn-gold">Save Shipment</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
