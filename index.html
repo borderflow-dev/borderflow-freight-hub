@@ -1,4 +1,125 @@
-<script src="script.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BorderFlow — Every Truck. Every Border. One Live Feed.</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <section id="landingPage" class="landing">
+    <div class="hero-media">
+      <img class="hero-photo" src="https://wikimedia.org" alt="Heavy Freight Semi Truck" />
+      <div class="hero-overlay"></div>
+    </div>
+
+    <header class="top-nav">
+      <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
+      <div class="nav-links">
+        <a onclick="showAuth(false)">Borders</a>
+        <a onclick="showAuth(false)">Features</a>
+        <a onclick="showAuth(true)">Register Agency</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="showAuth(false)">Sign in</button>
+        <button class="btn-gold-pill" onclick="showAuth(false)">Dashboard</button>
+      </div>
+    </header>
+
+    <div class="hero-content">
+      <div class="live-pill"><span class="live-dot"></span> LIVE AT 65 SOUTHERN AFRICAN BORDERS</div>
+      <h1>Every truck. Every border. <span>One live feed.</span></h1>
+      <p>BorderFlow lets clearing agents log shipments, track customs clearance step by step, and pay tolls and duty from one Border Wallet.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-primary" onclick="showAuth(true)">Register Clearing Company</button>
+        <button class="btn-hero-secondary" onclick="showAuth(false)">Open Dashboard →</button>
+      </div>
+    </div>
+
+    <div class="hero-footer">
+      <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Corridor Active</div>
+      <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop Border</div>
+      <div><strong>FORBES</strong> • ZW ↔ MZ Beira Corridor</div>
+      <div><strong>KAZUNGULA</strong> • BW ↔ ZM Bridge</div>
+    </div>
+  </section>
+
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-box">
+      <button class="close-auth" onclick="document.getElementById('authScreen').style.display='none'">✕</button>
+      <div class="nav-icon" style="margin-bottom:12px;">BF</div>
+      <h2 id="authHeading" style="color:#071426;font-size:20px;">Sign In to BorderFlow</h2>
+      <p style="color:#64748B;font-size:12px;margin:4px 0 16px;">Every Truck. Every Border. One Live Feed.</p>
+      <div id="signupFields" style="display:none;">
+        <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
+        <div class="field"><label>Role</label><select id="aRole"><option>Company Owner</option><option>Clearing Agent</option><option>Transport Manager</option><option>Driver</option><option>Client</option></select></div>
+      </div>
+      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="owner@beitbridgehub.co.zw" /></div>
+      <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="••••••••" /></div>
+      <button class="btn-full" id="authSubmitBtn" onclick="doLogin()">Sign In</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#475569;">
+        <span id="authPrompt">New clearing company?</span>
+        <button id="toggleAuthBtn" type="button" onclick="toggleMode()" style="background:none;border:none;color:#071426;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell">
+    <aside>
+      <div class="brand">
+        <div><span class="logo">BF</span><strong style="font-size:17px;">BorderFlow</strong></div>
+        <div id="companyBadge" style="font-size:11px;color:#D6A84F;margin-top:6px;">Workspace</div>
+      </div>
+      <nav>
+        <button class="nav-btn active" onclick="go('overview',this)">1. Overview</button>
+        <button class="nav-btn" onclick="go('shipments',this)">2. Shipments</button>
+        <button class="nav-btn" onclick="go('documents',this)">3. Documents</button>
+        <button class="nav-btn" onclick="go('clearance',this)">4. Clearance Management</button>
+        <button class="nav-btn" onclick="go('borders',this)">5. Border Network</button>
+        <button class="nav-btn" onclick="go('fleet',this)">6. Vehicles & Drivers</button>
+        <button class="nav-btn" onclick="go('delays',this)">7. Delay Management</button>
+        <button class="nav-btn" onclick="go('expenses',this)">8. Payments & Expenses</button>
+        <button class="nav-btn" onclick="go('clients',this)">9. Clients</button>
+        <button class="nav-btn" onclick="go('communication',this)">10. Communication</button>
+        <button class="nav-btn" onclick="go('reports',this)">11. Reports & Analytics</button>
+        <button class="nav-btn" onclick="go('settings',this)">12. Settings</button>
+      </nav>
+    </aside>
+
+    <div class="main-wrap">
+      <header>
+        <div>
+          <small id="userLabel" style="color:#64748B;font-weight:700;font-size:10px;">AUTHENTICATED</small>
+          <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
+          <button class="btn-out" onclick="doLogout()">Logout</button>
+        </div>
+      </header>
+      <main id="app"></main>
+    </div>
+  </div>
+
+  <div id="m" class="modal-bg">
+    <div class="modal">
+      <strong style="color:#071426;">Create Cross-Border Shipment</strong>
+      <div class="grid2">
+        <input id="c1" placeholder="Client (e.g. Harare Mining)" />
+        <select id="c2"><option>Mining Equipment</option><option>FMCG / Groceries</option><option>Fuel & Chemicals</option></select>
+        <input id="c3" placeholder="Origin (e.g. Johannesburg, ZA)" />
+        <input id="c4" placeholder="Destination (e.g. Harare, ZW)" />
+        <select id="c5"><option>Beitbridge</option><option>Chirundu</option><option>Forbes</option><option>Plumtree</option><option>Kazungula</option></select>
+        <input id="c6" placeholder="Truck Reg (e.g. AGH 4821)" />
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;">Cancel</button>
+        <button class="btn-gold" onclick="saveShipment()">Save Shipment</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
-<script type="module" src="script.js"></script>
