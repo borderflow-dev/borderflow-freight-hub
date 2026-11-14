@@ -120,6 +120,48 @@
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
-</body>
-</html>
+  <script>
+    const BASE = "https://supabase.co";
+    const API_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
+    const HEADERS = { "apikey": API_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+    const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
+
+    let list = [], page = "overview", isSignup = false, filterBorder = "ALL";
+    let currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
+    let docs = JSON.parse(localStorage.getItem("bf_docs") || '[{"id":"DOC-101","ref":"BF-101","name":"ZIMRA Bill of Entry (SAD 500)","border":"Beitbridge","status":"Verified"},{"id":"DOC-102","ref":"BF-101","name":"SADC Certificate of Origin","border":"Beitbridge","status":"Pending"}]');
+    let delays = JSON.parse(localStorage.getItem("bf_delays") || '[{"ref":"BF-101","border":"Beitbridge","reason":"ZIMRA Scanner Queue","hours":"2.5 hrs","status":"Delayed"}]');
+    let expenses = JSON.parse(localStorage.getItem("bf_exp") || '[{"ref":"BF-101","item":"ZIMRA Import Duty & VAT","border":"Beitbridge","amount":1450,"paid":true},{"ref":"BF-101","item":"Road Access & Carbon Tax","border":"Beitbridge","amount":320,"paid":false}]');
+    let messages = JSON.parse(localStorage.getItem("bf_msgs") || '[{"from":"Company Owner","text":"Beitbridge Southbound clearance lane active. Submit manifests early.","time":"Today"}]');
+
+    function saveStore() {
+      localStorage.setItem("bf_docs", JSON.stringify(docs));
+      localStorage.setItem("bf_delays", JSON.stringify(delays));
+      localStorage.setItem("bf_exp", JSON.stringify(expenses));
+      localStorage.setItem("bf_msgs", JSON.stringify(messages));
+    }
+    function bdg(s) {
+      if (s === "Cleared" || s === "Verified" || s === "Paid" || s === "Resolved") return '<span class="b bg">' + s + '</span>';
+      if (s === "Delayed" || s === "Unpaid") return '<span class="b br">' + s + '</span>';
+      return '<span class="b ba">' + s + '</span>';
+    }
+    function showAuth(signup) {
+      if (currentUser) return enterApp();
+      isSignup = !!signup;
+      document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
+      document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
+      document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
+      document.getElementById("authScreen").style.display = "flex";
+    }
+    function toggleMode() { showAuth(!isSignup); }
+    function doLogin() {
+      const email = document.getElementById("aEmail").value.trim() || "owner@beitbridgehub.co.zw";
+      const company = document.getElementById("aCompany").value.trim() || "Beitbridge Customs Hub";
+      const role = document.getElementById("aRole").value || "Company Owner";
+      currentUser = { email, company, role };
+      localStorage.setItem("bf_user", JSON.stringify(currentUser));
+      enterApp();
+    }
+    function doLogout() {
+      localStorage.removeItem("bf_user");
+      currentUser = null;
+      document.getElementById("appShell").classList.remove("active");
