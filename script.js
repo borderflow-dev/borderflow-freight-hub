@@ -3,7 +3,11 @@ const API_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
 const HEADERS = { "apikey": API_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
 const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
 
-let list = [], page = "overview", isSignup = false, filterBorder = "ALL";
+let list = [
+  { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge", truck: "AGH 4821", milestone_step: 5, status: "Pending", fee: 1450 },
+  { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu", truck: "AFZ 9012", milestone_step: 9, status: "Cleared", fee: 1200 }
+];
+let page = "overview", isSignup = false, filterBorder = "ALL";
 let currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
 let docs = JSON.parse(localStorage.getItem("bf_docs") || '[{"id":"DOC-101","ref":"BF-101","name":"ZIMRA Bill of Entry (SAD 500)","border":"Beitbridge","status":"Verified"},{"id":"DOC-102","ref":"BF-101","name":"SADC Certificate of Origin","border":"Beitbridge","status":"Pending"}]');
 let delays = JSON.parse(localStorage.getItem("bf_delays") || '[{"ref":"BF-101","border":"Beitbridge","reason":"ZIMRA Scanner Queue","hours":"2.5 hrs","status":"Delayed"}]');
@@ -24,6 +28,8 @@ window.showAuth = function(signup) {
   document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
   document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
   document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
+  document.getElementById("authPrompt").innerText = isSignup ? "Already registered?" : "New clearing company?";
+  document.getElementById("toggleAuthBtn").innerText = isSignup ? "Sign In" : "Create Account";
   document.getElementById("authScreen").style.display = "flex";
 };
 window.toggleMode = () => window.showAuth(!isSignup);
@@ -61,25 +67,39 @@ window.loadShipments = async function() {
   try {
     const res = await fetch(BASE + "/rest/v1/shipments?select=*&order=created_at.desc", { headers: HEADERS });
     const data = await res.json();
-    if (Array.isArray(data)) list = data;
+    if (Array.isArray(data) && data.length) list = data;
   } catch (e) {}
   window.draw();
 };
 
 window.saveShipment = async function() {
-  const newShip = { ref: "BF-" + (101 + list.length), client: document.getElementById("c1").value || "SADC Mining Corp", cargo: document.getElementById("c2").value, route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"), border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012", milestone_step: 0, status: "Pending", fee: 1200 };
+  const newShip = {
+    id: Date.now(),
+    ref: "BF-" + (101 + list.length),
+    client: document.getElementById("c1").value || "SADC Mining Corp",
+    cargo: document.getElementById("c2").value,
+    route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
+    border: document.getElementById("c5").value,
+    truck: document.getElementById("c6").value || "AFZ 9012",
+    milestone_step: 0,
+    status: "Pending",
+    fee: 1200
+  };
   list.unshift(newShip);
   document.getElementById("m").classList.remove("open");
   window.draw();
-  await fetch(BASE + "/rest/v1/shipments", { method: "POST", headers: HEADERS, body: JSON.stringify([newShip]) });
-  window.loadShipments();
+  try {
+    await fetch(BASE + "/rest/v1/shipments", { method: "POST", headers: HEADERS, body: JSON.stringify([newShip]) });
+  } catch (e) {}
 };
 
 window.nextStep = async function(id, step) {
   if (step < 9) {
     const next = step + 1, item = list.find(x => String(x.id) === String(id));
     if (item) { item.milestone_step = next; if (next >= 8) item.status = "Cleared"; window.draw(); }
-    await fetch(BASE + "/rest/v1/shipments?id=eq." + id, { method: "PATCH", headers: HEADERS, body: JSON.stringify({ milestone_step: next, status: next >= 8 ? "Cleared" : "Pending" }) });
+    try {
+      await fetch(BASE + "/rest/v1/shipments?id=eq." + id, { method: "PATCH", headers: HEADERS, body: JSON.stringify({ milestone_step: next, status: next >= 8 ? "Cleared" : "Pending" }) });
+    } catch (e) {}
   }
 };
 
@@ -99,16 +119,14 @@ window.draw = function() {
   const totalExp = expenses.reduce((a, b) => a + Number(b.amount || 0), 0);
 
   if (page === "overview" || page === "shipments") {
-    t.innerText = page === "overview" ? "1. Executive Dashboard (LIVE CLOUD DB)" : "2. Shipment Management (LIVE)";
+    t.innerText = page === "overview" ? "1. Executive Dashboard" : "2. Shipment Management";
     el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">${d}</div></div></div>
-      <div class="card"><div class="card-h"><span>Live PostgreSQL Consignments (${filtered.length})</span>
-      <select style="width:180px;padding:4px 8px;" onchange="setFilter(this.value)"><option value="ALL" ${filterBorder==="ALL"?"selected":""}>All Border Posts</option><option ${filterBorder==="Beitbridge"?"selected":""}>Beitbridge</option><option ${filterBorder==="Chirundu"?"selected":""}>Chirundu</option><option ${filterBorder==="Forbes"?"selected":""}>Forbes</option><option ${filterBorder==="Plumtree"?"selected":""}>Plumtree</option><option ${filterBorder==="Kazungula"?"selected":""}>Kazungula</option></select></div>
-      <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Milestone</th><th>Status</th></tr></thead>
-      <tbody>${filtered.map(x => `<tr><td><strong>${x.ref}</strong></td><td>${x.client}</td><td>${x.route}</td><td><strong>${x.border}</strong></td><td>${x.truck}</td><td>${MS[x.milestone_step || 0]}</td><td>${bdg(x.status)}</td></tr>`).join("")}</tbody></table></div>`;
-  } else if (page === "documents") {
-    t.innerText = "3. Customs Documents Vault";
-    el.innerHTML = `<div class="card"><div class="card-h"><span>Customs Paperwork & Declarations</span><button class="btn-gold" onclick="addDoc()">+ Log Document</button></div>
-      <table><thead><tr><th>Doc ID</th><th>Shipment</th><th>Document Type</th><th>Border</th><th>Status</th><th>Action</th></tr></thead>
-      <tbody>${docs.map((doc, i) => `<tr><td><strong>${doc.id}</strong></td><td>${doc.ref}</td><td>${doc.name}</td><td>${doc.border}</td><td>${bdg(doc.status)}</td><td>${doc.status !== "Verified" ? `<button class="btn-gold" onclick="verifyDoc(${i})">Verify ✓</button>` : "Verified"}</td></tr>`).join("")}</tbody></table></div>`;
-  } else if (page === "clearance") {
-    t.innerText = "4. Customs Clearance (10 Milestones)";
+      <div class="card"><div class="card-h"><span>Active Cross-Border Consignments (${filtered.length})</span>
+      <select style="width:160px;padding:4px 8px;" onchange="setFilter(this.value)">
+        <option value="ALL" ${filterBorder==="ALL"?"selected":""}>All Borders</option>
+        <option value="Beitbridge" ${filterBorder==="Beitbridge"?"selected":""}>Beitbridge</option>
+        <option value="Chirundu" ${filterBorder==="Chirundu"?"selected":""}>Chirundu</option>
+        <option value="Forbes" ${filterBorder==="Forbes"?"selected":""}>Forbes</option>
+        <option value="Kazungula" ${filterBorder==="Kazungula"?"selected":""}>Kazungula</option>
+      </select></div>
+      <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
