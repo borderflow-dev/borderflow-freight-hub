@@ -92,7 +92,7 @@
       <nav>
         <button class="nav-btn active" onclick="go('overview',this)">1. Overview</button>
         <button class="nav-btn" onclick="go('shipments',this)">2. Shipments</button>
-        <button class="nav-btn" onclick="go('documents',this)">3. Documents</button>
+        <button class="nav-btn" onclick="go('documents',this)">3. Documents & AI</button>
         <button class="nav-btn" onclick="go('clearance',this)">4. Clearance Management</button>
         <button class="nav-btn" onclick="go('borders',this)">5. Border Network</button>
         <button class="nav-btn" onclick="go('fleet',this)">6. Vehicles & Drivers</button>
@@ -112,6 +112,7 @@
           <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
+          <a href="https://dify.ai" target="_blank" class="btn-gold" style="text-decoration:none;background:#D6A84F;color:#071426;">⚡ AI Doc Checker</a>
           <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
           <button class="btn-out" onclick="doLogout()">Logout</button>
         </div>
@@ -139,13 +140,15 @@
   </div>
 
   <script>
+    const DIFY_URL = "https://dify.ai";
     const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
     let list = [
       { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge", truck: "AGH 4821", milestone_step: 5, status: "Pending" },
       { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu", truck: "AFZ 9012", milestone_step: 9, status: "Cleared" }
     ];
     let page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
-    const bdg = s => s === "Cleared" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
+    let docs = [{ id: "DOC-101", ref: "BF-101", name: "ZIMRA Bill of Entry (SAD 500)", status: "Verified" }, { id: "DOC-102", ref: "BF-101", name: "SADC Certificate of Origin", status: "Pending" }];
+    const bdg = s => s === "Cleared" || s === "Verified" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
 
     function showAuth(signup) {
       if (currentUser) return enterApp();
@@ -204,11 +207,23 @@
     function draw() {
       const el = document.getElementById("app"), t = document.getElementById("title");
       const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
-      t.innerText = page.toUpperCase() + " — BorderFlow Live";
-      el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
-        <div class="card"><div class="card-h"><span>Active Consignments (${list.length})</span></div>
-        <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td><td><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button></td></tr>`).join("")}</tbody></table></div>`;
+      if (page === "documents") {
+        t.innerText = "3. Customs Documents & AI Inspector";
+        el.innerHTML = `<div class="card" style="padding:20px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div><strong style="color:#071426;font-size:15px;">⚡ BorderFlow AI Document Checker (GroqCloud • openai/gpt-oss-120b)</strong>
+          <p style="font-size:12.5px;color:#475569;margin-top:4px;">Verify customs invoices, cargo weights, and truck plates before Beitbridge arrival.</p></div>
+          <a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;background:#071426;color:#D6A84F;padding:12px 18px;">Open AI Document Checker →</a>
+        </div>
+        <div class="card"><div class="card-h"><span>Shipment Manifests</span></div>
+        <table><thead><tr><th>ID</th><th>Ref</th><th>Document</th><th>Status</th><th>AI Check</th></tr></thead>
+        <tbody>${docs.map(x => `<tr><td>${x.id}</td><td>${x.ref}</td><td>${x.name}</td><td>${bdg(x.status)}</td><td><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;padding:4px 10px;">Inspect →</a></td></tr>`).join("")}</tbody></table></div>`;
+      } else {
+        t.innerText = page.toUpperCase() + " — BorderFlow Live";
+        el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
+          <div class="card"><div class="card-h"><span>Active Consignments (${list.length})</span></div>
+          <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td><td><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button></td></tr>`).join("")}</tbody></table></div>`;
+      }
     }
     if (currentUser) enterApp();
   </script>
