@@ -8,25 +8,23 @@
 </head>
 <body>
 
-  <!-- Professional Real HD Semi-Truck Homepage -->
+  <!-- Professional Real Semi-Truck Homepage -->
   <section id="landingPage" class="landing">
     <div class="hero-media">
-      <video class="hero-video" autoplay loop muted playsinline poster="https://pexels.com">
-        <source src="https://pexels.com" type="video/mp4" />
-      </video>
+      <img class="hero-photo" src="https://wikimedia.org" alt="Heavy Freight Semi Truck" />
       <div class="hero-overlay"></div>
     </div>
 
     <header class="top-nav">
       <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
       <div class="nav-links">
-        <a class="js-open-login">Borders</a>
-        <a class="js-open-login">Features</a>
-        <a class="js-open-signup">Register Agency</a>
+        <a onclick="document.getElementById('authScreen').style.display='flex'">Borders</a>
+        <a onclick="document.getElementById('authScreen').style.display='flex'">Features</a>
+        <a onclick="document.getElementById('authScreen').style.display='flex'">Register Agency</a>
       </div>
       <div class="nav-actions">
-        <button class="btn-ghost js-open-login">Sign in</button>
-        <button class="btn-gold-pill js-open-login">Dashboard</button>
+        <button class="btn-ghost" onclick="document.getElementById('authScreen').style.display='flex'">Sign in</button>
+        <button class="btn-gold-pill" onclick="document.getElementById('authScreen').style.display='flex'">Dashboard</button>
       </div>
     </header>
 
@@ -35,8 +33,8 @@
       <h1>Every truck. Every border. <span>One live feed.</span></h1>
       <p>BorderFlow lets clearing agents log shipments, track customs clearance step by step, and pay tolls and duty from one Border Wallet.</p>
       <div class="hero-btns">
-        <button class="btn-hero-primary js-open-signup">Register Clearing Company</button>
-        <button class="btn-hero-secondary js-open-login">Open Dashboard →</button>
+        <button class="btn-hero-primary" onclick="document.getElementById('signupFields').style.display='block';document.getElementById('authHeading').innerText='Register Clearing Company';document.getElementById('authSubmitBtn').innerText='Create Company Account';document.getElementById('authScreen').style.display='flex'">Register Clearing Company</button>
+        <button class="btn-hero-secondary" onclick="document.getElementById('authScreen').style.display='flex'">Open Dashboard →</button>
       </div>
     </div>
 
@@ -51,7 +49,7 @@
   <!-- Sign In / Sign Up Modal -->
   <div id="authScreen" class="auth-wrap">
     <div class="auth-box">
-      <button id="closeAuthBtn" class="close-auth">✕</button>
+      <button class="close-auth" onclick="document.getElementById('authScreen').style.display='none'">✕</button>
       <div class="nav-icon" style="margin-bottom:12px;">BF</div>
       <h2 id="authHeading" style="color:#071426;font-size:20px;">Sign In to BorderFlow</h2>
       <p style="color:#64748B;font-size:12px;margin:4px 0 16px;">Every Truck. Every Border. One Live Feed.</p>
