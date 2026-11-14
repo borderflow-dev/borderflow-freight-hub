@@ -56,7 +56,6 @@
       </div>
     </div>
 
-    <!-- 3-Role Showcase: Company Owner, Clearing Agent, Truck Driver -->
     <div style="position:relative;z-index:10;max-width:1240px;margin:0 auto;padding:12px 48px 32px;width:100%;">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
         <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
@@ -259,8 +258,9 @@
         reports: ["11. Reports & Corridor Analytics", `<div class="kpi-grid"><div class="kpi g"><small>On-Time Clearance</small><div>98.4%</div></div><div class="kpi"><small>Avg Border Dwell</small><div>1.8 hrs</div></div></div>`],
         settings: ["12. Workspace Settings", `<div class="card" style="padding:20px;max-width:440px;"><strong>Agency:</strong> ${currentUser.company}<br/><br/><strong>Cloud DB:</strong> ngkmbpbdaachqymnfffe.supabase.co</div>`]
       };
-      t.innerText = views[page];
-      el.innerHTML = views[page];
+      const currentView = views[page];
+      t.innerText = currentView.at(0);
+      el.innerHTML = currentView.at(1);
     }
     if (currentUser) enterApp();
   </script>
