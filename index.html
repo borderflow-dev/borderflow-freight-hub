@@ -108,7 +108,7 @@
     <div class="main-wrap">
       <header>
         <div>
-          <small id="userLabel" style="color:#64748B;font-weight:700;font-size:10px;">AUTHENTICATED</small>
+          <small id="userLabel" style="color:#64748B;font-weight:700;font-size:10px;">CLOUD SYNCED</small>
           <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
@@ -135,24 +135,55 @@
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;">Cancel</button>
-        <button class="btn-gold" onclick="saveShipment()">Save Shipment</button>
+        <button class="btn-gold" onclick="saveShipment()">Save to Cloud</button>
       </div>
     </div>
   </div>
 
   <script>
+    const SB_URL = "https://supabase.co";
+    const SB_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
+    const SB_HEADERS = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
     const DIFY_URL = "https://udify.app";
     const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
-    let list = [
-      { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge (ZA↔ZW)", truck: "AGH 4821", phone: "263771000101", milestone_step: 5, status: "Pending" },
-      { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu (ZW↔ZM)", truck: "AFZ 9012", phone: "27821000202", milestone_step: 9, status: "Cleared" }
-    ];
+
+    let list = [];
     let docs = [{ id: "DOC-101", ref: "BF-101", name: "ZIMRA Bill of Entry (SAD 500)", status: "Verified" }, { id: "DOC-102", ref: "BF-101", name: "SADC Certificate of Origin", status: "Pending" }];
     let delays = [{ ref: "BF-101", border: "Beitbridge", reason: "ZIMRA Scanner Queue", hours: "2.5 hrs", status: "Delayed" }];
     let expenses = [{ ref: "BF-101", item: "ZIMRA Import Duty & VAT", amount: 1450, paid: true }, { ref: "BF-101", item: "Road Access & Carbon Tax", amount: 320, paid: false }];
     let msgs = [{ from: "Company Owner", text: "Beitbridge Southbound lane active. Submit manifests early." }];
     let page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
     const bdg = s => (s === "Cleared" || s === "Verified" || s === "Paid" || s === "Resolved") ? `<span class="b bg">${s}</span>` : (s === "Delayed" || s === "Unpaid") ? `<span class="b br">${s}</span>` : `<span class="b ba">${s}</span>`;
+
+    async function loadCloud() {
+      try {
+        const res = await fetch(SB_URL + "?select=*&order=id.desc", { headers: SB_HEADERS });
+        const data = await res.json();
+        if (Array.isArray(data)) { list = data; draw(); }
+      } catch (e) {}
+    }
+    async function saveShipment() {
+      const item = {
+        ref: "BF-" + (101 + list.length),
+        client: document.getElementById("c1").value || "SADC Mining Corp",
+        cargo: document.getElementById("c2").value,
+        route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
+        border: document.getElementById("c5").value,
+        truck: document.getElementById("c6").value || "AFZ 9012",
+        phone: document.getElementById("c7").value || "",
+        milestone_step: 0, status: "Pending"
+      };
+      document.getElementById("m").classList.remove("open");
+      const res = await fetch(SB_URL, { method: "POST", headers: SB_HEADERS, body: JSON.stringify([item]) });
+      if (res.ok) await loadCloud();
+    }
+    async function nextStep(id, step) {
+      if (step < 9) {
+        const next = step + 1, status = next >= 8 ? "Cleared" : "Pending";
+        await fetch(SB_URL + "?id=eq." + id, { method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ milestone_step: next, status }) });
+        await loadCloud();
+      }
+    }
 
     function sendWhatsApp(ref, truck, border, stage, phone) {
       const clean = (phone || "").replace(/[^0-9]/g, "");
@@ -179,26 +210,22 @@
       document.getElementById("authScreen").style.display = "none";
       document.getElementById("appShell").classList.add("active");
       document.getElementById("companyBadge").innerText = currentUser.company;
-      document.getElementById("userLabel").innerText = currentUser.role.toUpperCase() + " • " + currentUser.email;
+      document.getElementById("userLabel").innerText = "LIVE SUPABASE CLOUD • " + currentUser.email;
       draw();
+      loadCloud();
     }
     function go(p, btn) { page = p; document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); if (btn) btn.classList.add("active"); draw(); }
-    function saveShipment() {
-      list.unshift({ id: Date.now(), ref: "BF-" + (101 + list.length), client: document.getElementById("c1").value || "SADC Mining Corp", cargo: document.getElementById("c2").value, route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"), border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012", phone: document.getElementById("c7").value || "", milestone_step: 0, status: "Pending" });
-      document.getElementById("m").classList.remove("open");
-      draw();
-    }
-    function nextStep(id) { const item = list.find(x => x.id === id); if (item && item.milestone_step < 9) { item.milestone_step++; if (item.milestone_step >= 8) item.status = "Cleared"; draw(); } }
     function addChat() { const v = document.getElementById("chatInp").value.trim(); if (v) { msgs.unshift({ from: currentUser.role, text: v }); draw(); } }
 
     function draw() {
       const el = document.getElementById("app"), t = document.getElementById("title");
       const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
+      const rows = list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step||0]}</td><td>${bdg(s.status)}</td><td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Advance →</button><button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step||0]}','${s.phone||''}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("");
       const views = {
-        overview: ["1. Executive Dashboard", `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">${delays.length}</div></div></div><div class="card"><div class="card-h"><span>International Consignments (${list.length})</span></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td><td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button><button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step]}','${s.phone}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("")}</tbody></table></div>`],
-        shipments: ["2. Shipment Management", `<div class="card"><div class="card-h"><span>All Active Shipments</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ New Shipment</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Cargo</th><th>Route</th><th>Truck</th><th>Stage</th><th>Status</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.cargo}</td><td>${s.route}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td></tr>`).join("")}</tbody></table></div>`],
+        overview: ["1. Executive Dashboard (Live Cloud)", `<div class="kpi-grid"><div class="kpi"><small>Cloud Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">${delays.length}</div></div></div><div class="card"><div class="card-h"><span>Supabase Live Consignments (${list.length})</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Add Truck</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows || '<tr><td colspan="8" style="text-align:center;color:#64748B;">No cloud shipments yet — click + Create Shipment to log your first live truck!</td></tr>'}</tbody></table></div>`],
+        shipments: ["2. Shipment Management", `<div class="card"><div class="card-h"><span>Cloud Shipments</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ New Shipment</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`],
         documents: ["3. Customs Documents & AI", `<div class="card" style="padding:18px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;"><div><strong>⚡ BorderFlow AI Document Checker</strong><p style="font-size:12px;color:#475569;margin-top:4px;">Verify invoices, weights & plates via Dify + GroqCloud.</p></div><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;">Launch AI Checker →</a></div><div class="card"><table><thead><tr><th>ID</th><th>Ref</th><th>Document</th><th>Status</th><th>Action</th></tr></thead><tbody>${docs.map((x,i) => `<tr><td>${x.id}</td><td>${x.ref}</td><td>${x.name}</td><td>${bdg(x.status)}</td><td><button class="btn-gold" onclick="docs[${i}].status='Verified';draw()">Verify</button></td></tr>`).join("")}</tbody></table></div>`],
-        clearance: ["4. 10-Stage Customs Clearance", list.map(s => `<div class="card" style="padding:16px;"><div style="display:flex;justify-content:space-between;"><strong>${s.ref} • ${s.client} (${s.border})</strong><button class="btn-gold" onclick="nextStep(${s.id})">Next Stage →</button></div><div class="steps">${MS.map((m,i) => `<div class="st ${i<=s.milestone_step?'ok':''}">${m}</div>`).join("")}</div></div>`).join("")],
+        clearance: ["4. 10-Stage Customs Clearance", list.map(s => `<div class="card" style="padding:16px;"><div style="display:flex;justify-content:space-between;"><strong>${s.ref} • ${s.client} (${s.border})</strong><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Next Stage →</button></div><div class="steps">${MS.map((m,i) => `<div class="st ${i<=(s.milestone_step||0)?'ok':''}">${m}</div>`).join("")}</div></div>`).join("") || '<div class="card" style="padding:20px;">Create a shipment first to track its 10 clearance stages.</div>'],
         borders: ["5. SADC Border Network", `<div class="card"><table><thead><tr><th>Border Post</th><th>Countries</th><th>Avg Clearance</th><th>Status</th></tr></thead><tbody><tr><td><strong>Beitbridge</strong></td><td>South Africa ↔ Zimbabwe</td><td>1.8 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Chirundu OSBP</strong></td><td>Zimbabwe ↔ Zambia</td><td>1.1 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Kazungula</strong></td><td>Botswana ↔ Zambia</td><td>1.5 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Kasumbalesa</strong></td><td>Zambia ↔ DRC</td><td>3.2 hrs</td><td>${bdg("Pending")}</td></tr></tbody></table></div>`],
         fleet: ["6. Vehicles & Drivers", `<div class="card"><table><thead><tr><th>Truck Reg</th><th>Shipment</th><th>Driver WhatsApp</th><th>Corridor</th><th>Status</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.truck}</strong></td><td>${s.ref}</td><td>+${s.phone || 'Not set'}</td><td>${s.border}</td><td>${bdg(s.status)}</td></tr>`).join("")}</tbody></table></div>`],
         delays: ["7. Delay & Bottleneck Management", `<div class="card"><table><thead><tr><th>Ref</th><th>Border</th><th>Reason</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead><tbody>${delays.map((x,i) => `<tr><td>${x.ref}</td><td>${x.border}</td><td>${x.reason}</td><td>${x.hours}</td><td>${bdg(x.status)}</td><td><button class="btn-gold" onclick="delays[${i}].status='Resolved';draw()">Resolve</button></td></tr>`).join("")}</tbody></table></div>`],
@@ -206,7 +233,7 @@
         clients: ["9. Importers & Exporters", `<div class="card"><table><thead><tr><th>Company</th><th>Cargo Type</th><th>Primary Corridor</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.client}</strong></td><td>${s.cargo}</td><td>${s.route}</td></tr>`).join("")}</tbody></table></div>`],
         communication: ["10. Border Agent Dispatch", `<div class="card" style="padding:16px;"><div style="display:flex;gap:8px;margin-bottom:14px;"><input id="chatInp" placeholder="Broadcast update to border lanes..."/><button class="btn-gold" onclick="addChat()">Send</button></div>${msgs.map(m => `<p style="padding:8px 0;border-bottom:1px solid #eee;"><strong>${m.from}:</strong> ${m.text}</p>`).join("")}</div>`],
         reports: ["11. Reports & Corridor Analytics", `<div class="kpi-grid"><div class="kpi g"><small>On-Time Clearance</small><div>98.4%</div></div><div class="kpi"><small>Avg Border Dwell</small><div>1.8 hrs</div></div><div class="kpi a"><small>Monthly Trucks</small><div>142</div></div></div>`],
-        settings: ["12. Workspace Settings", `<div class="card" style="padding:20px;max-width:440px;"><strong>Agency:</strong> ${currentUser.company}<br/><br/><strong>Admin:</strong> ${currentUser.email}<br/><br/><strong>AI Engine:</strong> Dify + GroqCloud Connected</div>`]
+        settings: ["12. Workspace Settings", `<div class="card" style="padding:20px;max-width:440px;"><strong>Agency:</strong> ${currentUser.company}<br/><br/><strong>Cloud DB:</strong> ngkmbpbdaachqymnfffe.supabase.co<br/><br/><strong>AI Engine:</strong> Dify + GroqCloud Connected</div>`]
       };
       t.innerText = views[page][0];
       el.innerHTML = views[page][1];
