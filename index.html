@@ -10,7 +10,6 @@
 
   <section id="landingPage" class="landing">
     <div class="hero-media"></div>
-
     <header class="top-nav">
       <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
       <div class="nav-links">
@@ -84,7 +83,6 @@
       </div>
     </div>
   </div>
-
   <div id="appShell" class="app-shell">
     <aside>
       <div class="brand">
@@ -140,6 +138,79 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
+    let list = [
+      { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge", truck: "AGH 4821", milestone_step: 5, status: "Pending" },
+      { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu", truck: "AFZ 9012", milestone_step: 9, status: "Cleared" }
+    ];
+    let page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
+    const bdg = s => s === "Cleared" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
+
+    function showAuth(signup) {
+      if (currentUser) return enterApp();
+      isSignup = !!signup;
+      document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
+      document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
+      document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
+      document.getElementById("authScreen").style.display = "flex";
+    }
+    function toggleMode() { showAuth(!isSignup); }
+    function doLogin() {
+      currentUser = {
+        email: document.getElementById("aEmail").value.trim() || "owner@beitbridgehub.co.zw",
+        company: document.getElementById("aCompany").value.trim() || "Beitbridge Customs Hub",
+        role: document.getElementById("aRole").value || "Company Owner"
+      };
+      localStorage.setItem("bf_user", JSON.stringify(currentUser));
+      enterApp();
+    }
+    function doLogout() {
+      localStorage.removeItem("bf_user");
+      currentUser = null;
+      document.getElementById("appShell").classList.remove("active");
+      document.getElementById("landingPage").style.display = "flex";
+    }
+    function enterApp() {
+      document.getElementById("landingPage").style.display = "none";
+      document.getElementById("authScreen").style.display = "none";
+      document.getElementById("appShell").classList.add("active");
+      document.getElementById("companyBadge").innerText = currentUser.company;
+      document.getElementById("userLabel").innerText = currentUser.role.toUpperCase() + " • " + currentUser.email;
+      draw();
+    }
+    function go(p, btn) {
+      page = p;
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      draw();
+    }
+    function saveShipment() {
+      list.unshift({
+        id: Date.now(), ref: "BF-" + (101 + list.length),
+        client: document.getElementById("c1").value || "SADC Mining Corp",
+        cargo: document.getElementById("c2").value,
+        route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
+        border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012",
+        milestone_step: 0, status: "Pending"
+      });
+      document.getElementById("m").classList.remove("open");
+      draw();
+    }
+    function nextStep(id) {
+      const item = list.find(x => x.id === id);
+      if (item && item.milestone_step < 9) { item.milestone_step++; if (item.milestone_step >= 8) item.status = "Cleared"; draw(); }
+    }
+    function draw() {
+      const el = document.getElementById("app"), t = document.getElementById("title");
+      const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
+      t.innerText = page.toUpperCase() + " — BorderFlow Live";
+      el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
+        <div class="card"><div class="card-h"><span>Active Consignments (${list.length})</span></div>
+        <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td><td><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button></td></tr>`).join("")}</tbody></table></div>`;
+    }
+    if (currentUser) enterApp();
+  </script>
 </body>
 </html>
