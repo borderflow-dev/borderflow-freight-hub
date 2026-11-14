@@ -5,95 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BorderFlow — Every Truck. Every Border. One Live Feed.</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    .rez-dots { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 14px; }
+    .rez-dots a { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #D6A84F; background: rgba(5,14,27,0.6); transition: 0.2s; }
+    .rez-dots a:hover { background: #D6A84F; transform: scale(1.3); }
+    .rez-hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .rez-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.48); }
+    .rez-section { padding: 88px 48px; max-width: 1240px; margin: 0 auto; }
+    .rez-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 48px; align-items: center; margin-bottom: 84px; }
+    .rez-img { width: 100%; height: 350px; object-fit: cover; border-radius: 14px; border: 1px solid rgba(214,168,79,0.3); box-shadow: 0 24px 48px rgba(0,0,0,0.5); }
+  </style>
 </head>
 <body>
 
-  <section id="landingPage" class="landing">
-    <div class="hero-media"></div>
-    <header class="top-nav">
-      <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
-      <div class="nav-links">
-        <a onclick="showAuth(false)">Borders</a>
-        <a onclick="showAuth(false)">Roles</a>
-        <a onclick="showAuth(true)">Register Agency</a>
-      </div>
-      <div class="nav-actions">
-        <button class="btn-ghost" onclick="showAuth(false)">Sign in</button>
-        <button class="btn-gold-pill" onclick="showAuth(false)">Dashboard</button>
-      </div>
-    </header>
+  <div id="landingPage">
+    <div class="rez-dots">
+      <a href="#sec-hero" title="Live Freight Video"></a>
+      <a href="#sec-owner" title="Company Owners"></a>
+      <a href="#sec-agent" title="Clearing Agents"></a>
+      <a href="#sec-driver" title="Truck Drivers"></a>
+    </div>
 
-    <div style="position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:36px 48px 16px;max-width:1240px;margin:0 auto;width:100%;flex-wrap:wrap;">
-      <div class="hero-content" style="padding:0;max-width:560px;">
+    <!-- SECTION 1: Full-Screen Auto-Playing Truck Video -->
+    <section id="sec-hero" class="rez-hero">
+      <video class="rez-video" autoplay muted loop playsinline poster="https://unsplash.com">
+        <source src="https://mixkit.co" type="video/mp4" />
+      </video>
+
+      <header class="top-nav">
+        <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
+        <div class="nav-links">
+          <a href="#sec-owner">Company Owners</a>
+          <a href="#sec-agent">Clearing Agents</a>
+          <a href="#sec-driver">Truck Drivers</a>
+        </div>
+        <div class="nav-actions">
+          <button class="btn-ghost" onclick="showAuth(false)">Sign in</button>
+          <button class="btn-gold-pill" onclick="showAuth(false)">Open Dashboard</button>
+        </div>
+      </header>
+
+      <div class="hero-content" style="max-width:780px;padding:60px 48px;">
         <div class="live-pill"><span class="live-dot"></span> LIVE AT 65 SOUTHERN AFRICAN BORDERS</div>
         <h1>Every truck. Every border. <span>One live feed.</span></h1>
-        <p>BorderFlow connects Company Owners, Clearing Agents, and Truck Drivers in one live customs workspace from Beitbridge to Kazungula.</p>
+        <p style="color:#F1F5F9;font-size:18px;">Real-time customs clearance, AI document inspection, and instant WhatsApp dispatch built for Southern Africa's toughest freight corridors.</p>
         <div class="hero-btns">
-          <button class="btn-hero-primary" onclick="showAuth(true)">Register Clearing Company</button>
-          <button class="btn-hero-secondary" onclick="showAuth(false)">Open Dashboard →</button>
+          <button class="btn-hero-primary" onclick="showAuth(false)">LAUNCH DASHBOARD →</button>
         </div>
       </div>
 
-      <div style="background:rgba(11,27,48,0.92);border:1px solid rgba(214,168,79,0.45);border-radius:14px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 24px 48px rgba(0,0,0,0.5);">
-        <div style="position:relative;height:185px;width:100%;overflow:hidden;">
-          <img src="https://unsplash.com" alt="Cross-border freight truck" style="width:100%;height:100%;object-fit:cover;display:block;" />
-          <div style="position:absolute;bottom:10px;left:12px;background:rgba(5,14,27,0.88);color:#D6A84F;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:6px;">● LIVE NORTH-SOUTH FREIGHT CORRIDOR</div>
+      <div class="hero-footer">
+        <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Active</div>
+        <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop Border</div>
+        <div><strong>FORBES</strong> • ZW ↔ MZ Corridor</div>
+        <div><strong>KAZUNGULA</strong> • BW ↔ ZM Bridge</div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Clean Editorial Showcase of Who BorderFlow Helps (No Cluttered Buttons) -->
+    <div style="background:#050E1B;border-top:1px solid rgba(214,168,79,0.2);">
+      <div class="rez-section">
+        <div style="text-align:center;margin-bottom:72px;">
+          <span style="color:#D6A84F;font-size:12px;font-weight:800;letter-spacing:3px;">BUILT FOR THE ENTIRE CORRIDOR</span>
+          <h2 style="font-size:36px;font-weight:900;color:#fff;margin-top:10px;letter-spacing:-0.5px;">WHO BORDERFLOW EMPOWERS</h2>
         </div>
-        <div style="padding:18px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span style="font-size:11.5px;font-weight:800;color:#D6A84F;letter-spacing:1px;">CORRIDOR TELEMETRY</span>
-            <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#34D399;padding:3px 10px;border-radius:99px;font-weight:700;">● ONLINE</span>
+
+        <!-- 1. Company Owners -->
+        <div id="sec-owner" class="rez-split">
+          <img class="rez-img" src="https://unsplash.com" alt="Clearing Company Owner" />
+          <div>
+            <span style="color:#D6A84F;font-size:12px;font-weight:800;letter-spacing:2px;">01 • CLEARING COMPANY OWNERS</span>
+            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">A POWERFUL COMMAND CENTER</h3>
+            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">Monitor every truck across Beitbridge, Chirundu, and Kazungula from one dark-mode dashboard. Control Border Wallet duty disbursements and track agency performance in real time.</p>
           </div>
-          <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
-            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(5,14,27,0.75);border-radius:8px;">
-              <span>Beitbridge (ZA ↔ ZW)</span><span style="color:#34D399;font-weight:700;">Avg 1.8 hrs</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(5,14,27,0.75);border-radius:8px;">
-              <span>Chirundu OSBP (ZW ↔ ZM)</span><span style="color:#34D399;font-weight:700;">Fast-Track</span>
-            </div>
+        </div>
+
+        <!-- 2. Clearing Agents -->
+        <div id="sec-agent" class="rez-split">
+          <div>
+            <span style="color:#34D399;font-size:12px;font-weight:800;letter-spacing:2px;">02 • CUSTOMS CLEARING AGENTS</span>
+            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">AI-POWERED DOCUMENT INSPECTION</h3>
+            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">Eliminate costly ZIMRA and SARS border delays. Run commercial invoices, SAD 500 forms, and truck plates through our built-in AI Document Checker before the truck reaches the gate.</p>
           </div>
+          <img class="rez-img" src="https://unsplash.com" alt="Customs Clearing Agent" />
+        </div>
+
+        <!-- 3. Truck Drivers -->
+        <div id="sec-driver" class="rez-split" style="margin-bottom:48px;">
+          <img class="rez-img" src="https://unsplash.com" alt="Cross-Border Truck Driver" />
+          <div>
+            <span style="color:#38BDF8;font-size:12px;font-weight:800;letter-spacing:2px;">03 • CROSS-BORDER TRUCK DRIVERS</span>
+            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">DIRECT WHATSAPP RELEASE ALERTS</h3>
+            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">No complicated apps for drivers on the road. Clearing agents send one-click WhatsApp updates straight to drivers in Zimbabwe (+263), South Africa (+27), and Zambia (+260) the moment duty is cleared.</p>
+          </div>
+        </div>
+
+        <!-- Single Clean Bottom Launch CTA -->
+        <div style="text-align:center;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08);">
+          <button class="btn-hero-primary" onclick="showAuth(false)">OPEN BORDERFLOW DASHBOARD →</button>
         </div>
       </div>
     </div>
-
-    <div style="position:relative;z-index:10;max-width:1240px;margin:0 auto;padding:12px 48px 32px;width:100%;">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
-        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
-          <img src="https://unsplash.com" alt="Company Owner" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #D6A84F;flex-shrink:0;" />
-          <div>
-            <span style="font-size:10px;font-weight:800;color:#D6A84F;letter-spacing:1px;">COMPANY OWNER</span>
-            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">Full Corridor Control</h3>
-            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Track agency revenue, Border Wallet duty payments, and live fleet KPIs.</p>
-          </div>
-        </div>
-
-        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
-          <img src="https://unsplash.com" alt="Clearing Agent" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #34D399;flex-shrink:0;" />
-          <div>
-            <span style="font-size:10px;font-weight:800;color:#34D399;letter-spacing:1px;">CLEARING AGENT</span>
-            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">AI-Assisted Clearance</h3>
-            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Verify SAD 500 bills of entry with AI and clear trucks across 10 border stages.</p>
-          </div>
-        </div>
-
-        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
-          <img src="https://unsplash.com" alt="Truck Driver" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #38BDF8;flex-shrink:0;" />
-          <div>
-            <span style="font-size:10px;font-weight:800;color:#38BDF8;letter-spacing:1px;">TRUCK DRIVER</span>
-            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">Instant WhatsApp Updates</h3>
-            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Receive real-time gate release alerts and border queue updates on WhatsApp.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-footer">
-      <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Corridor Active</div>
-      <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop Border</div>
-      <div><strong>FORBES</strong> • ZW ↔ MZ Beira Corridor</div>
-      <div><strong>KAZUNGULA</strong> • BW ↔ ZM Bridge</div>
-    </div>
-  </section>
+  </div>
 
   <div id="authScreen" class="auth-wrap">
     <div class="auth-box">
@@ -227,7 +241,7 @@
       localStorage.setItem("bf_user", JSON.stringify(currentUser));
       enterApp();
     }
-    function doLogout() { localStorage.removeItem("bf_user"); currentUser = null; document.getElementById("appShell").classList.remove("active"); document.getElementById("landingPage").style.display = "flex"; }
+    function doLogout() { localStorage.removeItem("bf_user"); currentUser = null; document.getElementById("appShell").classList.remove("active"); document.getElementById("landingPage").style.display = "block"; }
     function enterApp() {
       document.getElementById("landingPage").style.display = "none";
       document.getElementById("authScreen").style.display = "none";
