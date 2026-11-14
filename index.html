@@ -123,14 +123,15 @@
 
   <div id="m" class="modal-bg">
     <div class="modal">
-      <strong style="color:#071426;">Create Cross-Border Shipment</strong>
+      <strong style="color:#071426;">Create International Cross-Border Shipment</strong>
       <div class="grid2">
         <input id="c1" placeholder="Client (e.g. Harare Mining)" />
         <select id="c2"><option>Mining Equipment</option><option>FMCG / Groceries</option><option>Fuel & Chemicals</option></select>
         <input id="c3" placeholder="Origin (e.g. Johannesburg, ZA)" />
-        <input id="c4" placeholder="Destination (e.g. Harare, ZW)" />
-        <select id="c5"><option>Beitbridge</option><option>Chirundu</option><option>Forbes</option><option>Plumtree</option><option>Kazungula</option></select>
+        <input id="c4" placeholder="Destination (e.g. Lusaka, ZM)" />
+        <select id="c5"><option>Beitbridge (ZA↔ZW)</option><option>Chirundu (ZW↔ZM)</option><option>Forbes (ZW↔MZ)</option><option>Kazungula (BW↔ZM)</option><option>Kasumbalesa (ZM↔DRC)</option></select>
         <input id="c6" placeholder="Truck Reg (e.g. AGH 4821)" />
+        <input id="c7" placeholder="Driver WhatsApp (e.g. +263771234567)" style="grid-column: span 2;" />
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;">Cancel</button>
@@ -143,16 +144,16 @@
     const DIFY_URL = "https://udify.app";
     const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
     let list = [
-      { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge", truck: "AGH 4821", milestone_step: 5, status: "Pending" },
-      { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu", truck: "AFZ 9012", milestone_step: 9, status: "Cleared" }
+      { id: 1, ref: "BF-101", client: "Zimplats Mining", cargo: "Mining Equipment", route: "Johannesburg → Harare", border: "Beitbridge (ZA↔ZW)", truck: "AGH 4821", phone: "263771000101", milestone_step: 5, status: "Pending" },
+      { id: 2, ref: "BF-102", client: "Delta Beverages", cargo: "FMCG / Groceries", route: "Durban → Lusaka", border: "Chirundu (ZW↔ZM)", truck: "AFZ 9012", phone: "27821000202", milestone_step: 9, status: "Cleared" }
     ];
     let page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
-    let docs = [{ id: "DOC-101", ref: "BF-101", name: "ZIMRA Bill of Entry (SAD 500)", status: "Verified" }, { id: "DOC-102", ref: "BF-101", name: "SADC Certificate of Origin", status: "Pending" }];
-    const bdg = s => s === "Cleared" || s === "Verified" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
+    const bdg = s => s === "Cleared" ? `<span class="b bg">${s}</span>` : `<span class="b ba">${s}</span>`;
 
-    function sendWhatsApp(ref, truck, border, stage) {
-      const msg = encodeURIComponent(`*BorderFlow Live Update*\nShipment: ${ref}\nTruck: ${truck}\nBorder: ${border}\nStatus: ${stage}\n\nVerify documents: ${DIFY_URL}`);
-      window.open(`https://wa.me{msg}`, "_blank");
+    function sendWhatsApp(ref, truck, border, stage, phone) {
+      const cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+      const msg = encodeURIComponent(`*BorderFlow International Update*\nShipment: ${ref}\nTruck: ${truck}\nCorridor: ${border}\nStatus: ${stage}\n\nVerify customs docs: ${DIFY_URL}`);
+      window.open(`https://wa.me{cleanPhone}?text=${msg}`, "_blank");
     }
 
     function showAuth(signup) {
@@ -199,7 +200,9 @@
         client: document.getElementById("c1").value || "SADC Mining Corp",
         cargo: document.getElementById("c2").value,
         route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
-        border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012",
+        border: document.getElementById("c5").value,
+        truck: document.getElementById("c6").value || "AFZ 9012",
+        phone: document.getElementById("c7").value || "",
         milestone_step: 0, status: "Pending"
       });
       document.getElementById("m").classList.remove("open");
@@ -212,25 +215,13 @@
     function draw() {
       const el = document.getElementById("app"), t = document.getElementById("title");
       const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
-      if (page === "documents") {
-        t.innerText = "3. Customs Documents & AI Inspector";
-        el.innerHTML = `<div class="card" style="padding:20px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-          <div><strong style="color:#071426;font-size:15px;">⚡ BorderFlow AI Document Checker (GroqCloud • openai/gpt-oss-120b)</strong>
-          <p style="font-size:12.5px;color:#475569;margin-top:4px;">Verify customs invoices, cargo weights, and truck plates before Beitbridge arrival.</p></div>
-          <a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;background:#071426;color:#D6A84F;padding:12px 18px;">Open AI Document Checker →</a>
-        </div>
-        <div class="card"><div class="card-h"><span>Shipment Manifests</span></div>
-        <table><thead><tr><th>ID</th><th>Ref</th><th>Document</th><th>Status</th><th>AI Check</th></tr></thead>
-        <tbody>${docs.map(x => `<tr><td>${x.id}</td><td>${x.ref}</td><td>${x.name}</td><td>${bdg(x.status)}</td><td><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;padding:4px 10px;">Inspect →</a></td></tr>`).join("")}</tbody></table></div>`;
-      } else {
-        t.innerText = page.toUpperCase() + " — BorderFlow Live";
-        el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
-          <div class="card"><div class="card-h"><span>Active Consignments (${list.length})</span></div>
-          <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td>
-          <td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button>
-          <button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step]}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("")}</tbody></table></div>`;
-      }
+      t.innerText = page.toUpperCase() + " — BorderFlow International";
+      el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">1</div></div></div>
+        <div class="card"><div class="card-h"><span>International Consignments (${list.length})</span></div>
+        <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step]}</td><td>${bdg(s.status)}</td>
+        <td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id})">Advance →</button>
+        <button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step]}','${s.phone}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("")}</tbody></table></div>`;
     }
     if (currentUser) enterApp();
   </script>
