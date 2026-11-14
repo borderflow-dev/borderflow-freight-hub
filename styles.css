@@ -1,10 +1,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Inter, Roboto, Arial, sans-serif; }
 body { background: #071426; color: #1E293B; min-height: 100vh; overflow-x: hidden; }
 
-@keyframes slowPanZoom {
-  0% { transform: scale(1.0) translateX(0px); }
-  50% { transform: scale(1.08) translateX(-18px); }
-  100% { transform: scale(1.0) translateX(0px); }
+@keyframes truckCruise {
+  0% { transform: translateX(480px); }
+  100% { transform: translateX(-980px); }
+}
+@keyframes roadLines {
+  from { transform: translateX(0); }
+  to { transform: translateX(-120px); }
 }
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -16,38 +19,37 @@ body { background: #071426; color: #1E293B; min-height: 100vh; overflow-x: hidde
 }
 
 /* Landing Hero Page */
-.landing { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; color: #fff; }
-.hero-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background-image: linear-gradient(90deg, rgba(7,20,38,0.92) 0%, rgba(7,20,38,0.72) 55%, rgba(7,20,38,0.35) 100%),
-                    linear-gradient(180deg, rgba(7,20,38,0.75) 0%, rgba(7,20,38,0.2) 50%, rgba(7,20,38,0.95) 100%),
-                    url('https://unsplash.com');
-  background-size: cover; background-position: center right;
-  animation: slowPanZoom 18s ease-in-out infinite;
-}
+.landing { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; color: #fff; background: radial-gradient(circle at 75% 40%, #162E4D 0%, #0B1B30 45%, #071426 100%); }
 
-.top-nav { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; border-bottom: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+/* Animated Highway & Driving Truck Layer */
+.highway-scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.border-towers { position: absolute; right: 8%; bottom: 135px; display: flex; gap: 180px; opacity: 0.45; }
+.tower-light { width: 14px; height: 14px; border-radius: 50%; background: #FBBF24; box-shadow: 0 0 60px 28px rgba(251, 191, 36, 0.45); }
+.road-deck { position: absolute; bottom: 52px; left: 0; right: 0; height: 90px; background: linear-gradient(180deg, #0F172A 0%, #070D19 100%); border-top: 2px solid rgba(214,168,79,0.35); }
+.road-stripes { position: absolute; top: 42px; left: 0; width: 200%; height: 4px; background: repeating-linear-gradient(90deg, #D6A84F 0 50px, transparent 50px 120px); animation: roadLines 0.7s linear infinite; }
+.driving-semi { position: absolute; bottom: 78px; right: 0; width: 540px; animation: truckCruise 9s linear infinite; filter: drop-shadow(0 18px 25px rgba(0,0,0,0.75)); }
+
+.top-nav { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(7,20,38,0.65); backdrop-filter: blur(8px); }
 .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; color: #fff; }
 .nav-icon { width: 34px; height: 34px; background: #D6A84F; color: #071426; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; }
-.nav-links { display: flex; gap: 28px; font-size: 13.5px; color: #CBD5E1; }
+.nav-links { display: flex; gap: 28px; font-size: 13.5px; }
 .nav-links a { color: #CBD5E1; text-decoration: none; cursor: pointer; }
 .nav-links a:hover { color: #D6A84F; }
 .nav-actions { display: flex; gap: 14px; align-items: center; }
 .btn-ghost { background: transparent; border: none; color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer; padding: 8px 14px; }
-.btn-gold-pill { background: #D6A84F; color: #071426; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: transform 0.15s; }
-.btn-gold-pill:hover { transform: translateY(-1px); background: #e3b963; }
+.btn-gold-pill { background: #D6A84F; color: #071426; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; }
 
-.hero-content { position: relative; z-index: 2; max-width: 760px; padding: 60px 48px; animation: fadeUp 0.8s ease-out; }
-.live-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(214,168,79,0.14); border: 1px solid rgba(214,168,79,0.45); color: #D6A84F; padding: 6px 14px; border-radius: 99px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 22px; }
+.hero-content { position: relative; z-index: 2; max-width: 720px; padding: 48px 48px 140px; animation: fadeUp 0.7s ease-out; }
+.live-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(214,168,79,0.14); border: 1px solid rgba(214,168,79,0.45); color: #D6A84F; padding: 6px 14px; border-radius: 99px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 20px; }
 .live-dot { width: 7px; height: 7px; background: #D6A84F; border-radius: 50%; animation: pulseDot 1.5s infinite; }
-.hero-content h1 { font-size: clamp(38px, 5.5vw, 66px); font-weight: 900; line-height: 1.05; letter-spacing: -1px; margin-bottom: 20px; }
+.hero-content h1 { font-size: clamp(38px, 5vw, 62px); font-weight: 900; line-height: 1.05; letter-spacing: -1px; margin-bottom: 18px; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
 .hero-content h1 span { color: #D6A84F; display: block; }
-.hero-content p { font-size: 17px; line-height: 1.6; color: #CBD5E1; max-width: 560px; margin-bottom: 32px; }
+.hero-content p { font-size: 16.5px; line-height: 1.6; color: #E2E8F0; max-width: 540px; margin-bottom: 28px; text-shadow: 0 2px 12px rgba(0,0,0,0.7); }
 .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-.btn-hero-primary { background: #D6A84F; color: #071426; border: none; padding: 14px 28px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; }
-.btn-hero-secondary { background: rgba(11,27,48,0.85); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.btn-hero-primary { background: #D6A84F; color: #071426; border: none; padding: 14px 28px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 8px 20px rgba(214,168,79,0.3); }
+.btn-hero-secondary { background: rgba(11,27,48,0.9); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; }
 
-.hero-footer { position: relative; z-index: 2; display: flex; gap: 36px; padding: 18px 48px; background: rgba(7,20,38,0.85); border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94A3B8; flex-wrap: wrap; }
+.hero-footer { position: relative; z-index: 2; display: flex; gap: 36px; padding: 16px 48px; background: #050E1B; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #94A3B8; flex-wrap: wrap; }
 .hero-footer strong { color: #D6A84F; }
 
 /* Auth Modal Overlay */
