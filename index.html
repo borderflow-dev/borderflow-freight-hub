@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- Professional Real Semi-Truck Homepage -->
   <section id="landingPage" class="landing">
     <div class="hero-media">
       <img class="hero-photo" src="https://wikimedia.org" alt="Heavy Freight Semi Truck" />
@@ -18,13 +17,13 @@
     <header class="top-nav">
       <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
       <div class="nav-links">
-        <a onclick="document.getElementById('authScreen').style.display='flex'">Borders</a>
-        <a onclick="document.getElementById('authScreen').style.display='flex'">Features</a>
-        <a onclick="document.getElementById('authScreen').style.display='flex'">Register Agency</a>
+        <a onclick="showAuth(false)">Borders</a>
+        <a onclick="showAuth(false)">Features</a>
+        <a onclick="showAuth(true)">Register Agency</a>
       </div>
       <div class="nav-actions">
-        <button class="btn-ghost" onclick="document.getElementById('authScreen').style.display='flex'">Sign in</button>
-        <button class="btn-gold-pill" onclick="document.getElementById('authScreen').style.display='flex'">Dashboard</button>
+        <button class="btn-ghost" onclick="showAuth(false)">Sign in</button>
+        <button class="btn-gold-pill" onclick="showAuth(false)">Dashboard</button>
       </div>
     </header>
 
@@ -33,8 +32,8 @@
       <h1>Every truck. Every border. <span>One live feed.</span></h1>
       <p>BorderFlow lets clearing agents log shipments, track customs clearance step by step, and pay tolls and duty from one Border Wallet.</p>
       <div class="hero-btns">
-        <button class="btn-hero-primary" onclick="document.getElementById('signupFields').style.display='block';document.getElementById('authHeading').innerText='Register Clearing Company';document.getElementById('authSubmitBtn').innerText='Create Company Account';document.getElementById('authScreen').style.display='flex'">Register Clearing Company</button>
-        <button class="btn-hero-secondary" onclick="document.getElementById('authScreen').style.display='flex'">Open Dashboard →</button>
+        <button class="btn-hero-primary" onclick="showAuth(true)">Register Clearing Company</button>
+        <button class="btn-hero-secondary" onclick="showAuth(false)">Open Dashboard →</button>
       </div>
     </div>
 
@@ -46,7 +45,6 @@
     </div>
   </section>
 
-  <!-- Sign In / Sign Up Modal -->
   <div id="authScreen" class="auth-wrap">
     <div class="auth-box">
       <button class="close-auth" onclick="document.getElementById('authScreen').style.display='none'">✕</button>
@@ -57,17 +55,16 @@
         <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
         <div class="field"><label>Role</label><select id="aRole"><option>Company Owner</option><option>Clearing Agent</option><option>Transport Manager</option><option>Driver</option><option>Client</option></select></div>
       </div>
-      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="agent@company.co.zw" /></div>
+      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="owner@beitbridgehub.co.zw" /></div>
       <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="••••••••" /></div>
-      <button id="authSubmitBtn" class="btn-full">Sign In</button>
+      <button class="btn-full" id="authSubmitBtn" onclick="doLogin()">Sign In</button>
       <div style="text-align:center;margin-top:14px;font-size:12px;color:#475569;">
         <span id="authPrompt">New clearing company?</span>
-        <button id="toggleAuthBtn" type="button" style="background:none;border:none;color:#071426;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
+        <button id="toggleAuthBtn" type="button" onclick="toggleMode()" style="background:none;border:none;color:#071426;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
       </div>
     </div>
   </div>
 
-  <!-- Main 12-Module SaaS Workspace -->
   <div id="appShell" class="app-shell">
     <aside>
       <div class="brand">
@@ -75,18 +72,18 @@
         <div id="companyBadge" style="font-size:11px;color:#D6A84F;margin-top:6px;">Workspace</div>
       </div>
       <nav>
-        <button class="nav-btn active" data-p="overview">1. Overview</button>
-        <button class="nav-btn" data-p="shipments">2. Shipments</button>
-        <button class="nav-btn" data-p="documents">3. Documents</button>
-        <button class="nav-btn" data-p="clearance">4. Clearance Management</button>
-        <button class="nav-btn" data-p="borders">5. Border Network</button>
-        <button class="nav-btn" data-p="fleet">6. Vehicles & Drivers</button>
-        <button class="nav-btn" data-p="delays">7. Delay Management</button>
-        <button class="nav-btn" data-p="expenses">8. Payments & Expenses</button>
-        <button class="nav-btn" data-p="clients">9. Clients</button>
-        <button class="nav-btn" data-p="communication">10. Communication</button>
-        <button class="nav-btn" data-p="reports">11. Reports & Analytics</button>
-        <button class="nav-btn" data-p="settings">12. Settings</button>
+        <button class="nav-btn active" onclick="go('overview',this)">1. Overview</button>
+        <button class="nav-btn" onclick="go('shipments',this)">2. Shipments</button>
+        <button class="nav-btn" onclick="go('documents',this)">3. Documents</button>
+        <button class="nav-btn" onclick="go('clearance',this)">4. Clearance Management</button>
+        <button class="nav-btn" onclick="go('borders',this)">5. Border Network</button>
+        <button class="nav-btn" onclick="go('fleet',this)">6. Vehicles & Drivers</button>
+        <button class="nav-btn" onclick="go('delays',this)">7. Delay Management</button>
+        <button class="nav-btn" onclick="go('expenses',this)">8. Payments & Expenses</button>
+        <button class="nav-btn" onclick="go('clients',this)">9. Clients</button>
+        <button class="nav-btn" onclick="go('communication',this)">10. Communication</button>
+        <button class="nav-btn" onclick="go('reports',this)">11. Reports & Analytics</button>
+        <button class="nav-btn" onclick="go('settings',this)">12. Settings</button>
       </nav>
     </aside>
 
@@ -97,8 +94,8 @@
           <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
-          <button id="openBtn" class="btn-gold">+ Create Shipment</button>
-          <button id="logoutBtn" class="btn-out">Logout</button>
+          <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
+          <button class="btn-out" onclick="doLogout()">Logout</button>
         </div>
       </header>
       <main id="app"></main>
@@ -117,12 +114,65 @@
         <input id="c6" placeholder="Truck Reg (e.g. AGH 4821)" />
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button id="cancelBtn" style="padding:8px 12px;">Cancel</button>
-        <button id="saveBtn" class="btn-gold">Save Shipment</button>
+        <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;">Cancel</button>
+        <button class="btn-gold" onclick="saveShipment()">Save Shipment</button>
       </div>
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
-</body>
-</html>
+  <script>
+    const BASE = "https://supabase.co";
+    const API_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
+    const HEADERS = { "apikey": API_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+    const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
+    let list = [], page = "overview", isSignup = false;
+    let currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
+
+    function showAuth(signup) {
+      if (currentUser) return enterApp();
+      isSignup = !!signup;
+      document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
+      document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
+      document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
+      document.getElementById("authScreen").style.display = "flex";
+    }
+    function toggleMode() { showAuth(!isSignup); }
+    function doLogin() {
+      const email = document.getElementById("aEmail").value.trim() || "owner@beitbridgehub.co.zw";
+      const company = document.getElementById("aCompany").value.trim() || "Beitbridge Customs Hub";
+      const role = document.getElementById("aRole").value || "Company Owner";
+      currentUser = { email, company, role };
+      localStorage.setItem("bf_user", JSON.stringify(currentUser));
+      enterApp();
+    }
+    function doLogout() {
+      localStorage.removeItem("bf_user");
+      currentUser = null;
+      document.getElementById("appShell").classList.remove("active");
+      document.getElementById("landingPage").style.display = "flex";
+    }
+    function enterApp() {
+      document.getElementById("landingPage").style.display = "none";
+      document.getElementById("authScreen").style.display = "none";
+      document.getElementById("appShell").classList.add("active");
+      document.getElementById("companyBadge").innerText = currentUser.company;
+      document.getElementById("userLabel").innerText = currentUser.role.toUpperCase() + " • " + currentUser.email;
+      loadShipments();
+    }
+    function go(p, btn) {
+      page = p;
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      draw();
+    }
+    async function loadShipments() {
+      try {
+        const res = await fetch(BASE + "/rest/v1/shipments?select=*&order=created_at.desc", { headers: HEADERS });
+        const data = await res.json();
+        if (Array.isArray(data)) list = data;
+      } catch (e) {}
+      draw();
+    }
+    async function saveShipment() {
+      const newShip = { ref: "BF-" + (101 + list.length), client: document.getElementById("c1").value || "SADC Client", cargo: document.getElementById("c2").value, route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"), border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012", milestone_step: 0, status: "Pending", fee: 1200 };
+      list.unshift(newShip);
