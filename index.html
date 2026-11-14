@@ -14,7 +14,7 @@
       <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
       <div class="nav-links">
         <a onclick="showAuth(false)">Borders</a>
-        <a onclick="showAuth(false)">Features</a>
+        <a onclick="showAuth(false)">Roles</a>
         <a onclick="showAuth(true)">Register Agency</a>
       </div>
       <div class="nav-actions">
@@ -23,40 +23,66 @@
       </div>
     </header>
 
-    <div style="position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:40px 48px;max-width:1240px;margin:0 auto;width:100%;flex-wrap:wrap;">
+    <div style="position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:40px;padding:36px 48px 16px;max-width:1240px;margin:0 auto;width:100%;flex-wrap:wrap;">
       <div class="hero-content" style="padding:0;max-width:560px;">
         <div class="live-pill"><span class="live-dot"></span> LIVE AT 65 SOUTHERN AFRICAN BORDERS</div>
         <h1>Every truck. Every border. <span>One live feed.</span></h1>
-        <p>BorderFlow lets clearing agents log shipments, track customs clearance step by step, and pay tolls and duty from one Border Wallet.</p>
+        <p>BorderFlow connects Company Owners, Clearing Agents, and Truck Drivers in one live customs workspace from Beitbridge to Kazungula.</p>
         <div class="hero-btns">
           <button class="btn-hero-primary" onclick="showAuth(true)">Register Clearing Company</button>
           <button class="btn-hero-secondary" onclick="showAuth(false)">Open Dashboard →</button>
         </div>
       </div>
 
-      <div style="background:rgba(11,27,48,0.92);border:1px solid rgba(214,168,79,0.45);border-radius:14px;overflow:hidden;width:100%;max-width:450px;box-shadow:0 24px 48px rgba(0,0,0,0.5);">
-        <div style="position:relative;height:210px;width:100%;overflow:hidden;">
-          <img src="https://unsplash.com" onerror="this.src='https://unsplash.com'" alt="Cross-border freight semi-truck driving on highway" style="width:100%;height:100%;object-fit:cover;display:block;" />
-          <div style="position:absolute;bottom:10px;left:12px;background:rgba(5,14,27,0.85);color:#D6A84F;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:0.8px;">● LIVE NORTH-SOUTH FREIGHT CORRIDOR</div>
+      <div style="background:rgba(11,27,48,0.92);border:1px solid rgba(214,168,79,0.45);border-radius:14px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 24px 48px rgba(0,0,0,0.5);">
+        <div style="position:relative;height:185px;width:100%;overflow:hidden;">
+          <img src="https://unsplash.com" alt="Cross-border freight truck" style="width:100%;height:100%;object-fit:cover;display:block;" />
+          <div style="position:absolute;bottom:10px;left:12px;background:rgba(5,14,27,0.88);color:#D6A84F;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:6px;">● LIVE NORTH-SOUTH FREIGHT CORRIDOR</div>
         </div>
-        <div style="padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:10px;">
-            <span style="font-size:12px;font-weight:800;color:#D6A84F;letter-spacing:1px;">CORRIDOR TELEMETRY</span>
-            <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#34D399;padding:3px 10px;border-radius:99px;font-weight:700;">● SYSTEMS ONLINE</span>
+        <div style="padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:11.5px;font-weight:800;color:#D6A84F;letter-spacing:1px;">CORRIDOR TELEMETRY</span>
+            <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#34D399;padding:3px 10px;border-radius:99px;font-weight:700;">● ONLINE</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
-            <div style="display:flex;justify-content:space-between;padding:9px 12px;background:rgba(7,20,38,0.65);border-radius:8px;">
-              <span style="color:#E2E8F0;font-weight:600;">Beitbridge (ZA ↔ ZW)</span>
-              <span style="color:#34D399;font-weight:700;">Avg 1.8 hrs</span>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(5,14,27,0.75);border-radius:8px;">
+              <span>Beitbridge (ZA ↔ ZW)</span><span style="color:#34D399;font-weight:700;">Avg 1.8 hrs</span>
             </div>
-            <div style="display:flex;justify-content:space-between;padding:9px 12px;background:rgba(7,20,38,0.65);border-radius:8px;">
-              <span style="color:#E2E8F0;font-weight:600;">Chirundu OSBP (ZW ↔ ZM)</span>
-              <span style="color:#34D399;font-weight:700;">Fast-Track</span>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(5,14,27,0.75);border-radius:8px;">
+              <span>Chirundu OSBP (ZW ↔ ZM)</span><span style="color:#34D399;font-weight:700;">Fast-Track</span>
             </div>
-            <div style="display:flex;justify-content:space-between;padding:9px 12px;background:rgba(7,20,38,0.65);border-radius:8px;">
-              <span style="color:#E2E8F0;font-weight:600;">Kazungula Bridge (BW ↔ ZM)</span>
-              <span style="color:#D6A84F;font-weight:700;">Moderate</span>
-            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Role Showcase: Company Owner, Clearing Agent, Truck Driver -->
+    <div style="position:relative;z-index:10;max-width:1240px;margin:0 auto;padding:12px 48px 32px;width:100%;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
+        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
+          <img src="https://unsplash.com" alt="Company Owner" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #D6A84F;flex-shrink:0;" />
+          <div>
+            <span style="font-size:10px;font-weight:800;color:#D6A84F;letter-spacing:1px;">COMPANY OWNER</span>
+            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">Full Corridor Control</h3>
+            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Track agency revenue, Border Wallet duty payments, and live fleet KPIs.</p>
+          </div>
+        </div>
+
+        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
+          <img src="https://unsplash.com" alt="Clearing Agent" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #34D399;flex-shrink:0;" />
+          <div>
+            <span style="font-size:10px;font-weight:800;color:#34D399;letter-spacing:1px;">CLEARING AGENT</span>
+            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">AI-Assisted Clearance</h3>
+            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Verify SAD 500 bills of entry with AI and clear trucks across 10 border stages.</p>
+          </div>
+        </div>
+
+        <div style="background:rgba(11,27,48,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;">
+          <img src="https://unsplash.com" alt="Truck Driver" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #38BDF8;flex-shrink:0;" />
+          <div>
+            <span style="font-size:10px;font-weight:800;color:#38BDF8;letter-spacing:1px;">TRUCK DRIVER</span>
+            <h3 style="font-size:15px;color:#fff;margin:2px 0 4px;">Instant WhatsApp Updates</h3>
+            <p style="font-size:12px;color:#94A3B8;line-height:1.4;">Receive real-time gate release alerts and border queue updates on WhatsApp.</p>
           </div>
         </div>
       </div>
@@ -74,8 +100,8 @@
     <div class="auth-box">
       <button class="close-auth" onclick="document.getElementById('authScreen').style.display='none'">✕</button>
       <div class="nav-icon" style="margin-bottom:12px;">BF</div>
-      <h2 id="authHeading" style="color:#071426;font-size:20px;">Sign In to BorderFlow</h2>
-      <p style="color:#64748B;font-size:12px;margin:4px 0 16px;">Every Truck. Every Border. One Live Feed.</p>
+      <h2 id="authHeading" style="font-size:20px;">Sign In to BorderFlow</h2>
+      <p style="color:#94A3B8;font-size:12px;margin:4px 0 16px;">Every Truck. Every Border. One Live Feed.</p>
       <div id="signupFields" style="display:none;">
         <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
         <div class="field"><label>Role</label><select id="aRole"><option>Company Owner</option><option>Clearing Agent</option><option>Transport Manager</option><option>Driver</option><option>Client</option></select></div>
@@ -83,9 +109,9 @@
       <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="owner@beitbridgehub.co.zw" /></div>
       <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="••••••••" /></div>
       <button class="btn-full" id="authSubmitBtn" onclick="doLogin()">Sign In</button>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:#475569;">
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#94A3B8;">
         <span id="authPrompt">New clearing company?</span>
-        <button id="toggleAuthBtn" type="button" onclick="toggleMode()" style="background:none;border:none;color:#071426;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
+        <button id="toggleAuthBtn" type="button" onclick="toggleMode()" style="background:none;border:none;color:#D6A84F;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
       </div>
     </div>
   </div>
@@ -114,11 +140,11 @@
     <div class="main-wrap">
       <header>
         <div>
-          <small id="userLabel" style="color:#64748B;font-weight:700;font-size:10px;">CLOUD SYNCED</small>
-          <h2 id="title" style="font-size:18px;color:#071426;">1. Executive Dashboard</h2>
+          <small id="userLabel" style="color:#94A3B8;font-weight:700;font-size:10px;">CLOUD SYNCED</small>
+          <h2 id="title" style="font-size:18px;">1. Executive Dashboard</h2>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
-          <a href="https://udify.app" target="_blank" class="btn-gold" style="text-decoration:none;background:#D6A84F;color:#071426;">⚡ AI Doc Checker</a>
+          <a href="https://udify.app" target="_blank" class="btn-gold" style="text-decoration:none;">⚡ AI Doc Checker</a>
           <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
           <button class="btn-out" onclick="doLogout()">Logout</button>
         </div>
@@ -129,7 +155,7 @@
 
   <div id="m" class="modal-bg">
     <div class="modal">
-      <strong style="color:#071426;">Create International Cross-Border Shipment</strong>
+      <strong>Create International Cross-Border Shipment</strong>
       <div class="grid2">
         <input id="c1" placeholder="Client (e.g. Harare Mining)" />
         <select id="c2"><option>Mining Equipment</option><option>FMCG / Groceries</option><option>Fuel & Chemicals</option></select>
@@ -140,7 +166,7 @@
         <input id="c7" placeholder="Driver WhatsApp (e.g. +263771234567)" style="grid-column: span 2;" />
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;">Cancel</button>
+        <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;background:#1E293B;color:#fff;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
         <button class="btn-gold" onclick="saveShipment()">Save to Cloud</button>
       </div>
     </div>
@@ -220,21 +246,21 @@
       const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
       const rows = list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step||0]}</td><td>${bdg(s.status)}</td><td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Advance →</button><button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step||0]}','${s.phone||''}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("");
       const views = {
-        overview: ["1. Executive Dashboard (Live Cloud)", `<div class="kpi-grid"><div class="kpi"><small>Cloud Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">${delays.length}</div></div></div><div class="card"><div class="card-h"><span>Supabase Live Consignments (${list.length})</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Add Truck</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows || '<tr><td colspan="8" style="text-align:center;color:#64748B;">No cloud shipments yet — click + Create Shipment!</td></tr>'}</tbody></table></div>`],
+        overview: ["1. Executive Dashboard (Live Cloud)", `<div class="kpi-grid"><div class="kpi"><small>Cloud Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#34D399">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#FBBF24">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#F87171">${delays.length}</div></div></div><div class="card"><div class="card-h"><span>Supabase Live Consignments (${list.length})</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Add Truck</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows || '<tr><td colspan="8" style="text-align:center;color:#94A3B8;">No cloud shipments yet — click + Create Shipment!</td></tr>'}</tbody></table></div>`],
         shipments: ["2. Shipment Management", `<div class="card"><div class="card-h"><span>Cloud Shipments</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ New Shipment</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`],
-        documents: ["3. Customs Documents & AI", `<div class="card" style="padding:18px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;"><div><strong>⚡ BorderFlow AI Document Checker</strong><p style="font-size:12px;color:#475569;margin-top:4px;">Verify invoices, weights & plates via Dify + GroqCloud.</p></div><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;">Launch AI Checker →</a></div>`],
+        documents: ["3. Customs Documents & AI", `<div class="card" style="padding:18px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;"><div><strong>⚡ BorderFlow AI Document Checker</strong><p style="font-size:12px;color:#94A3B8;margin-top:4px;">Verify invoices, weights & plates via Dify + GroqCloud.</p></div><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;">Launch AI Checker →</a></div>`],
         clearance: ["4. 10-Stage Customs Clearance", list.map(s => `<div class="card" style="padding:16px;"><div style="display:flex;justify-content:space-between;"><strong>${s.ref} • ${s.client} (${s.border})</strong><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Next Stage →</button></div><div class="steps">${MS.map((m,i) => `<div class="st ${i<=(s.milestone_step||0)?'ok':''}">${m}</div>`).join("")}</div></div>`).join("") || '<div class="card" style="padding:20px;">Create a shipment first to track its 10 clearance stages.</div>'],
         borders: ["5. SADC Border Network", `<div class="card"><table><thead><tr><th>Border Post</th><th>Countries</th><th>Avg Clearance</th><th>Status</th></tr></thead><tbody><tr><td><strong>Beitbridge</strong></td><td>South Africa ↔ Zimbabwe</td><td>1.8 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Chirundu OSBP</strong></td><td>Zimbabwe ↔ Zambia</td><td>1.1 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Kazungula</strong></td><td>Botswana ↔ Zambia</td><td>1.5 hrs</td><td>${bdg("Cleared")}</td></tr></tbody></table></div>`],
         fleet: ["6. Vehicles & Drivers", `<div class="card"><table><thead><tr><th>Truck Reg</th><th>Shipment</th><th>Driver WhatsApp</th><th>Corridor</th><th>Status</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.truck}</strong></td><td>${s.ref}</td><td>+${s.phone || 'Not set'}</td><td>${s.border}</td><td>${bdg(s.status)}</td></tr>`).join("")}</tbody></table></div>`],
         delays: ["7. Delay & Bottleneck Management", `<div class="card"><table><thead><tr><th>Ref</th><th>Border</th><th>Reason</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead><tbody>${delays.map((x,i) => `<tr><td>${x.ref}</td><td>${x.border}</td><td>${x.reason}</td><td>${x.hours}</td><td>${bdg(x.status)}</td><td><button class="btn-gold" onclick="delays[${i}].status='Resolved';draw()">Resolve</button></td></tr>`).join("")}</tbody></table></div>`],
-        expenses: ["8. Border Wallet & Duty Payments", `<div class="kpi-grid"><div class="kpi g"><small>Border Wallet</small><div style="color:#059669">$14,250</div></div><div class="kpi"><small>Duty Paid</small><div>$1,450</div></div></div>`],
+        expenses: ["8. Border Wallet & Duty Payments", `<div class="kpi-grid"><div class="kpi g"><small>Border Wallet</small><div style="color:#34D399">$14,250</div></div><div class="kpi"><small>Duty Paid</small><div>$1,450</div></div></div>`],
         clients: ["9. Importers & Exporters", `<div class="card"><table><thead><tr><th>Company</th><th>Cargo Type</th><th>Primary Corridor</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.client}</strong></td><td>${s.cargo}</td><td>${s.route}</td></tr>`).join("")}</tbody></table></div>`],
-        communication: ["10. Border Agent Dispatch", `<div class="card" style="padding:16px;"><div style="display:flex;gap:8px;margin-bottom:14px;"><input id="chatInp" placeholder="Broadcast update..."/><button class="btn-gold" onclick="addChat()">Send</button></div>${msgs.map(m => `<p style="padding:8px 0;border-bottom:1px solid #eee;"><strong>${m.from}:</strong> ${m.text}</p>`).join("")}</div>`],
+        communication: ["10. Border Agent Dispatch", `<div class="card" style="padding:16px;"><div style="display:flex;gap:8px;margin-bottom:14px;"><input id="chatInp" placeholder="Broadcast update..."/><button class="btn-gold" onclick="addChat()">Send</button></div>${msgs.map(m => `<p style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);"><strong>${m.from}:</strong> ${m.text}</p>`).join("")}</div>`],
         reports: ["11. Reports & Corridor Analytics", `<div class="kpi-grid"><div class="kpi g"><small>On-Time Clearance</small><div>98.4%</div></div><div class="kpi"><small>Avg Border Dwell</small><div>1.8 hrs</div></div></div>`],
         settings: ["12. Workspace Settings", `<div class="card" style="padding:20px;max-width:440px;"><strong>Agency:</strong> ${currentUser.company}<br/><br/><strong>Cloud DB:</strong> ngkmbpbdaachqymnfffe.supabase.co</div>`]
       };
-      t.innerText = views[page][0];
-      el.innerHTML = views[page][1];
+      t.innerText = views[page];
+      el.innerHTML = views[page];
     }
     if (currentUser) enterApp();
   </script>
