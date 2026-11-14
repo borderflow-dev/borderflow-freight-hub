@@ -176,3 +176,36 @@
     async function saveShipment() {
       const newShip = { ref: "BF-" + (101 + list.length), client: document.getElementById("c1").value || "SADC Client", cargo: document.getElementById("c2").value, route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"), border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012", milestone_step: 0, status: "Pending", fee: 1200 };
       list.unshift(newShip);
+      document.getElementById("m").classList.remove("open");
+      draw();
+      await fetch(BASE + "/rest/v1/shipments", { method: "POST", headers: HEADERS, body: JSON.stringify([newShip]) });
+      loadShipments();
+    }
+    async function nextStep(id, step) {
+      if (step < 9) {
+        const next = step + 1, item = list.find(x => String(x.id) === String(id));
+        if (item) { item.milestone_step = next; if (next >= 8) item.status = "Cleared"; draw(); }
+        await fetch(BASE + "/rest/v1/shipments?id=eq." + id, { method: "PATCH", headers: HEADERS, body: JSON.stringify({ milestone_step: next, status: next >= 8 ? "Cleared" : "Pending" }) });
+      }
+    }
+    function draw() {
+      const el = document.getElementById("app"), t = document.getElementById("title");
+      const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length, d = list.filter(x => x.status === "Delayed").length;
+      if (page === "overview" || page === "shipments") {
+        t.innerText = page === "overview" ? "1. Executive Dashboard (LIVE CLOUD DB)" : "2. Shipment Management (LIVE)";
+        el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>Pending</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Delayed</small><div style="color:#DC2626">${d}</div></div></div>
+          <div class="card"><div class="card-h"><span>Live PostgreSQL Consignments</span><span>Beitbridge • Chirundu • Forbes</span></div>
+          <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Milestone</th><th>Status</th></tr></thead>
+          <tbody>${list.map(x => `<tr><td><strong>${x.ref}</strong></td><td>${x.client}</td><td>${x.route}</td><td><strong>${x.border}</strong></td><td>${x.truck}</td><td>${MS[x.milestone_step || 0]}</td><td><span class="b ${x.status==='Cleared'?'bg':x.status==='Delayed'?'br':'ba'}">${x.status}</span></td></tr>`).join("")}</tbody></table></div>`;
+      } else if (page === "clearance") {
+        t.innerText = "4. Customs Clearance (10 Milestones)";
+        el.innerHTML = list.map(x => `<div class="card" style="padding:18px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${x.ref} — ${x.client}</strong> (${x.border})</div><button class="btn-gold" onclick="nextStep('${x.id}', ${x.milestone_step || 0})">Advance Milestone →</button></div><div class="steps">${MS.map((m, idx) => `<div class="st ${idx <= (x.milestone_step || 0) ? "ok" : ""}">${idx <= (x.milestone_step || 0) ? "✓ " : ""}${m}</div>`).join("")}</div></div>`).join("");
+      } else {
+        t.innerText = page.toUpperCase() + " — LIVE WORKSPACE";
+        el.innerHTML = `<div class="card" style="padding:20px;"><h3>${currentUser.company}</h3><p style="margin-top:8px;font-size:13px;">Active User: <strong>${currentUser.email}</strong> (${currentUser.role}) | Live Cloud Shipments: <strong>${list.length}</strong></p></div>`;
+      }
+    }
+    if (currentUser) enterApp();
+  </script>
+</body>
+</html>
