@@ -12,7 +12,7 @@ let currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
 let docs = JSON.parse(localStorage.getItem("bf_docs") || '[{"id":"DOC-101","ref":"BF-101","name":"ZIMRA Bill of Entry (SAD 500)","border":"Beitbridge","status":"Verified"},{"id":"DOC-102","ref":"BF-101","name":"SADC Certificate of Origin","border":"Beitbridge","status":"Pending"}]');
 let delays = JSON.parse(localStorage.getItem("bf_delays") || '[{"ref":"BF-101","border":"Beitbridge","reason":"ZIMRA Scanner Queue","hours":"2.5 hrs","status":"Delayed"}]');
 let expenses = JSON.parse(localStorage.getItem("bf_exp") || '[{"ref":"BF-101","item":"ZIMRA Import Duty & VAT","border":"Beitbridge","amount":1450,"paid":true},{"ref":"BF-101","item":"Road Access & Carbon Tax","border":"Beitbridge","amount":320,"paid":false}]');
-let messages = JSON.parse(localStorage.getItem("bf_msgs") || '[{"from":"Company Owner","text":"Beitbridge Southbound clearance lane active. Submit manifests early.","time":"Today"}]');
+let messages = JSON.parse(localStorage.getItem("bf_msgs") || '[{"from":"Company Owner","text":"Beitbridge Southbound lane active. Submit manifests early.","time":"Today"}]');
 
 const saveStore = () => {
   localStorage.setItem("bf_docs", JSON.stringify(docs));
@@ -53,7 +53,7 @@ window.enterApp = function() {
   document.getElementById("appShell").classList.add("active");
   document.getElementById("companyBadge").innerText = currentUser.company;
   document.getElementById("userLabel").innerText = currentUser.role.toUpperCase() + " • " + currentUser.email;
-  window.loadShipments();
+  window.draw();
 };
 window.go = function(p, btn) {
   page = p;
@@ -63,54 +63,34 @@ window.go = function(p, btn) {
 };
 window.setFilter = b => { filterBorder = b; window.draw(); };
 
-window.loadShipments = async function() {
-  try {
-    const res = await fetch(BASE + "/rest/v1/shipments?select=*&order=created_at.desc", { headers: HEADERS });
-    const data = await res.json();
-    if (Array.isArray(data) && data.length) list = data;
-  } catch (e) {}
-  window.draw();
-};
-
-window.saveShipment = async function() {
-  const newShip = {
-    id: Date.now(),
-    ref: "BF-" + (101 + list.length),
+window.saveShipment = function() {
+  list.unshift({
+    id: Date.now(), ref: "BF-" + (101 + list.length),
     client: document.getElementById("c1").value || "SADC Mining Corp",
     cargo: document.getElementById("c2").value,
     route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
-    border: document.getElementById("c5").value,
-    truck: document.getElementById("c6").value || "AFZ 9012",
-    milestone_step: 0,
-    status: "Pending",
-    fee: 1200
-  };
-  list.unshift(newShip);
+    border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012",
+    milestone_step: 0, status: "Pending", fee: 1200
+  });
   document.getElementById("m").classList.remove("open");
   window.draw();
-  try {
-    await fetch(BASE + "/rest/v1/shipments", { method: "POST", headers: HEADERS, body: JSON.stringify([newShip]) });
-  } catch (e) {}
 };
 
-window.nextStep = async function(id, step) {
+window.nextStep = function(id, step) {
   if (step < 9) {
-    const next = step + 1, item = list.find(x => String(x.id) === String(id));
-    if (item) { item.milestone_step = next; if (next >= 8) item.status = "Cleared"; window.draw(); }
-    try {
-      await fetch(BASE + "/rest/v1/shipments?id=eq." + id, { method: "PATCH", headers: HEADERS, body: JSON.stringify({ milestone_step: next, status: next >= 8 ? "Cleared" : "Pending" }) });
-    } catch (e) {}
+    const item = list.find(x => String(x.id) === String(id));
+    if (item) { item.milestone_step = step + 1; if (item.milestone_step >= 8) item.status = "Cleared"; window.draw(); }
   }
 };
 
 window.verifyDoc = i => { docs[i].status = "Verified"; saveStore(); window.draw(); };
-window.addDoc = () => { const ref = prompt("Shipment Ref:", "BF-101"), name = prompt("Document Name:", "Commercial Invoice"); if (ref && name) { docs.unshift({ id: "DOC-" + (101 + docs.length), ref, name, border: "Beitbridge", status: "Pending" }); saveStore(); window.draw(); } };
+window.addDoc = () => { const ref = prompt("Ref:", "BF-101"), name = prompt("Doc:", "Invoice"); if (ref && name) { docs.unshift({ id: "DOC-" + (101 + docs.length), ref, name, border: "Beitbridge", status: "Pending" }); saveStore(); window.draw(); } };
 window.resolveDelay = i => { delays[i].status = "Resolved"; saveStore(); window.draw(); };
-window.addDelay = () => { const ref = prompt("Shipment Ref:", "BF-101"), border = prompt("Border Post:", "Beitbridge"), reason = prompt("Delay Reason:", "ASYCUDA System Hold"); if (ref && reason) { delays.unshift({ ref, border: border || "Beitbridge", reason, hours: "1.5 hrs", status: "Delayed" }); saveStore(); window.draw(); } };
+window.addDelay = () => { const ref = prompt("Ref:", "BF-101"), reason = prompt("Reason:", "Scanner Queue"); if (ref && reason) { delays.unshift({ ref, border: "Beitbridge", reason, hours: "1.5 hrs", status: "Delayed" }); saveStore(); window.draw(); } };
 window.markPaid = i => { expenses[i].paid = true; saveStore(); window.draw(); };
-window.addExpense = () => { const ref = prompt("Shipment Ref:", "BF-101"), item = prompt("Expense Item:", "ZIMRA Customs Duty"), amount = Number(prompt("Amount (USD):", "950")); if (ref && item && amount) { expenses.unshift({ ref, item, border: "Beitbridge", amount, paid: false }); saveStore(); window.draw(); } };
-window.sendMsg = () => { const inp = document.getElementById("msgInput"); if (inp && inp.value.trim()) { messages.unshift({ from: `${currentUser.role} (${currentUser.email})`, text: inp.value.trim(), time: new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) }); saveStore(); window.draw(); } };
-window.updateCompany = () => { const val = document.getElementById("setComp").value.trim(); if (val) { currentUser.company = val; localStorage.setItem("bf_user", JSON.stringify(currentUser)); document.getElementById("companyBadge").innerText = val; alert("Workspace updated!"); window.draw(); } };
+window.addExpense = () => { const ref = prompt("Ref:", "BF-101"), item = prompt("Item:", "Duty"), amount = Number(prompt("USD:", "950")); if (ref && item && amount) { expenses.unshift({ ref, item, border: "Beitbridge", amount, paid: false }); saveStore(); window.draw(); } };
+window.sendMsg = () => { const inp = document.getElementById("msgInput"); if (inp && inp.value.trim()) { messages.unshift({ from: currentUser.role, text: inp.value.trim(), time: "Now" }); saveStore(); window.draw(); } };
+window.updateCompany = () => { const val = document.getElementById("setComp").value.trim(); if (val) { currentUser.company = val; localStorage.setItem("bf_user", JSON.stringify(currentUser)); document.getElementById("companyBadge").innerText = val; alert("Saved!"); } };
 
 window.draw = function() {
   const el = document.getElementById("app"), t = document.getElementById("title");
@@ -121,12 +101,14 @@ window.draw = function() {
   if (page === "overview" || page === "shipments") {
     t.innerText = page === "overview" ? "1. Executive Dashboard" : "2. Shipment Management";
     el.innerHTML = `<div class="kpi-grid"><div class="kpi"><small>Total Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#059669">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#D97706">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#DC2626">${d}</div></div></div>
-      <div class="card"><div class="card-h"><span>Active Cross-Border Consignments (${filtered.length})</span>
-      <select style="width:160px;padding:4px 8px;" onchange="setFilter(this.value)">
-        <option value="ALL" ${filterBorder==="ALL"?"selected":""}>All Borders</option>
-        <option value="Beitbridge" ${filterBorder==="Beitbridge"?"selected":""}>Beitbridge</option>
-        <option value="Chirundu" ${filterBorder==="Chirundu"?"selected":""}>Chirundu</option>
-        <option value="Forbes" ${filterBorder==="Forbes"?"selected":""}>Forbes</option>
-        <option value="Kazungula" ${filterBorder==="Kazungula"?"selected":""}>Kazungula</option>
-      </select></div>
+      <div class="card"><div class="card-h"><span>Consignments (${filtered.length})</span><select style="width:150px" onchange="setFilter(this.value)"><option value="ALL">All Borders</option><option value="Beitbridge">Beitbridge</option><option value="Chirundu">Chirundu</option><option value="Forbes">Forbes</option><option value="Kazungula">Kazungula</option></select></div>
       <table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Border</th><th>Truck</th><th>Stage</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${filtered.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step || 0]}</td><td>${bdg(s.status)}</td><td><button class="btn-gold" onclick="nextStep('${s.id}',${s.milestone_step || 0})">Advance →</button></td></tr>`).join("")}</tbody></table></div>`;
+  } else if (page === "documents") {
+    t.innerText = "3. Customs Documents";
+    el.innerHTML = `<div class="card"><div class="card-h"><span>Documents</span><button class="btn-gold" onclick="addDoc()">+ Add Doc</button></div><table><thead><tr><th>ID</th><th>Ref</th><th>Document</th><th>Status</th><th>Action</th></tr></thead><tbody>${docs.map((x,i)=>`<tr><td>${x.id}</td><td>${x.ref}</td><td>${x.name}</td><td>${bdg(x.status)}</td><td>${x.status!=="Verified"?`<button class="btn-gold" onclick="verifyDoc(${i})">Verify</button>`:"✓"}</td></tr>`).join("")}</tbody></table></div>`;
+  } else if (page === "clearance") {
+    t.innerText = "4. 10-Stage Clearance";
+    el.innerHTML = list.map(s=>`<div class="card" style="padding:16px"><div style="display:flex;justify-content:space-between"><strong>${s.ref} • ${s.client}</strong><button class="btn-gold" onclick="nextStep('${s.id}',${s.milestone_step||0})">Next →</button></div><div class="steps">${MS.map((m,idx)=>`<div class="st ${idx<=(s.milestone_step||0)?"ok":""}">${m}</div>`).join("")}</div></div>`).join("");
+  } else if (page === "borders") {
+    t.innerText = "5. Border Network";
