@@ -1,4 +1,4 @@
-const BASE = "https://supabase.co";
+const BASE = "https://" + "ngkmbpbdaachqymnfffe" + ".supabase.co";
 const API_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
 const HEADERS = {
   "apikey": API_KEY,
@@ -76,12 +76,12 @@ async function loadAllData() {
   list = (sRes || []).map((r, idx) => ({
     id: r.id,
     ref: r.reference_no || ("BF-" + (101 + idx)),
-    client: r.client_name || r.cargo_description || "Zimplats Mining",
+    client: r.cargo_description || "Zimplats Mining",
     cargo: r.cargo_description || "General Freight",
     route: (r.origin || "Johannesburg") + " → " + (r.destination || "Harare"),
     border: r.corridor || "Beitbridge",
     truck: r.truck_registration || "AGH 4821",
-    milestone_step: Number(r.milestone_step ?? 0),
+    milestone_step: MS.indexOf(r.stage) >= 0 ? MS.indexOf(r.stage) : 0,
     status: r.status || "Pending",
     fee: Number(r.declared_value || 1200)
   }));
