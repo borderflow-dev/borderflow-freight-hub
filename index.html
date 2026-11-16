@@ -6,8 +6,9 @@
   <title>BorderFlow — Beitbridge Customs Hub</title>
   <style>
     :root {
-      --glass: rgba(12, 12, 15, 0.78);
-      --glass-strong: rgba(9, 9, 11, 0.88);
+      --bg: #09090B;
+      --glass: rgba(12, 12, 15, 0.80);
+      --glass-strong: rgba(9, 9, 11, 0.90);
       --border: rgba(255, 255, 255, 0.16);
       --border-strong: rgba(255, 255, 255, 0.35);
       --text: #FAFAFA;
@@ -16,9 +17,8 @@
       --black: #09090B;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-    body { background: #09090B; color: var(--text); overflow-x: hidden; }
-
-    /* LOGO */
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
     .logo-wrap { display: flex; align-items: center; gap: 12px; }
     .logo-mark {
       width: 42px; height: 42px; border-radius: 11px; background: var(--white);
@@ -26,45 +26,59 @@
     }
     .logo-title { font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: var(--white); line-height: 1; }
     .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
-
-    /* BUTTONS */
     button { position: relative; z-index: 50; cursor: pointer; }
     .btn-white {
       background: var(--white); color: var(--black); border: 1px solid var(--white);
-      padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 12px;
+      padding: 12px 22px; border-radius: 8px; font-weight: 800; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
     }
     .btn-white:hover { background: #E4E4E7; }
     .btn-outline {
       background: rgba(18, 18, 21, 0.85); color: var(--white); border: 1px solid var(--border-strong);
-      padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 12px;
+      padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
     }
     .btn-outline:hover { border-color: var(--white); }
-
-    /* LANDING PAGE */
-    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
     .bg-video {
       position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover;
       z-index: 0; filter: contrast(110%) brightness(0.62); pointer-events: none;
     }
-    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 20; }
+    #landingView { position: relative; z-index: 10; }
     .top-nav {
-      display: flex; justify-content: space-between; align-items: center; padding: 18px 40px;
-      background: var(--glass-strong); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center; padding: 16px 40px;
+      background: rgba(9, 9, 11, 0.88); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
     }
-    .hero-main { max-width: 760px; padding: 60px 40px; }
+    .hero { min-height: 92vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .hero-main { max-width: 820px; padding: 80px 40px 40px; }
     .badge-live {
       display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
       background: var(--glass-strong); border: 1px solid var(--white); color: var(--white);
-      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
     }
-    .hero-main h1 { font-size: 50px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin: 18px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
-    .hero-main p { color: #F4F4F5; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
-    .hero-bar {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
-      padding: 20px 40px; background: var(--glass-strong); backdrop-filter: blur(12px); border-top: 1px solid var(--border); font-size: 13px;
+    .hero-main h1 { font-size: 56px; font-weight: 900; line-height: 1.06; letter-spacing: -0.03em; margin: 20px 0; text-transform: uppercase; text-shadow: 0 4px 24px rgba(0,0,0,0.7); }
+    .hero-main p { color: #F4F4F5; font-size: 17px; line-height: 1.6; margin-bottom: 30px; max-width: 600px; }
+    .spec-strip {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      background: var(--glass-strong); backdrop-filter: blur(14px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     }
-
-    /* DASHBOARD SHELL WITH FULL LIVE VIDEO BACKGROUND */
+    .spec-box { padding: 22px 32px; border-right: 1px solid var(--border); }
+    .spec-num { font-size: 24px; font-weight: 900; color: var(--white); letter-spacing: -0.02em; }
+    .spec-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A1A1AA; text-transform: uppercase; margin-top: 4px; }
+    .showcase-banner {
+      min-height: 85vh; display: flex; align-items: flex-end; padding: 64px 40px;
+      background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
+    }
+    .showcase-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      border-bottom: 1px solid var(--border); background: #09090B;
+    }
+    .showcase-tile {
+      min-height: 520px; display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 40px; background-size: cover; background-position: center;
+      border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: #FFFFFF; text-transform: uppercase; margin-bottom: 8px; }
+    .sec-title { font-size: 36px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase; margin-bottom: 12px; }
+    .sec-desc { color: #E4E4E7; font-size: 14px; line-height: 1.6; max-width: 520px; margin-bottom: 20px; }
     .app-shell { display: none; min-height: 100vh; position: relative; z-index: 10; }
     .sidebar {
       width: 255px; background: var(--glass-strong); backdrop-filter: blur(14px);
@@ -84,91 +98,118 @@
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .dash-body { padding: 24px; max-width: 1350px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
-    .glass-card {
-      background: var(--glass); backdrop-filter: blur(14px);
-      border: 1px solid var(--border); border-radius: 12px; padding: 20px;
-    }
+    .glass-card { background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
     .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
     .kpi-num { font-size: 32px; font-weight: 800; color: var(--white); margin-top: 6px; }
-
-    /* TABLE */
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
     .tag-white { background: var(--white); color: var(--black); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .tag-dark { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid var(--border-strong); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-
-    /* MODAL */
-    .modal-bg {
-      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
-    }
-    .modal-card {
-      background: #121215; border: 1px solid var(--border-strong); border-radius: 14px;
-      padding: 26px; width: 100%; max-width: 420px; position: relative;
-    }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #121215; border: 1px solid var(--border-strong); border-radius: 14px; padding: 26px; width: 100%; max-width: 420px; position: relative; }
     .modal-close { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--muted); font-size: 18px; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
-    .field input, .field select {
-      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong);
-      background: #09090B; color: var(--white); font-size: 13px;
-    }
+    .field input, .field select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: #09090B; color: var(--white); font-size: 13px; }
   </style>
 </head>
 <body>
 
-  <!-- LIVE FULL-SCREEN VIDEO PLAYING BEHIND ALL 12 SECTIONS -->
   <video class="bg-video" autoplay muted loop playsinline>
-    <source src="live%20(2)_compressed%20(1).mp4" type="video/mp4" />
     <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
   </video>
 
-  <!-- LANDING PAGE -->
   <div id="landingView">
-    <section class="hero">
-      <header class="top-nav">
-        <div class="logo-wrap">
-          <div class="logo-mark">
-            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-              <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
-              <path d="M7 5.5H15C17.2 5.5 18.8 6.8 18.8 8.8C18.8 10.3 17.8 11.4 16.4 11.8C18.2 12.2 19.4 13.5 19.4 15.4C19.4 17.7 17.6 19.2 15.1 19.2H7" stroke="#09090B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 12.2H15" stroke="#09090B" stroke-width="2.4" stroke-linecap="round"/>
-              <path d="M13 22.5H25M25 22.5L22 19.5M25 22.5L22 25.5" stroke="#09090B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <div class="logo-title">BorderFlow</div>
-            <div class="logo-sub">Beitbridge Customs Hub</div>
-          </div>
+    <header class="top-nav">
+      <div class="logo-wrap">
+        <div class="logo-mark">
+          <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+            <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
+            <path d="M7 5.5H15C17.2 5.5 18.8 6.8 18.8 8.8C18.8 10.3 17.8 11.4 16.4 11.8C18.2 12.2 19.4 13.5 19.4 15.4C19.4 17.7 17.6 19.2 15.1 19.2H7" stroke="#09090B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 12.2H15" stroke="#09090B" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M13 22.5H25M25 22.5L22 19.5M25 22.5L22 25.5" stroke="#09090B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-outline" onclick="openLogin()">Sign In</button>
-          <button type="button" class="btn-white" onclick="enterDashboard()">Open Demo</button>
+        <div>
+          <div class="logo-title">BorderFlow</div>
+          <div class="logo-sub">Beitbridge Customs Hub</div>
         </div>
-      </header>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn-outline" onclick="openLogin()">Sign In</button>
+        <button type="button" class="btn-white" onclick="enterDashboard()">Launch System</button>
+      </div>
+    </header>
 
+    <section class="hero">
       <div class="hero-main">
-        <div class="badge-live">● LIVE • BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
-        <h1>Every truck. Every border.<br>One live feed.</h1>
-        <p>Cross-border freight command centre built in Beitbridge. Track trucks, verify customs manifests, and clear cargo without border delays.</p>
+        <div class="badge-live">● BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
+        <h1>Tactical Cross-Border Freight Command.</h1>
+        <p>Built at the Beitbridge Border Post. Pre-clear customs manifests, verify ZIMRA & SARS declarations with AI, and track heavy commercial fleets in real time.</p>
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <button type="button" class="btn-white" onclick="enterDashboard()">LAUNCH COMMAND CENTRE →</button>
-          <button type="button" class="btn-outline" onclick="openLogin()">Agent Login</button>
+          <button type="button" class="btn-white" onclick="enterDashboard()">ENTER COMMAND CENTRE →</button>
+          <a href="#capabilities" style="text-decoration:none;"><button type="button" class="btn-outline">SEE WHAT IT DOES ↓</button></a>
         </div>
       </div>
 
-      <div class="hero-bar">
-        <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Active</div>
-        <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop</div>
-        <div><strong>FORBES</strong> • ZW ↔ MZ Corridor</div>
-        <div><strong>KAZUNGULA</strong> • BW ↔ ZM Bridge</div>
+      <div class="spec-strip">
+        <div class="spec-box"><div class="spec-num">12 MODULES</div><div class="spec-lbl">End-to-End Customs Control</div></div>
+        <div class="spec-box"><div class="spec-num">AI SCANNER</div><div class="spec-lbl">Zero-Error Manifest Verification</div></div>
+        <div class="spec-box"><div class="spec-num">4 CORRIDORS</div><div class="spec-lbl">SA • ZW • ZM • MZ • BW</div></div>
+        <div class="spec-box"><div class="spec-num">24/7 LIVE</div><div class="spec-lbl">Beitbridge Hub Telemetry</div></div>
+      </div>
+    </section>
+
+    <section id="capabilities" class="showcase-banner" style="background-image: linear-gradient(to top, #09090B 12%, rgba(9,9,11,0.3) 65%, rgba(9,9,11,0.75) 100%), url('pic5.jpg');">
+      <div style="max-width: 740px;">
+        <div class="eyebrow">01 // REAL-TIME FLEET & QUEUE INTELLIGENCE</div>
+        <h2 class="sec-title">Never Lose a Truck in Border Queues.</h2>
+        <p class="sec-desc">Monitor northbound and southbound commercial lanes at Beitbridge in real time, logging every horse-and-trailer from Musina straight through ZIMRA & SARS clearance.</p>
+        <button type="button" class="btn-white" onclick="enterDashboard()">OPEN LIVE MANIFEST →</button>
+      </div>
+    </section>
+
+    <section class="showcase-grid">
+      <div class="showcase-tile" style="background-image: linear-gradient(to top, rgba(9,9,11,0.96) 20%, rgba(9,9,11,0.2) 100%), url('pic1.jpg');">
+        <div class="eyebrow">02 // EXECUTIVE COMMAND</div>
+        <h3 style="font-size:25px; font-weight:900; margin-bottom:8px;">CENTRALIZED HUB CONTROL</h3>
+        <p style="color:#D4D4D8; font-size:13.5px; line-height:1.5;">Manage corporate accounts, clearing agents, and customs release approvals from one unified dashboard.</p>
+      </div>
+
+      <div class="showcase-tile" style="background-image: linear-gradient(to top, rgba(9,9,11,0.96) 20%, rgba(9,9,11,0.2) 100%), url('pic2.jpg');">
+        <div class="eyebrow">03 // AI DOCUMENT SHIELD</div>
+        <h3 style="font-size:25px; font-weight:900; margin-bottom:8px;">INSTANT INVOICE & BILL OF ENTRY CHECK</h3>
+        <p style="color:#D4D4D8; font-size:13.5px; line-height:1.5;">Upload commercial invoices, packing lists, and Form 21 entries. Our AI flags HS-code mismatches before customs holds your cargo.</p>
+      </div>
+
+      <div class="showcase-tile" style="background-image: linear-gradient(to top, rgba(9,9,11,0.96) 20%, rgba(9,9,11,0.2) 100%), url('pic3.jpg');">
+        <div class="eyebrow">04 // ON-GROUND AGENTS</div>
+        <h3 style="font-size:25px; font-weight:900; margin-bottom:8px;">DIRECT BEITBRIDGE EXECUTION</h3>
+        <p style="color:#D4D4D8; font-size:13.5px; line-height:1.5;">Coordinated customs clearance teams stationed at the Limpopo crossing to handle physical inspections and rapid release orders.</p>
+      </div>
+
+      <div class="showcase-tile" style="background-image: linear-gradient(to top, rgba(9,9,11,0.96) 20%, rgba(9,9,11,0.2) 100%), url('pic4.jpg');">
+        <div class="eyebrow">05 // CORRIDOR FLEET TRACKING</div>
+        <h3 style="font-size:25px; font-weight:900; margin-bottom:8px;">SOUTHERN AFRICA TRANSIT NETWORK</h3>
+        <p style="color:#D4D4D8; font-size:13.5px; line-height:1.5;">Built for mining equipment, bulk grain, fuel tankers, and containerized freight across SA, Zimbabwe, Zambia, and Mozambique.</p>
+      </div>
+    </section>
+
+    <section style="position: relative; min-height: 75vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 60px 24px; overflow: hidden; border-top: 1px solid var(--border);">
+      <video autoplay muted loop playsinline style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.45); pointer-events: none;">
+        <source src="2.%20owner.jpg.mp4" type="video/mp4" />
+      </video>
+      <div style="position: relative; z-index: 10; max-width: 640px;">
+        <div class="eyebrow">06 // LIVE CORRIDOR TELEMETRY</div>
+        <h2 style="font-size: 42px; font-weight: 900; margin: 10px 0 16px;">STEP INSIDE THE COMMAND CENTRE.</h2>
+        <p style="color: #E4E4E7; margin-bottom: 28px; font-size: 15px;">Explore all 12 operational modules floating over your live Beitbridge video feed.</p>
+        <button type="button" class="btn-white" onclick="enterDashboard()">LAUNCH ALL 12 MODULES →</button>
       </div>
     </section>
   </div>
 
-  <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal-bg">
     <div class="modal-card">
       <button type="button" class="modal-close" onclick="closeLogin()">✕</button>
@@ -180,7 +221,6 @@
     </div>
   </div>
 
-  <!-- SHIPMENT MODAL -->
   <div id="shipModal" class="modal-bg">
     <div class="modal-card">
       <button type="button" class="modal-close" onclick="closeShipModal()">✕</button>
@@ -203,7 +243,6 @@
     </div>
   </div>
 
-  <!-- DASHBOARD WITH ALL 12 SECTIONS OVER LIVE VIDEO -->
   <div id="dashboardView" class="app-shell">
     <aside class="sidebar">
       <div>
@@ -222,8 +261,9 @@
           </div>
         </div>
 
-        <div class="nav-list" id="navMenu">
+        <div class="nav-list">
           <button type="button" class="nav-btn active" onclick="switchTab(this, '1. Executive Dashboard (Live Cloud)', 'Real-time overview of all cross-border shipments, clearance queues, and live Beitbridge corridor telemetry.')">1. Overview</button>
+ance queues, and live Beitbridge corridor telemetry.')">1. Overview</button>
           <button type="button" class="nav-btn" onclick="switchTab(this, '2. Shipments & Consignments', 'Full manifest list of southbound and northbound freight moving through Beitbridge.')">2. Shipments</button>
           <button type="button" class="nav-btn" onclick="switchTab(this, '3. Documents & AI Verification', 'Upload Commercial Invoices, Bills of Entry (Form 21), and Certificates of Origin for AI mismatch scanning.')">3. Documents & AI</button>
           <button type="button" class="nav-btn" onclick="switchTab(this, '4. Clearance Management', 'Track ZIMRA ASYCUDA World and SARS EDI declaration approvals in real time.')">4. Clearance Management</button>
@@ -251,7 +291,6 @@
       </header>
 
       <div class="dash-body">
-        <!-- ACTIVE SECTION BANNER OVER LIVE VIDEO -->
         <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
             <h2 id="sectionTitle" style="font-size:20px; font-weight:800;">1. Executive Dashboard (Live Cloud)</h2>
@@ -260,7 +299,6 @@
           <span class="tag-white">● LIVE VIDEO BACKGROUND ACTIVE</span>
         </div>
 
-        <!-- KPI CARDS -->
         <div class="kpi-grid">
           <div class="glass-card"><div class="kpi-label">Active Shipments</div><div class="kpi-num" id="kpiTotal">2</div></div>
           <div class="glass-card"><div class="kpi-label">Cleared Customs</div><div class="kpi-num" id="kpiCleared">1</div></div>
@@ -313,6 +351,7 @@
       closeLogin();
       document.getElementById('landingView').style.display = 'none';
       document.getElementById('dashboardView').style.display = 'flex';
+      window.scrollTo(0, 0);
     }
     function logout() {
       document.getElementById('dashboardView').style.display = 'none';
