@@ -1,282 +1,249 @@
-const BASE = "https://" + "ngkmbpbdaachqymnfffe" + ".supabase.co";
-const API_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
-const HEADERS = {
-  "apikey": API_KEY,
-  "Authorization": "Bearer " + API_KEY,
-  "Content-Type": "application/json",
-  "Prefer": "return=representation"
-};
+const SUPABASE_URL = 'https://supabase.co';
+const SUPABASE_KEY = 'sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const MS = [
-  "1. Created", "2. At Border", "3. Docs Checked", "4. Declaration",
-  "5. Assessment", "6. Duty Paid", "7. Inspection", "8. Released",
-  "9. Cleared to Go", "10. Delivered"
-];
+let isSignupMode = false;
+let currentUser = null;
+let activeCompany = null;
+let allShipments = [];
+let currentQuickType = '';
+let mapInstance = null;
 
-let companyId = null;
-let list = [];
-let docs = [];
-let delays = [];
-let expenses = [];
-let clients = [];
-let vehicles = [];
-let drivers = [];
-let messages = [];
-
-let page = "overview", isSignup = false, filterBorder = "ALL";
-let currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
-
-const bdg = s => (s === "Cleared" || s === "Verified" || s === "Paid" || s === "Resolved" || s === "Active" || s === "Available")
-  ? `<span class="b bg">${s}</span>`
-  : (s === "Delayed" || s === "Unpaid" || s === "Flagged" || s === "Maintenance")
-    ? `<span class="b br">${s}</span>`
-    : `<span class="b ba">${s}</span>`;
-
-async function sb(path, opts = {}) {
-  const res = await fetch(BASE + "/rest/v1/" + path, {
-    ...opts,
-    headers: { ...HEADERS, ...(opts.headers || {}) }
-  });
-  if (!res.ok) {
-    console.error("Supabase error:", path, await res.text());
-    return null;
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
+function openAuth(signup) {
+  isSignupMode = signup;
+  updateAuthUI();
+  document.getElementById('authScreen').style.display = 'flex';
 }
 
-async function resolveCompany() {
-  const name = (currentUser && currentUser.company) ? currentUser.company : "Beitbridge Customs Hub";
-  const found = await sb(`companies?name=eq.${encodeURIComponent(name)}&limit=1`);
-  if (found && found.length > 0) {
-    companyId = found[0].id;
-  } else {
-    const created = await sb("companies", {
-      method: "POST",
-      body: JSON.stringify({ name, country: "Zimbabwe", currency: "USD" })
+function closeAuth() {
+  document.getElementById('authScreen').style.display = 'none';
+}
+
+function toggleAuthMode() {
+  isSignupMode = !isSignupMode;
+  updateAuthUI();
+}
+
+function updateAuthUI() {
+  document.getElementById('signupFields').style.display = isSignupMode ? 'block' : 'none';
+  document.getElementById('authHeading').textContent = isSignupMode ? 'Create Company Workspace' : 'Sign In to BorderFlow';
+  document.getElementById('authSubmitBtn').textContent = isSignupMode ? 'Create Account & Launch' : 'Sign In';
+  document.getElementById('authPrompt').textContent = isSignupMode ? 'Already registered?' : 'New logistics company?';
+  document.getElementById('toggleAuthBtn').textContent = isSignupMode ? 'Sign In' : 'Create Account';
+  document.getElementById('authMsg').textContent = '';
+}
+
+async function handleAuth() {
+  const email = document.getElementById('aEmail').value.trim();
+  const password = document.getElementById('aPass').value;
+  const fullName = document.getElementById('aName').value.trim();
+  const companyName = document.getElementById('aCompany').value.trim();
+  const msgEl = document.getElementById('authMsg');
+
+  if (!email || !password) {
+    msgEl.textContent = 'Please enter your work email and password.';
+    return;
+  }
+
+  msgEl.textContent = 'Connecting to BorderFlow cloud...';
+
+  if (isSignupMode) {
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName || email.split('@')[0],
+          company_name: companyName || 'BorderFlow Logistics Ltd'
+        }
+      }
     });
-    if (created && created.length > 0) companyId = created[0].id;
+    if (error) {
+      msgEl.textContent = error.message;
+      return;
+    }
+    if (data.session) {
+      closeAuth();
+      await initWorkspace();
+    } else {
+      msgEl.style.color = '#22C58B';
+      msgEl.textContent = 'Account created! Check your email to confirm, or sign in if confirmation is disabled.';
+    }
+  } else {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      msgEl.textContent = error.message;
+      return;
+    }
+    closeAuth();
+    await initWorkspace();
   }
 }
 
-async function loadAllData() {
-  if (!companyId) await resolveCompany();
-  const q = companyId ? `?company_id=eq.${companyId}&order=created_at.desc` : `?order=created_at.desc`;
-  const [sRes, dRes, dlRes, eRes, cRes, vRes, drRes, mRes] = await Promise.all([
-    sb("shipments" + q),
-    sb("documents" + q),
-    sb("delays" + q),
-    sb("expenses" + q),
-    sb("clients" + q),
-    sb("vehicles" + q),
-    sb("drivers" + q),
-    sb("messages" + q)
+async function signOutUser() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function initWorkspace() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  currentUser = user;
+
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('appShell').style.display = 'flex';
+
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  const { data: members } = await sb
+    .from('company_members')
+    .select('company_id, role, company:companies(*)')
+    .eq('user_id', user.id);
+
+  if (members && members.length > 0) {
+    activeCompany = members[0].company;
+  }
+
+  const displayName = profile?.full_name || user.email.split('@')[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  document.getElementById('welcomeGreeting').textContent = `${greeting}, ${displayName}.`;
+  document.getElementById('welcomeCompany').textContent = `Here is ${activeCompany?.name || 'your company'}'s cross-border operations overview.`;
+  document.getElementById('headerUserBadge').textContent = `${displayName} • ${activeCompany?.name || ''}`;
+
+  startClock();
+  await loadOverviewData();
+  await loadBorderMap();
+}
+
+function startClock() {
+  const update = () => {
+    const now = new Date();
+    document.getElementById('liveClock').textContent = `${now.toDateString()} | ${now.toLocaleTimeString()}`;
+  };
+  update();
+  setInterval(update, 1000);
+}
+
+async function loadOverviewData() {
+  if (!activeCompany) return;
+
+  const [shipRes, delayRes] = await Promise.all([
+    sb.from('shipments').select('*').eq('company_id', activeCompany.id).order('created_at', { ascending: false }),
+    sb.from('shipment_delays').select('shipment_id').eq('company_id', activeCompany.id).eq('is_resolved', false)
   ]);
 
-  list = (sRes || []).map((r, idx) => ({
-    id: r.id,
-    ref: r.reference_no || ("BF-" + (101 + idx)),
-    client: r.cargo_description || "Zimplats Mining",
-    cargo: r.cargo_description || "General Freight",
-    route: (r.origin || "Johannesburg") + " → " + (r.destination || "Harare"),
-    border: r.corridor || "Beitbridge",
-    truck: r.truck_registration || "AGH 4821",
-    milestone_step: MS.indexOf(r.stage) >= 0 ? MS.indexOf(r.stage) : 0,
-    status: r.status || "Pending",
-    fee: Number(r.declared_value || 1200)
-  }));
+  allShipments = shipRes.data || [];
+  const active = allShipments.filter(s => s.status !== 'cancelled' && s.status !== 'archived');
+  const cleared = active.filter(s => s.status === 'cleared' || s.status === 'delivered');
+  const inClearance = active.filter(s => ['ready_for_clearance', 'declaration_submitted', 'under_assessment', 'inspection_required', 'duties_payable'].includes(s.status));
+  const uniqueDelays = new Set((delayRes.data || []).map(d => d.shipment_id));
 
-  docs = dRes || [];
-  delays = dlRes || [];
-  expenses = eRes || [];
-  clients = cRes || [];
-  vehicles = vRes || [];
-  drivers = drRes || [];
-  messages = mRes || [];
-  window.draw();
+  document.getElementById('statTotal').textContent = active.length;
+  document.getElementById('statCleared').textContent = cleared.length;
+  document.getElementById('statInClearance').textContent = inClearance.length;
+  document.getElementById('statDelays').textContent = uniqueDelays.size;
+
+  renderShipments(allShipments);
 }
 
-window.showAuth = function(signup) {
-  if (currentUser) return window.enterApp();
-  isSignup = !!signup;
-  document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
-  document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
-  document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
-  document.getElementById("authPrompt").innerText = isSignup ? "Already registered?" : "New clearing company?";
-  document.getElementById("toggleAuthBtn").innerText = isSignup ? "Sign In" : "Create Account";
-  document.getElementById("authScreen").style.display = "flex";
-};
+function renderShipments(list) {
+  const tbody = document.getElementById('shipmentsTableBody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--bf-muted);">No shipments recorded yet. Click "+ Create Shipment" above!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.slice(0, 10).map(s => `
+    <tr>
+      <td><strong>${s.shipment_ref}</strong></td>
+      <td>${s.origin_city} → ${s.destination_city}</td>
+      <td>${s.container_no || '—'}</td>
+      <td><span class="pill">${s.status.replace(/_/g, ' ')}</span></td>
+    </tr>
+  `).join('');
+}
 
-window.toggleMode = () => window.showAuth(!isSignup);
+function filterShipments() {
+  const q = document.getElementById('globalSearch').value.toLowerCase();
+  const filtered = allShipments.filter(s =>
+    (s.shipment_ref || '').toLowerCase().includes(q) ||
+    (s.container_no || '').toLowerCase().includes(q) ||
+    (s.origin_city || '').toLowerCase().includes(q) ||
+    (s.destination_city || '').toLowerCase().includes(q)
+  );
+  renderShipments(filtered);
+}
 
-window.doLogin = async function() {
-  const email = document.getElementById("aEmail").value.trim() || "owner@beitbridgehub.co.zw";
-  const company = document.getElementById("aCompany").value.trim() || "Beitbridge Customs Hub";
-  const role = document.getElementById("aRole").value || "Company Owner";
-  currentUser = { email, company, role };
-  localStorage.setItem("bf_user", JSON.stringify(currentUser));
-  companyId = null;
-  await window.enterApp();
-};
-
-window.doLogout = function() {
-  localStorage.removeItem("bf_user");
-  currentUser = null;
-  companyId = null;
-  document.getElementById("appShell").classList.remove("active");
-  document.getElementById("landingPage").style.display = "flex";
-};
-
-window.enterApp = async function() {
-  document.getElementById("landingPage").style.display = "none";
-  document.getElementById("authScreen").style.display = "none";
-  document.getElementById("appShell").classList.add("active");
-  document.getElementById("companyBadge").innerText = currentUser.company;
-  document.getElementById("userLabel").innerText = currentUser.role.toUpperCase() + " • " + currentUser.email;
-  await loadAllData();
-};
-
-window.go = function(p, btn) {
-  page = p;
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  if (btn) btn.classList.add("active");
-  window.draw();
-};
-
-window.setFilter = b => { filterBorder = b; window.draw(); };
-
-window.saveShipment = async function() {
-  if (!companyId) await resolveCompany();
-  const ref = "BF-" + Math.floor(100 + Math.random() * 900);
-  const clientName = document.getElementById("c1")?.value || "SADC Mining Corp";
-  const cargo = document.getElementById("c2")?.value || "Mining Equipment";
-  const origin = document.getElementById("c3")?.value || "Johannesburg";
-  const dest = document.getElementById("c4")?.value || "Harare";
-  const border = document.getElementById("c5")?.value || "Beitbridge";
-  const truck = document.getElementById("c6")?.value || "AFZ 9012";
-
-  await sb("shipments", {
-    method: "POST",
-    body: JSON.stringify({
-      company_id: companyId,
-      reference_no: ref,
-      origin,
-      destination: dest,
-      corridor: border,
-      cargo_description: clientName + " — " + cargo,
-      truck_registration: truck,
-      stage: MS[0],
-      status: "Pending",
-      declared_value: 1200
-    })
+async function loadBorderMap() {
+  const { data: borders } = await sb.from('border_posts').select('*');
+  if (!mapInstance) {
+    mapInstance = L.map('borderMap').setView([-20.0, 29.5], 5);
+    L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(mapInstance);
+  }
+  (borders || []).forEach(b => {
+    L.circleMarker([b.latitude, b.longitude], {
+      radius: 9,
+      color: b.congestion_level === 'moderate' ? '#F3B64B' : '#22C58B',
+      fillOpacity: 0.8
+    }).addTo(mapInstance).bindPopup(`<strong>${b.name}</strong><br/>Status: ${b.congestion_level}`);
   });
+}
 
-  const modal = document.getElementById("m");
-  if (modal) modal.classList.remove("open");
-  await loadAllData();
-};
+function switchSection(name, isOverview, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent = name;
+  document.getElementById('overviewSection').style.display = isOverview ? 'flex' : 'none';
+  document.getElementById('placeholderSection').style.display = isOverview ? 'none' : 'flex';
+  document.getElementById('placeholderTitle').textContent = name;
+}
 
-window.nextStep = async function(id, step) {
-  if (step < 9) {
-    const next = step + 1;
-    const status = next >= 8 ? "Cleared" : "Pending";
-    await sb(`shipments?id=eq.${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ stage: MS[next], status })
-    });
-    const item = list.find(x => String(x.id) === String(id));
-    if (item) { item.milestone_step = next; item.status = status; }
-    window.draw();
+function openQuickModal(type) {
+  currentQuickType = type;
+  document.getElementById('qmFeedback').textContent = '';
+  const fields = document.getElementById('qmFields');
+  const titles = {
+    shipment: 'Create New Shipment',
+    clearance: 'Submit Customs Clearance',
+    vehicle: 'Add Vehicle & Driver',
+    client: 'Onboard New Client',
+    delay: 'Report Border Delay',
+    payment: 'Record Client Payment',
+    expense: 'Create Operational Expense'
+  };
+  document.getElementById('qmTitle').textContent = titles[type];
+
+  if (type === 'shipment') {
+    fields.innerHTML = `
+      <div class="field"><label>Shipment Ref *</label><input id="f1" placeholder="BF-2026-1001" /></div>
+      <div class="field"><label>Origin City *</label><input id="f2" placeholder="Durban, ZA" /></div>
+      <div class="field"><label>Destination City *</label><input id="f3" placeholder="Harare, ZW" /></div>
+      <div class="field"><label>Container No</label><input id="f4" placeholder="MSKU882910" /></div>`;
+  } else if (type === 'clearance') {
+    fields.innerHTML = `
+      <div class="field"><label>Existing Shipment Ref *</label><input id="f1" placeholder="BF-2026-1001" /></div>
+      <div class="field"><label>Customs Declaration Ref *</label><input id="f2" placeholder="ZIMRA-SAD500-441" /></div>`;
+  } else if (type === 'vehicle') {
+    fields.innerHTML = `
+      <div class="field"><label>Truck Registration *</label><input id="f1" placeholder="AFZ 4821" /></div>
+      <div class="field"><label>Driver Full Name *</label><input id="f2" placeholder="Tendai Moyo" /></div>`;
+  } else if (type === 'client') {
+    fields.innerHTML = `
+      <div class="field"><label>Client Company Name *</label><input id="f1" placeholder="Zambezi Mining Ltd" /></div>
+      <div class="field"><label>Email</label><input id="f2" placeholder="ops@client.co.zw" /></div>`;
+  } else if (type === 'delay') {
+    fields.innerHTML = `
+      <div class="field"><label>Shipment Ref *</label><input id="f1" placeholder="BF-2026-1001" /></div>
+      <div class="field"><label>Reason *</label><input id="f2" placeholder="Beitbridge Scanner Queue" /></div>`;
+  } else {
+    fields.innerHTML = `
+      <div class="field"><label>Category *</label><input id="f1" placeholder="Customs Duty / Freight Fee" /></div>
+      <div class="field"><label>Amount (USD) *</label><input id="f2" type="number" placeholder="1500" /></div>`;
   }
-};
+  document.getElementById('quickModal').style.display = 'flex';
+}
 
-window.verifyDoc = async (id) => {
-  await sb(`documents?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ status: "Verified" }) });
-  await loadAllData();
-};
-
-window.addDoc = async () => {
-  const ref = prompt("Shipment Ref:", list[0]?.ref || "BF-101");
-  const name = prompt("Document Type:", "ZIMRA Bill of Entry (SAD 500)");
-  if (ref && name) {
-    await sb("documents", {
-      method: "POST",
-      body: JSON.stringify({ company_id: companyId, shipment_ref: ref, doc_type: name, border: "Beitbridge", status: "Pending" })
-    });
-    await loadAllData();
-  }
-};
-
-window.resolveDelay = async (id) => {
-  await sb(`delays?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ status: "Resolved" }) });
-  await loadAllData();
-};
-
-window.addDelay = async () => {
-  const ref = prompt("Shipment Ref:", list[0]?.ref || "BF-101");
-  const reason = prompt("Delay Reason:", "ZIMRA Scanner Queue");
-  const hours = prompt("Hours Lost:", "2.0 hrs") || "2.0 hrs";
-  if (ref && reason) {
-    await sb("delays", {
-      method: "POST",
-      body: JSON.stringify({ company_id: companyId, shipment_ref: ref, border: "Beitbridge", reason, hours_lost: hours, status: "Delayed" })
-    });
-    await loadAllData();
-  }
-};
-
-window.markPaid = async (id) => {
-  await sb(`expenses?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ paid: true }) });
-  await loadAllData();
-};
-
-window.addExpense = async () => {
-  const ref = prompt("Shipment Ref:", list[0]?.ref || "BF-101");
-  const item = prompt("Expense Item:", "ZIMRA Import Duty & VAT");
-  const amount = Number(prompt("Amount (USD):", "950"));
-  if (ref && item && amount) {
-    await sb("expenses", {
-      method: "POST",
-      body: JSON.stringify({ company_id: companyId, shipment_ref: ref, item, border: "Beitbridge", amount, paid: false })
-    });
-    await loadAllData();
-  }
-};
-
-window.addClient = async () => {
-  const name = prompt("Client Company Name:", "Zimplats Mining");
-  const country = prompt("Country:", "Zimbabwe") || "Zimbabwe";
-  const contact_phone = prompt("Phone / WhatsApp:", "+263 77 123 4567") || "";
-  if (name) {
-    await sb("clients", {
-      method: "POST",
-      body: JSON.stringify({ company_id: companyId, name, category: "Importer", country, contact_phone, status: "Active" })
-    });
-    await loadAllData();
-  }
-};
-
-window.addVehicle = async () => {
-  const registration = prompt("Truck Registration:", "AGH 4821");
-  const driverName = prompt("Assigned Driver Name:", "Tatenda Moyo");
-  const phone = prompt("Driver WhatsApp:", "+263 77 987 6543");
-  if (registration) {
-    await sb("vehicles", {
-      method: "POST",
-      body: JSON.stringify({ company_id: companyId, registration, type: "Heavy truck", capacity_tonnes: 34, status: "Available" })
-    });
-    if (driverName) {
-      await sb("drivers", {
-        method: "POST",
-        body: JSON.stringify({ company_id: companyId, full_name: driverName, phone, status: "Available" })
-      });
-    }
-    await loadAllData();
-  }
-};
-
-window.sendMsg = async () => {
-  const inp = document.getElementById("msgInput");
-  if (inp && inp.value.trim()) {
-    await sb("messages", {
-      method: "POST",
+async function submitQuickAction() {
+  if (!activeCompany) return;
