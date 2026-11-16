@@ -41,28 +41,28 @@
     }
     .btn-outline:hover { border-color: var(--white); }
 
-    /* LANDING HERO */
+    /* LANDING HERO (FULL COLOR TRUCK VIDEO) */
     .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
     .hero-video {
       position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-      z-index: 0; filter: grayscale(100%) contrast(120%) brightness(0.4); pointer-events: none;
+      z-index: 0; filter: contrast(112%) brightness(0.55); pointer-events: none;
     }
     .top-nav, .hero-main, .hero-bar { position: relative; z-index: 10; }
     .top-nav {
       display: flex; justify-content: space-between; align-items: center; padding: 18px 40px;
-      background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+      background: rgba(9, 9, 11, 0.82); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
     }
     .hero-main { max-width: 760px; padding: 60px 40px; }
     .badge-live {
       display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
-      background: var(--surface); border: 1px solid var(--white); color: var(--white);
+      background: rgba(18, 18, 21, 0.9); border: 1px solid var(--white); color: var(--white);
       font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
     }
     .hero-main h1 { font-size: 50px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin: 18px 0; }
-    .hero-main p { color: #D4D4D8; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
+    .hero-main p { color: #E4E4E7; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
     .hero-bar {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
-      padding: 20px 40px; background: rgba(18, 18, 21, 0.95); border-top: 1px solid var(--border); font-size: 13px;
+      padding: 20px 40px; background: rgba(18, 18, 21, 0.92); border-top: 1px solid var(--border); font-size: 13px;
     }
 
     /* MODAL */
@@ -108,10 +108,10 @@
     .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
     .kpi-num { font-size: 32px; font-weight: 800; color: var(--white); margin-top: 6px; }
 
-    /* DASHBOARD VIDEO MONITOR */
+    /* DASHBOARD VIDEO MONITOR (FULL COLOR) */
     .monitor-video {
-      width: 100%; max-height: 280px; object-fit: cover; border-radius: 8px;
-      border: 1px solid var(--border-strong); filter: grayscale(100%) contrast(120%); margin-top: 12px;
+      width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px;
+      border: 1px solid var(--border-strong); margin-top: 12px;
     }
 
     /* TABLE */
@@ -158,7 +158,7 @@
       <div class="hero-main">
         <div class="badge-live">● LIVE • BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
         <h1>Every truck. Every border.<br>One live feed.</h1>
-        <p>Monochrome cross-border freight command centre built in Beitbridge. Track trucks, verify customs manifests, and clear cargo without border delays.</p>
+        <p>Cross-border freight command centre built in Beitbridge. Track trucks, verify customs manifests, and clear cargo without border delays.</p>
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
           <button type="button" class="btn-white" onclick="enterDashboard()">LAUNCH COMMAND CENTRE →</button>
           <button type="button" class="btn-outline" onclick="openLogin()">Agent Login</button>
