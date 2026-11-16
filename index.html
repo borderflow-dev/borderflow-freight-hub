@@ -3,116 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BorderFlow — Beitbridge Command Centre</title>
+  <title>BorderFlow — Beitbridge Customs Hub</title>
   <style>
     :root {
-      --bg: #09090B;
-      --surface: #121215;
-      --surface-2: #18181B;
-      --border: #27272A;
-      --border-strong: #3F3F46;
+      --glass: rgba(12, 12, 15, 0.78);
+      --glass-strong: rgba(9, 9, 11, 0.88);
+      --border: rgba(255, 255, 255, 0.16);
+      --border-strong: rgba(255, 255, 255, 0.35);
       --text: #FAFAFA;
-      --muted: #A1A1AA;
+      --muted: #D4D4D8;
       --white: #FFFFFF;
       --black: #09090B;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-    body { background: var(--bg); color: var(--text); }
-    .logo-wrap { display: flex; align-items: center; gap: 14px; }
+    body { background: #09090B; color: var(--text); overflow-x: hidden; }
+
+    /* LOGO */
+    .logo-wrap { display: flex; align-items: center; gap: 12px; }
     .logo-mark {
-      width: 44px; height: 44px; border-radius: 12px; background: var(--white);
+      width: 42px; height: 42px; border-radius: 11px; background: var(--white);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
     }
-    .logo-title { font-size: 20px; font-weight: 900; letter-spacing: -0.04em; color: var(--white); line-height: 1; }
-    .logo-sub { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
-    button { position: relative; z-index: 100; cursor: pointer; }
+    .logo-title { font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: var(--white); line-height: 1; }
+    .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+
+    /* BUTTONS */
+    button { position: relative; z-index: 50; cursor: pointer; }
     .btn-white {
       background: var(--white); color: var(--black); border: 1px solid var(--white);
-      padding: 12px 22px; border-radius: 8px; font-weight: 700; font-size: 13px;
+      padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 12px;
     }
     .btn-white:hover { background: #E4E4E7; }
     .btn-outline {
-      background: rgba(18, 18, 21, 0.92); color: var(--white); border: 1px solid var(--border-strong);
-      padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 13px;
+      background: rgba(18, 18, 21, 0.85); color: var(--white); border: 1px solid var(--border-strong);
+      padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 12px;
     }
     .btn-outline:hover { border-color: var(--white); }
+
+    /* LANDING PAGE */
     .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-    .hero-video {
-      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-      z-index: 0; filter: contrast(112%) brightness(0.58); pointer-events: none;
+    .bg-video {
+      position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      z-index: 0; filter: contrast(110%) brightness(0.62); pointer-events: none;
     }
-    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 50; }
+    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 20; }
     .top-nav {
       display: flex; justify-content: space-between; align-items: center; padding: 18px 40px;
-      background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+      background: var(--glass-strong); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
     }
     .hero-main { max-width: 760px; padding: 60px 40px; }
     .badge-live {
       display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
-      background: rgba(18, 18, 21, 0.92); border: 1px solid var(--white); color: var(--white);
+      background: var(--glass-strong); border: 1px solid var(--white); color: var(--white);
       font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
     }
-    .hero-main h1 { font-size: 50px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin: 18px 0; }
-    .hero-main p { color: #E4E4E7; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
+    .hero-main h1 { font-size: 50px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin: 18px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+    .hero-main p { color: #F4F4F5; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
     .hero-bar {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
-      padding: 20px 40px; background: rgba(18, 18, 21, 0.94); border-top: 1px solid var(--border); font-size: 13px;
+      padding: 20px 40px; background: var(--glass-strong); backdrop-filter: blur(12px); border-top: 1px solid var(--border); font-size: 13px;
     }
-    .modal-bg {
-      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
-      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
-    }
-    .modal-card {
-      background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px;
-      padding: 28px; width: 100%; max-width: 420px; position: relative;
-    }
-    .modal-close { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--muted); font-size: 18px; }
-    .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    .field input, .field select {
-      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong);
-      background: var(--bg); color: var(--white); font-size: 13px;
-    }
-    .app-shell { display: none; min-height: 100vh; }
+
+    /* DASHBOARD SHELL WITH FULL LIVE VIDEO BACKGROUND */
+    .app-shell { display: none; min-height: 100vh; position: relative; z-index: 10; }
     .sidebar {
-      width: 260px; background: var(--surface); border-right: 1px solid var(--border);
-      padding: 20px 14px; display: flex; flex-direction: column; justify-content: space-between;
+      width: 255px; background: var(--glass-strong); backdrop-filter: blur(14px);
+      border-right: 1px solid var(--border); padding: 18px 12px;
+      display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0;
     }
+    .nav-list { display: flex; flex-direction: column; gap: 3px; margin-top: 18px; overflow-y: auto; }
     .nav-btn {
       width: 100%; text-align: left; background: transparent; border: 1px solid transparent;
-      color: var(--muted); padding: 11px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 4px;
+      color: var(--muted); padding: 9px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 500;
     }
-    .nav-btn.active, .nav-btn:hover { background: var(--surface-2); color: var(--white); border-color: var(--border-strong); }
-    .main-col { flex: 1; display: flex; flex-direction: column; }
+    .nav-btn.active, .nav-btn:hover { background: rgba(255,255,255,0.14); color: var(--white); border-color: var(--border-strong); font-weight: 700; }
+    .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .topbar {
-      height: 68px; background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+      height: 64px; background: var(--glass-strong); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border); padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-    .dash-body { padding: 24px; max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .dash-body { padding: 24px; max-width: 1350px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    .glass-card {
+      background: var(--glass); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+    }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
     .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
     .kpi-num { font-size: 32px; font-weight: 800; color: var(--white); margin-top: 6px; }
-    .monitor-video { width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-strong); margin-top: 12px; }
+
+    /* TABLE */
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
     .tag-white { background: var(--white); color: var(--black); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-    .tag-dark { background: var(--surface-2); color: var(--white); border: 1px solid var(--border-strong); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-    @media (max-width: 800px) {
-      .sidebar { display: none; }
-      .top-nav, .hero-main, .hero-bar { padding: 20px; }
-      .hero-main h1 { font-size: 34px; }
+    .tag-dark { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid var(--border-strong); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+    /* MODAL */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-card {
+      background: #121215; border: 1px solid var(--border-strong); border-radius: 14px;
+      padding: 26px; width: 100%; max-width: 420px; position: relative;
+    }
+    .modal-close { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--muted); font-size: 18px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .field input, .field select {
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong);
+      background: #09090B; color: var(--white); font-size: 13px;
     }
   </style>
 </head>
 <body>
+
+  <!-- LIVE FULL-SCREEN VIDEO PLAYING BEHIND ALL 12 SECTIONS -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="live%20(2)_compressed%20(1).mp4" type="video/mp4" />
+    <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
+  </video>
+
+  <!-- LANDING PAGE -->
   <div id="landingView">
     <section class="hero">
-      <video class="hero-video" autoplay muted loop playsinline>
-        <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
-      </video>
       <header class="top-nav">
         <div class="logo-wrap">
           <div class="logo-mark">
@@ -125,7 +140,7 @@
           </div>
           <div>
             <div class="logo-title">BorderFlow</div>
-            <div class="logo-sub">Beitbridge Hub</div>
+            <div class="logo-sub">Beitbridge Customs Hub</div>
           </div>
         </div>
         <div style="display:flex; gap:10px;">
@@ -133,6 +148,7 @@
           <button type="button" class="btn-white" onclick="enterDashboard()">Open Demo</button>
         </div>
       </header>
+
       <div class="hero-main">
         <div class="badge-live">● LIVE • BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
         <h1>Every truck. Every border.<br>One live feed.</h1>
@@ -142,6 +158,7 @@
           <button type="button" class="btn-outline" onclick="openLogin()">Agent Login</button>
         </div>
       </div>
+
       <div class="hero-bar">
         <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Active</div>
         <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop</div>
@@ -150,29 +167,20 @@
       </div>
     </section>
   </div>
+
+  <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal-bg">
     <div class="modal-card">
       <button type="button" class="modal-close" onclick="closeLogin()">✕</button>
-      <div class="logo-wrap" style="margin-bottom:18px;">
-        <div class="logo-mark">
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-            <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
-            <path d="M7 5.5H15C17.2 5.5 18.8 6.8 18.8 8.8C18.8 10.3 17.8 11.4 16.4 11.8C18.2 12.2 19.4 13.5 19.4 15.4C19.4 17.7 17.6 19.2 15.1 19.2H7" stroke="#09090B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M7 12.2H15" stroke="#09090B" stroke-width="2.4" stroke-linecap="round"/>
-            <path d="M13 22.5H25M25 22.5L22 19.5M25 22.5L22 25.5" stroke="#09090B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <div class="logo-title">Sign In</div>
-          <div class="logo-sub">BorderFlow Workspace</div>
-        </div>
-      </div>
+      <h3 style="margin-bottom:4px;">Sign In to BorderFlow</h3>
+      <p style="color:var(--muted); font-size:12px; margin-bottom:16px;">Beitbridge Customs Hub Command Centre</p>
       <div class="field"><label>Agent Email</label><input id="loginEmail" type="email" value="owner@beitbridgehub.co.zw" /></div>
       <div class="field"><label>Password</label><input id="loginPass" type="password" value="••••••••••••" /></div>
       <button type="button" class="btn-white" style="width:100%;" onclick="enterDashboard()">Enter Command Centre →</button>
     </div>
   </div>
 
+  <!-- SHIPMENT MODAL -->
   <div id="shipModal" class="modal-bg">
     <div class="modal-card">
       <button type="button" class="modal-close" onclick="closeShipModal()">✕</button>
@@ -195,10 +203,11 @@
     </div>
   </div>
 
+  <!-- DASHBOARD WITH ALL 12 SECTIONS OVER LIVE VIDEO -->
   <div id="dashboardView" class="app-shell">
     <aside class="sidebar">
       <div>
-        <div class="logo-wrap" style="margin-bottom:28px; padding:0 6px;">
+        <div class="logo-wrap" style="padding:0 6px;">
           <div class="logo-mark">
             <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
               <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
@@ -209,45 +218,57 @@
           </div>
           <div>
             <div class="logo-title">BorderFlow</div>
-            <div class="logo-sub">Beitbridge Hub</div>
+            <div class="logo-sub">Beitbridge Customs Hub</div>
           </div>
         </div>
-        <button type="button" class="nav-btn active">■ Command Overview</button>
-        <button type="button" class="nav-btn" onclick="openShipModal()">+ New Shipment</button>
-        <button type="button" class="nav-btn" onclick="alert('AI Manifest Scanner ready — upload PDF or photo of ZIMRA Bill of Entry.')">▣ AI Doc Checker</button>
-        <button type="button" class="nav-btn" onclick="alert('Beitbridge Northbound Queue: 24 mins | Southbound Queue: 18 mins')">◈ Border Live Status</button>
+
+        <div class="nav-list" id="navMenu">
+          <button type="button" class="nav-btn active" onclick="switchTab(this, '1. Executive Dashboard (Live Cloud)', 'Real-time overview of all cross-border shipments, clearance queues, and live Beitbridge corridor telemetry.')">1. Overview</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '2. Shipments & Consignments', 'Full manifest list of southbound and northbound freight moving through Beitbridge.')">2. Shipments</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '3. Documents & AI Verification', 'Upload Commercial Invoices, Bills of Entry (Form 21), and Certificates of Origin for AI mismatch scanning.')">3. Documents & AI</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '4. Clearance Management', 'Track ZIMRA ASYCUDA World and SARS EDI declaration approvals in real time.')">4. Clearance Management</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '5. Border Network & Queue Times', 'Live crossing status for Beitbridge (SA↔ZW), Chirundu (ZW↔ZM), Forbes (ZW↔MZ), and Kazungula.')">5. Border Network</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '6. Vehicles & Drivers Registry', 'Manage horse-and-trailer registrations, driver passports, and cross-border permits.')">6. Vehicles & Drivers</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '7. Delay Management & Alerts', 'Monitor customs holds, physical inspection bays, and missing document alerts.')">7. Delay Management</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '8. Payments, Duties & Expenses', 'Track customs duty assessments, clearing agency fees, and bridge toll disbursements.')">8. Payments & Expenses</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '9. Clients & Importers Directory', 'Corporate accounts, mining exporters, and logistics partners across Southern Africa.')">9. Clients</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '10. Driver & Agent Communication', 'Automated WhatsApp and SMS clearance notifications sent directly to drivers at the border.')">10. Communication</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '11. Reports & Corridor Analytics', 'Monthly cargo tonnage, average border turnaround times, and revenue metrics.')">11. Reports & Analytics</button>
+          <button type="button" class="nav-btn" onclick="switchTab(this, '12. Workspace & Hub Settings', 'Configure team roles, ZIMRA/SARS agent codes, and live camera feed sources.')">12. Settings</button>
+        </div>
       </div>
-      <button type="button" class="btn-outline" style="width:100%;" onclick="logout()">Logout</button>
+
+      <button type="button" class="btn-outline" style="width:100%; margin-top:14px;" onclick="logout()">Logout</button>
     </aside>
 
     <div class="main-col">
       <header class="topbar">
-        <div style="font-size:13px; color:var(--muted);">Logged in as <strong style="color:var(--white);" id="userBadge">owner@beitbridgehub.co.zw</strong></div>
-        <button type="button" class="btn-white" onclick="openShipModal()">+ Create Shipment</button>
+        <div style="font-size:12px; color:var(--muted);">LIVE HUB • <strong style="color:var(--white);" id="userBadge">owner@beitbridgehub.co.zw</strong></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-outline" onclick="alert('AI Doc Checker ready: Select a PDF or image of your ZIMRA Bill of Entry.')">AI Doc Checker</button>
+          <button type="button" class="btn-white" onclick="openShipModal()">+ Create Shipment</button>
+        </div>
       </header>
 
       <div class="dash-body">
-        <div class="kpi-grid">
-          <div class="card"><div class="kpi-label">Active Shipments</div><div class="kpi-num" id="kpiTotal">2</div></div>
-          <div class="card"><div class="kpi-label">Cleared Customs</div><div class="kpi-num" id="kpiCleared">1</div></div>
-          <div class="card"><div class="kpi-label">In Clearance</div><div class="kpi-num" id="kpiPending">1</div></div>
-          <div class="card"><div class="kpi-label">Border Hub</div><div class="kpi-num" style="font-size:22px; padding-top:8px;">BEITBRIDGE</div></div>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <h3 style="font-size:16px;">Beitbridge Corridor Live Feed</h3>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">Commercial freight lane & customs checkpoint monitor</p>
-            </div>
-            <span class="tag-white">● LIVE FEED</span>
+        <!-- ACTIVE SECTION BANNER OVER LIVE VIDEO -->
+        <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 id="sectionTitle" style="font-size:20px; font-weight:800;">1. Executive Dashboard (Live Cloud)</h2>
+            <p id="sectionDesc" style="font-size:13px; color:var(--muted); margin-top:4px;">Real-time overview of all cross-border shipments, clearance queues, and live Beitbridge corridor telemetry.</p>
           </div>
-          <video class="monitor-video" autoplay muted loop playsinline controls>
-            <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
-          </video>
+          <span class="tag-white">● LIVE VIDEO BACKGROUND ACTIVE</span>
         </div>
 
-        <div class="card">
+        <!-- KPI CARDS -->
+        <div class="kpi-grid">
+          <div class="glass-card"><div class="kpi-label">Active Shipments</div><div class="kpi-num" id="kpiTotal">2</div></div>
+          <div class="glass-card"><div class="kpi-label">Cleared Customs</div><div class="kpi-num" id="kpiCleared">1</div></div>
+          <div class="glass-card"><div class="kpi-label">In Clearance</div><div class="kpi-num" id="kpiPending">1</div></div>
+          <div class="glass-card"><div class="kpi-label">Active Delays</div><div class="kpi-num">0</div></div>
+        </div>
+
+        <div class="glass-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <h3 style="font-size:16px;">Live Cross-Border Consignments</h3>
@@ -299,6 +320,13 @@
     }
     function openShipModal() { document.getElementById('shipModal').style.display = 'flex'; }
     function closeShipModal() { document.getElementById('shipModal').style.display = 'none'; }
+    function switchTab(btn, title, desc) {
+      var buttons = document.querySelectorAll('.nav-btn');
+      for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
+      btn.classList.add('active');
+      document.getElementById('sectionTitle').textContent = title;
+      document.getElementById('sectionDesc').textContent = desc;
+    }
     function addShipment() {
       var client = document.getElementById('sClient').value.trim();
       var cargo = document.getElementById('sCargo').value.trim();
