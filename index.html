@@ -3,100 +3,169 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BorderFlow — Command Centre</title>
-  <link rel="stylesheet" href="https://unpkg.com" />
-  <script src="https://jsdelivr.net"></script>
-  <script src="https://unpkg.com"></script>
+  <title>BorderFlow — Beitbridge Command Centre</title>
   <style>
     :root {
-      --bf-bg: #0B1422;
-      --bf-sidebar: #101C2D;
-      --bf-card: #142338;
-      --bf-card2: #192B42;
-      --bf-gold: #D6AD59;
-      --bf-gold-hover: #E8C77F;
-      --bf-text: #F5F7FA;
-      --bf-muted: #A7B3C2;
-      --bf-green: #22C58B;
-      --bf-amber: #F3B64B;
-      --bf-red: #EF5350;
-      --bf-blue: #55A6E8;
-      --bf-border: #27374B;
+      --bg: #09090B;
+      --surface: #121215;
+      --surface-2: #18181B;
+      --border: #27272A;
+      --border-strong: #3F3F46;
+      --text: #FAFAFA;
+      --muted: #A1A1AA;
+      --white: #FFFFFF;
+      --black: #09090B;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-    body { background: var(--bf-bg); color: var(--bf-text); }
-    .rez-hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-    .rez-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.45); pointer-events: none; }
-    .top-nav, .hero-content, .hero-footer { position: relative; z-index: 20; }
-    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: rgba(11,20,34,0.82); backdrop-filter: blur(8px); border-bottom: 1px solid var(--bf-border); }
-    .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
-    .nav-icon { background: var(--bf-gold); color: #0B1422; font-weight: 900; padding: 6px 10px; border-radius: 8px; }
-    .btn-ghost { background: rgba(20,35,56,0.85); border: 1px solid var(--bf-border); color: var(--bf-text); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; }
-    .btn-ghost:hover { border-color: var(--bf-gold); color: var(--bf-gold); }
-    .btn-gold-pill, .btn-hero-primary, .btn-full { background: var(--bf-gold); color: #0B1422; font-weight: 700; border: none; padding: 11px 22px; border-radius: 8px; cursor: pointer; }
-    .btn-gold-pill:hover, .btn-hero-primary:hover, .btn-full:hover { background: var(--bf-gold-hover); }
-    .hero-content { max-width: 780px; padding: 60px 48px; }
-    .hero-content h1 { font-size: 48px; line-height: 1.15; margin: 16px 0; }
-    .hero-content h1 span { color: var(--bf-gold); }
-    .live-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(20,35,56,0.9); border: 1px solid var(--bf-gold); color: var(--bf-gold); padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-    .hero-footer { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 20px 48px; background: rgba(16,28,45,0.92); border-top: 1px solid var(--bf-border); font-size: 13px; }
 
-    /* Auth Modal */
-    .auth-wrap { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
-    .auth-box { background: var(--bf-card); border: 1px solid var(--bf-border); border-radius: 14px; padding: 28px; width: 100%; max-width: 400px; position: relative; }
-    .close-auth { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--bf-muted); font-size: 18px; cursor: pointer; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); }
+
+    /* LOGO */
+    .logo-wrap { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 10px; background: var(--white);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .logo-title { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); line-height: 1.1; }
+    .logo-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+
+    /* BUTTONS */
+    .btn-white {
+      background: var(--white); color: var(--black); border: 1px solid var(--white);
+      padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;
+    }
+    .btn-white:hover { background: #E4E4E7; }
+    .btn-outline {
+      background: rgba(18, 18, 21, 0.85); color: var(--white); border: 1px solid var(--border-strong);
+      padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--white); }
+
+    /* LANDING HERO */
+    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .hero-video {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      z-index: 0; filter: grayscale(100%) contrast(120%) brightness(0.4); pointer-events: none;
+    }
+    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 10; }
+    .top-nav {
+      display: flex; justify-content: space-between; align-items: center; padding: 18px 40px;
+      background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    }
+    .hero-main { max-width: 760px; padding: 60px 40px; }
+    .badge-live {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--white); color: var(--white);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    }
+    .hero-main h1 { font-size: 50px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; margin: 18px 0; }
+    .hero-main p { color: #D4D4D8; font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 580px; }
+    .hero-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+      padding: 20px 40px; background: rgba(18, 18, 21, 0.95); border-top: 1px solid var(--border); font-size: 13px;
+    }
+
+    /* MODAL */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+      z-index: 999; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-card {
+      background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px;
+      padding: 28px; width: 100%; max-width: 420px; position: relative;
+    }
+    .modal-close {
+      position: absolute; right: 16px; top: 16px; background: none; border: none;
+      color: var(--muted); font-size: 18px; cursor: pointer;
+    }
     .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 12px; color: var(--bf-muted); margin-bottom: 5px; }
-    .field input, .field select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bf-border); background: var(--bf-bg); color: var(--bf-text); }
-    .btn-full { width: 100%; margin-top: 8px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong);
+      background: var(--bg); color: var(--white); font-size: 13px;
+    }
 
-    /* Command Centre App Shell */
+    /* DASHBOARD APP */
     .app-shell { display: none; min-height: 100vh; }
-    .sidebar { width: 250px; background: var(--bf-sidebar); border-right: 1px solid var(--bf-border); padding: 20px 14px; display: flex; flex-direction: column; justify-content: space-between; }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--bf-muted); font-size: 13px; cursor: pointer; margin-bottom: 4px; border: 1px solid transparent; }
-    .nav-item.active, .nav-item:hover { background: var(--bf-card2); color: var(--bf-gold); border-color: rgba(214,173,89,0.3); }
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
-    .top-header { height: 64px; background: var(--bf-sidebar); border-bottom: 1px solid var(--bf-border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .search-input { background: var(--bf-bg); border: 1px solid var(--bf-border); color: var(--bf-text); padding: 8px 14px; border-radius: 8px; width: 300px; font-size: 13px; }
-    .content { padding: 24px; max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-    .card { background: var(--bf-card); border: 1px solid var(--bf-border); border-radius: 12px; padding: 20px; }
-    .welcome-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-    .status-badge { background: rgba(34,197,139,0.15); color: var(--bf-green); border: 1px solid rgba(34,197,139,0.4); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
-    .qa-btn { background: var(--bf-card2); border: 1px solid var(--bf-border); color: var(--bf-text); padding: 12px; border-radius: 8px; text-align: left; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .qa-btn:hover { border-color: var(--bf-gold); color: var(--bf-gold); }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .stat-val { font-size: 32px; font-weight: 800; margin: 8px 0 4px; }
-    .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
-    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--bf-border); }
-    th { color: var(--bf-muted); font-size: 11px; text-transform: uppercase; }
-    .pill { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--bf-card2); color: var(--bf-blue); }
-    #borderMap { height: 270px; border-radius: 10px; margin-top: 12px; z-index: 1; }
+    .sidebar {
+      width: 250px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 14px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .nav-btn {
+      width: 100%; text-align: left; background: transparent; border: 1px solid transparent;
+      color: var(--muted); padding: 10px 12px; border-radius: 8px; font-size: 13px;
+      font-weight: 500; cursor: pointer; margin-bottom: 4px;
+    }
+    .nav-btn.active, .nav-btn:hover { background: var(--surface-2); color: var(--white); border-color: var(--border-strong); }
+    .main-col { flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      height: 64px; background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-body { padding: 24px; max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+    .kpi-num { font-size: 32px; font-weight: 800; color: var(--white); margin-top: 6px; }
+
+    /* DASHBOARD VIDEO MONITOR */
+    .monitor-video {
+      width: 100%; max-height: 280px; object-fit: cover; border-radius: 8px;
+      border: 1px solid var(--border-strong); filter: grayscale(100%) contrast(120%); margin-top: 12px;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .tag-white { background: var(--white); color: var(--black); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .tag-dark { background: var(--surface-2); color: var(--white); border: 1px solid var(--border-strong); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+    @media (max-width: 800px) {
+      .sidebar { display: none; }
+      .top-nav, .hero-main, .hero-bar { padding: 20px; }
+      .hero-main h1 { font-size: 34px; }
+    }
   </style>
 </head>
 <body>
 
   <!-- LANDING PAGE -->
-  <div id="landingPage">
-    <section class="rez-hero">
-      <video class="rez-video" autoplay muted loop playsinline>
+  <div id="landingView">
+    <section class="hero">
+      <video class="hero-video" autoplay muted loop playsinline>
         <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
       </video>
+
       <header class="top-nav">
-        <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
-        <div style="display:flex;gap:10px;">
-          <button type="button" class="btn-ghost" onclick="openAuth(false)">Sign In</button>
-          <button type="button" class="btn-gold-pill" onclick="openAuth(true)">Create Workspace</button>
+        <div class="logo-wrap">
+          <div class="logo-mark">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 9H17L13.5 5.5M20 15H7L10.5 18.5" stroke="#09090B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="logo-title">BorderFlow</div>
+            <div class="logo-sub">Beitbridge Hub</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-outline" onclick="openLogin()">Sign In</button>
+          <button type="button" class="btn-white" onclick="enterDashboard()">Open Demo</button>
         </div>
       </header>
-      <div class="hero-content">
-        <div class="live-pill">LIVE AT BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
-        <h1>Every truck. Every border. <span>One live feed.</span></h1>
-        <p style="color:#CBD5E1;font-size:17px;margin-bottom:24px;">Enterprise cross-border freight, customs clearance, and corridor command centre.</p>
-        <button type="button" class="btn-hero-primary" onclick="openAuth(false)">LAUNCH COMMAND CENTRE →</button>
+
+      <div class="hero-main">
+        <div class="badge-live">● LIVE • BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
+        <h1>Every truck. Every border.<br>One live feed.</h1>
+        <p>Monochrome cross-border freight command centre built in Beitbridge. Track trucks, verify customs manifests, and clear cargo without border delays.</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button type="button" class="btn-white" onclick="enterDashboard()">LAUNCH COMMAND CENTRE →</button>
+          <button type="button" class="btn-outline" onclick="openLogin()">Agent Login</button>
+        </div>
       </div>
-      <div class="hero-footer">
+
+      <div class="hero-bar">
         <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Active</div>
         <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop</div>
         <div><strong>FORBES</strong> • ZW ↔ MZ Corridor</div>
@@ -105,30 +174,35 @@
     </section>
   </div>
 
-  <!-- AUTH MODAL -->
-  <div id="authScreen" class="auth-wrap">
-    <div class="auth-box">
-      <button type="button" class="close-auth" onclick="closeAuth()">✕</button>
-      <div class="nav-icon" style="display:inline-block;margin-bottom:10px;">BF</div>
-      <h2 id="authHeading">Sign In to BorderFlow</h2>
-      <p style="color:var(--bf-muted);font-size:12px;margin:4px 0 16px;">Connected to Live PostgreSQL Cloud</p>
-      <div id="signupFields" style="display:none;">
-        <div class="field"><label>Your Full Name</label><input id="aName" placeholder="e.g. James Moyo" /></div>
-        <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal-bg">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeLogin()">✕</button>
+      <div class="logo-wrap" style="margin-bottom:16px;">
+        <div class="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M4 9H17L13.5 5.5M20 15H7L10.5 18.5" stroke="#09090B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-title">Sign In</div>
+          <div class="logo-sub">BorderFlow Workspace</div>
+        </div>
       </div>
-      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="ops@borderflow.co.zw" /></div>
-      <div class="field"><label>Password (min 6 characters)</label><input id="aPass" type="password" placeholder="••••••••" /></div>
-      <div id="authMsg" style="font-size:12px;margin-bottom:8px;color:var(--bf-amber);"></div>
-      <button type="button" class="btn-full" id="authSubmitBtn" onclick="handleAuth()">Sign In</button>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--bf-muted);">
-        <span id="authPrompt">New logistics company?</span>
-        <button type="button" onclick="toggleAuthMode()" id="toggleAuthBtn" style="background:none;border:none;color:var(--bf-gold);font-weight:700;cursor:pointer;text-decoration:underline;">Create Account</button>
+      <div class="field">
+        <label>Agent Email</label>
+        <input id="loginEmail" type="email" value="owner@beitbridgehub.co.zw" />
       </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPass" type="password" value="••••••••••••" />
+      </div>
+      <button type="button" class="btn-white" style="width:100%;" onclick="enterDashboard()">Enter Command Centre →</button>
     </div>
   </div>
 
-  <!-- COMMAND CENTRE DASHBOARD -->
-  <div id="appShell" class="app-shell">
-    <aside class="sidebar">
-      <div>
-        <div class="nav-brand" style="margin-bottom:24px;"><div class="nav-icon">BF</div>BorderFlow</div>
+  <!-- NEW SHIPMENT MODAL -->
+  <div id="shipModal" class="modal-bg">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeShipModal()">✕</button>
+      <h3 style="margin-bottom:4px;">Create Cross-Border Shipment</h3>
