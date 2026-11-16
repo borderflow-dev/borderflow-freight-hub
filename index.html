@@ -20,27 +20,26 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); }
 
-    /* UPGRADED ENTERPRISE LOGO */
-    .logo-wrap { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    /* LOGO */
+    .logo-wrap { display: flex; align-items: center; gap: 14px; }
     .logo-mark {
       width: 44px; height: 44px; border-radius: 12px; background: var(--white);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.18);
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
     }
     .logo-title { font-size: 20px; font-weight: 900; letter-spacing: -0.04em; color: var(--white); line-height: 1; }
     .logo-sub { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
 
-    /* BUTTONS */
+    /* BUTTONS — HIGHEST LAYER SO CLICKS ALWAYS WORK */
+    button { position: relative; z-index: 100; cursor: pointer; }
     .btn-white {
       background: var(--white); color: var(--black); border: 1px solid var(--white);
-      padding: 11px 22px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;
-      position: relative; z-index: 50;
+      padding: 12px 22px; border-radius: 8px; font-weight: 700; font-size: 13px;
     }
     .btn-white:hover { background: #E4E4E7; }
     .btn-outline {
-      background: rgba(18, 18, 21, 0.9); color: var(--white); border: 1px solid var(--border-strong);
-      padding: 11px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
-      position: relative; z-index: 50;
+      background: rgba(18, 18, 21, 0.92); color: var(--white); border: 1px solid var(--border-strong);
+      padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 13px;
     }
     .btn-outline:hover { border-color: var(--white); }
 
@@ -48,9 +47,9 @@
     .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
     .hero-video {
       position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-      z-index: 1; filter: contrast(112%) brightness(0.58); pointer-events: none;
+      z-index: 0; filter: contrast(112%) brightness(0.58); pointer-events: none;
     }
-    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 30; }
+    .top-nav, .hero-main, .hero-bar { position: relative; z-index: 50; }
     .top-nav {
       display: flex; justify-content: space-between; align-items: center; padding: 18px 40px;
       background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
@@ -71,7 +70,7 @@
     /* MODAL */
     .modal-bg {
       display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
-      z-index: 999; align-items: center; justify-content: center; padding: 16px;
+      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-card {
       background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px;
@@ -79,7 +78,7 @@
     }
     .modal-close {
       position: absolute; right: 16px; top: 16px; background: none; border: none;
-      color: var(--muted); font-size: 18px; cursor: pointer;
+      color: var(--muted); font-size: 18px;
     }
     .field { margin-bottom: 14px; }
     .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
@@ -97,7 +96,7 @@
     .nav-btn {
       width: 100%; text-align: left; background: transparent; border: 1px solid transparent;
       color: var(--muted); padding: 11px 12px; border-radius: 8px; font-size: 13px;
-      font-weight: 500; cursor: pointer; margin-bottom: 4px;
+      font-weight: 500; margin-bottom: 4px;
     }
     .nav-btn.active, .nav-btn:hover { background: var(--surface-2); color: var(--white); border-color: var(--border-strong); }
     .main-col { flex: 1; display: flex; flex-direction: column; }
@@ -141,7 +140,6 @@
       <header class="top-nav">
         <div class="logo-wrap">
           <div class="logo-mark">
-            <!-- Custom Geometric BF + Border Bridge Emblem -->
             <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
               <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
               <path d="M7 5.5H15C17.2 5.5 18.8 6.8 18.8 8.8C18.8 10.3 17.8 11.4 16.4 11.8C18.2 12.2 19.4 13.5 19.4 15.4C19.4 17.7 17.6 19.2 15.1 19.2H7" stroke="#09090B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -155,8 +153,8 @@
           </div>
         </div>
         <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-outline" id="btnSignInTop">Sign In</button>
-          <button type="button" class="btn-white" id="btnOpenDemoTop">Open Demo</button>
+          <button type="button" class="btn-outline" onclick="openLogin()">Sign In</button>
+          <button type="button" class="btn-white" onclick="enterDashboard()">Open Demo</button>
         </div>
       </header>
 
@@ -165,8 +163,8 @@
         <h1>Every truck. Every border.<br>One live feed.</h1>
         <p>Cross-border freight command centre built in Beitbridge. Track trucks, verify customs manifests, and clear cargo without border delays.</p>
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <button type="button" class="btn-white" id="btnLaunchMain">LAUNCH COMMAND CENTRE →</button>
-          <button type="button" class="btn-outline" id="btnAgentLogin">Agent Login</button>
+          <button type="button" class="btn-white" onclick="enterDashboard()">LAUNCH COMMAND CENTRE →</button>
+          <button type="button" class="btn-outline" onclick="openLogin()">Agent Login</button>
         </div>
       </div>
 
@@ -182,10 +180,14 @@
   <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal-bg">
     <div class="modal-card">
-      <button type="button" class="modal-close" id="btnCloseLogin">✕</button>
+      <button type="button" class="modal-close" onclick="closeLogin()">✕</button>
       <div class="logo-wrap" style="margin-bottom:18px;">
         <div class="logo-mark">
           <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
             <rect x="3" y="4" width="4" height="20" rx="1.5" fill="#09090B"/>
             <path d="M7 5.5H15C17.2 5.5 18.8 6.8 18.8 8.8C18.8 10.3 17.8 11.4 16.4 11.8C18.2 12.2 19.4 13.5 19.4 15.4C19.4 17.7 17.6 19.2 15.1 19.2H7" stroke="#09090B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M7 12.2H15" stroke="#09090B" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M13 22.5H25M25 22.5L22 19.5M25 22.5L22 25.5" stroke="#09090B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
