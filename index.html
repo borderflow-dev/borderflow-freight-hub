@@ -3,281 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BorderFlow — Every Truck. Every Border. One Live Feed.</title>
+  <title>BorderFlow — Command Centre</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com" />
+  <script src="https://jsdelivr.net"></script>
+  <script src="https://unpkg.com"></script>
   <style>
-    html { scroll-behavior: smooth; }
-    .rez-dots { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 14px; }
-    .rez-dots a { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #D6A84F; background: rgba(5,14,27,0.6); transition: 0.2s; }
-    .rez-dots a:hover { background: #D6A84F; transform: scale(1.3); }
+    :root {
+      --bf-bg: #0B1422;
+      --bf-sidebar: #101C2D;
+      --bf-card: #142338;
+      --bf-card2: #192B42;
+      --bf-gold: #D6AD59;
+      --bf-gold-hover: #E8C77F;
+      --bf-text: #F5F7FA;
+      --bf-muted: #A7B3C2;
+      --bf-green: #22C58B;
+      --bf-amber: #F3B64B;
+      --bf-red: #EF5350;
+      --bf-blue: #55A6E8;
+      --bf-border: #27374B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+    body { background: var(--bf-bg); color: var(--bf-text); }
     .rez-hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-    .rez-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.55); }
-    .rez-section { padding: 88px 48px; max-width: 1240px; margin: 0 auto; }
-    .rez-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 48px; align-items: center; margin-bottom: 84px; }
-    .rez-img { width: 100%; height: 350px; object-fit: cover; border-radius: 14px; border: 1px solid rgba(214,168,79,0.35); box-shadow: 0 24px 48px rgba(0,0,0,0.55); }
+    .rez-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.45); }
+    .top-nav, .hero-content, .hero-footer { position: relative; z-index: 2; }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: rgba(11,20,34,0.75); backdrop-filter: blur(8px); border-bottom: 1px solid var(--bf-border); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+    .nav-icon { background: var(--bf-gold); color: #0B1422; font-weight: 900; padding: 6px 10px; border-radius: 8px; }
+    .btn-ghost { background: transparent; border: 1px solid var(--bf-border); color: var(--bf-text); padding: 9px 16px; border-radius: 8px; cursor: pointer; }
+    .btn-gold-pill, .btn-hero-primary, .btn-full { background: var(--bf-gold); color: #0B1422; font-weight: 700; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    .btn-gold-pill:hover, .btn-hero-primary:hover, .btn-full:hover { background: var(--bf-gold-hover); }
+    .hero-content { max-width: 780px; padding: 60px 48px; }
+    .hero-content h1 { font-size: 48px; line-height: 1.15; margin: 16px 0; }
+    .hero-content h1 span { color: var(--bf-gold); }
+    .live-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(20,35,56,0.9); border: 1px solid var(--bf-gold); color: var(--bf-gold); padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .hero-footer { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 20px 48px; background: rgba(16,28,45,0.9); border-top: 1px solid var(--bf-border); font-size: 13px; }
+
+    /* Auth Modal */
+    .auth-wrap { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .auth-box { background: var(--bf-card); border: 1px solid var(--bf-border); border-radius: 14px; padding: 28px; width: 100%; max-width: 400px; position: relative; }
+    .close-auth { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--bf-muted); font-size: 18px; cursor: pointer; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; color: var(--bf-muted); margin-bottom: 5px; }
+    .field input, .field select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--bf-border); background: var(--bf-bg); color: var(--bf-text); }
+    .btn-full { width: 100%; margin-top: 8px; }
+
+    /* Command Centre App Shell */
+    .app-shell { display: none; min-height: 100vh; }
+    .sidebar { width: 250px; background: var(--bf-sidebar); border-right: 1px solid var(--bf-border); padding: 20px 14px; display: flex; flex-direction: column; justify-content: space-between; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--bf-muted); font-size: 13px; cursor: pointer; margin-bottom: 4px; border: 1px solid transparent; }
+    .nav-item.active, .nav-item:hover { background: var(--bf-card2); color: var(--bf-gold); border-color: rgba(214,173,89,0.3); }
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+    .top-header { height: 64px; background: var(--bf-sidebar); border-bottom: 1px solid var(--bf-border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .search-input { background: var(--bf-bg); border: 1px solid var(--bf-border); color: var(--bf-text); padding: 8px 14px; border-radius: 8px; width: 300px; font-size: 13px; }
+    .content { padding: 24px; max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: var(--bf-card); border: 1px solid var(--bf-border); border-radius: 12px; padding: 20px; }
+    .welcome-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+    .status-badge { background: rgba(34,197,139,0.15); color: var(--bf-green); border: 1px solid rgba(34,197,139,0.4); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+    .qa-btn { background: var(--bf-card2); border: 1px solid var(--bf-border); color: var(--bf-text); padding: 12px; border-radius: 8px; text-align: left; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .qa-btn:hover { border-color: var(--bf-gold); color: var(--bf-gold); }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .stat-val { font-size: 32px; font-weight: 800; margin: 8px 0 4px; }
+    .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--bf-border); }
+    th { color: var(--bf-muted); font-size: 11px; text-transform: uppercase; }
+    .pill { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--bf-card2); color: var(--bf-blue); }
+    #borderMap { height: 270px; border-radius: 10px; margin-top: 12px; z-index: 1; }
   </style>
 </head>
 <body>
 
+  <!-- LANDING PAGE -->
   <div id="landingPage">
-    <div class="rez-dots">
-      <a href="#sec-hero" title="Live Freight Video"></a>
-      <a href="#sec-owner" title="Company Owners"></a>
-      <a href="#sec-agent" title="Clearing Agents"></a>
-      <a href="#sec-driver" title="Truck Drivers"></a>
-    </div>
-
-    <!-- SECTION 1: Full-Screen Auto-Playing Local HD Truck Video -->
-    <section id="sec-hero" class="rez-hero">
+    <section class="rez-hero">
       <video class="rez-video" autoplay muted loop playsinline>
         <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
       </video>
-
       <header class="top-nav">
         <div class="nav-brand"><div class="nav-icon">BF</div>BorderFlow</div>
-        <div class="nav-links">
-          <a href="#sec-owner">Company Owners</a>
-          <a href="#sec-agent">Clearing Agents</a>
-          <a href="#sec-driver">Truck Drivers</a>
-        </div>
-        <div class="nav-actions">
-          <button class="btn-ghost" onclick="showAuth(false)">Sign in</button>
-          <button class="btn-gold-pill" onclick="showAuth(false)">Open Dashboard</button>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-ghost" onclick="openAuth(false)">Sign In</button>
+          <button class="btn-gold-pill" onclick="openAuth(true)">Create Workspace</button>
         </div>
       </header>
-
-      <div class="hero-content" style="max-width:780px;padding:60px 48px;">
-        <div class="live-pill"><span class="live-dot"></span> LIVE AT 65 SOUTHERN AFRICAN BORDERS</div>
+      <div class="hero-content">
+        <div class="live-pill">LIVE AT BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</div>
         <h1>Every truck. Every border. <span>One live feed.</span></h1>
-        <p style="color:#F8FAFC;font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,0.7);">Real-time customs clearance, AI document inspection, and instant WhatsApp dispatch built for Southern Africa's toughest freight corridors.</p>
-        <div class="hero-btns">
-          <button class="btn-hero-primary" onclick="showAuth(false)">LAUNCH DASHBOARD →</button>
-        </div>
+        <p style="color:#CBD5E1;font-size:17px;margin-bottom:24px;">Enterprise cross-border freight, customs clearance, and corridor command centre.</p>
+        <button class="btn-hero-primary" onclick="openAuth(false)">LAUNCH COMMAND CENTRE →</button>
       </div>
-
       <div class="hero-footer">
         <div><strong>BEITBRIDGE</strong> • SA ↔ ZW Active</div>
-        <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop Border</div>
+        <div><strong>CHIRUNDU</strong> • ZW ↔ ZM One-Stop</div>
         <div><strong>FORBES</strong> • ZW ↔ MZ Corridor</div>
         <div><strong>KAZUNGULA</strong> • BW ↔ ZM Bridge</div>
       </div>
     </section>
-
-    <!-- SECTION 2: Who BorderFlow Empowers (Using Your Uploaded Local Media) -->
-    <div style="background:#050E1B;border-top:1px solid rgba(214,168,79,0.2);">
-      <div class="rez-section">
-        <div style="text-align:center;margin-bottom:72px;">
-          <span style="color:#D6A84F;font-size:12px;font-weight:800;letter-spacing:3px;">BUILT FOR THE ENTIRE CORRIDOR</span>
-          <h2 style="font-size:36px;font-weight:900;color:#fff;margin-top:10px;letter-spacing:-0.5px;">WHO BORDERFLOW EMPOWERS</h2>
-        </div>
-
-        <!-- 1. Company Owners (Your Uploaded Executive Video) -->
-        <div id="sec-owner" class="rez-split">
-          <video class="rez-img" autoplay muted loop playsinline>
-            <source src="2. owner.jpg.mp4" type="video/mp4" />
-          </video>
-          <div>
-            <span style="color:#D6A84F;font-size:12px;font-weight:800;letter-spacing:2px;">01 • CLEARING COMPANY OWNERS</span>
-            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">A POWERFUL COMMAND CENTER</h3>
-            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">Monitor every truck across Beitbridge, Chirundu, and Kazungula from one dark-mode dashboard. Control Border Wallet duty disbursements and track agency performance in real time.</p>
-          </div>
-        </div>
-
-        <!-- 2. Clearing Agents (Your Uploaded Clearing Agent Photo) -->
-        <div id="sec-agent" class="rez-split">
-          <div>
-            <span style="color:#34D399;font-size:12px;font-weight:800;letter-spacing:2px;">02 • CUSTOMS CLEARING AGENTS</span>
-            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">AI-POWERED DOCUMENT INSPECTION</h3>
-            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">Eliminate costly ZIMRA and SARS border delays. Run commercial invoices, SAD 500 forms, and truck plates through our built-in AI Document Checker before the truck reaches the gate.</p>
-          </div>
-          <img class="rez-img" src="agent.jpg.jpg" alt="Customs Clearing Agent" />
-        </div>
-
-        <!-- 3. Truck Drivers -->
-        <div id="sec-driver" class="rez-split" style="margin-bottom:48px;">
-          <img class="rez-img" src="https://unsplash.com" alt="Cross-Border Truck Driver" />
-          <div>
-            <span style="color:#38BDF8;font-size:12px;font-weight:800;letter-spacing:2px;">03 • CROSS-BORDER TRUCK DRIVERS</span>
-            <h3 style="font-size:30px;color:#fff;margin:10px 0 16px;">DIRECT WHATSAPP RELEASE ALERTS</h3>
-            <p style="color:#CBD5E1;font-size:16px;line-height:1.7;">No complicated apps for drivers on the road. Clearing agents send one-click WhatsApp updates straight to drivers in Zimbabwe (+263), South Africa (+27), and Zambia (+260) the moment duty is cleared.</p>
-          </div>
-        </div>
-
-        <div style="text-align:center;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08);">
-          <button class="btn-hero-primary" onclick="showAuth(false)">OPEN BORDERFLOW DASHBOARD →</button>
-        </div>
-      </div>
-    </div>
   </div>
 
+  <!-- AUTH MODAL -->
   <div id="authScreen" class="auth-wrap">
     <div class="auth-box">
-      <button class="close-auth" onclick="document.getElementById('authScreen').style.display='none'">✕</button>
-      <div class="nav-icon" style="margin-bottom:12px;">BF</div>
-      <h2 id="authHeading" style="font-size:20px;">Sign In to BorderFlow</h2>
-      <p style="color:#94A3B8;font-size:12px;margin:4px 0 16px;">Every Truck. Every Border. One Live Feed.</p>
+      <button class="close-auth" onclick="closeAuth()">✕</button>
+      <div class="nav-icon" style="display:inline-block;margin-bottom:10px;">BF</div>
+      <h2 id="authHeading">Sign In to BorderFlow</h2>
+      <p style="color:var(--bf-muted);font-size:12px;margin:4px 0 16px;">Connected to Live PostgreSQL Cloud</p>
       <div id="signupFields" style="display:none;">
+        <div class="field"><label>Your Full Name</label><input id="aName" placeholder="e.g. James Moyo" /></div>
         <div class="field"><label>Company Name</label><input id="aCompany" placeholder="e.g. Beitbridge Clearing Services" /></div>
-        <div class="field"><label>Role</label><select id="aRole"><option>Company Owner</option><option>Clearing Agent</option><option>Transport Manager</option><option>Driver</option><option>Client</option></select></div>
       </div>
-      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="owner@beitbridgehub.co.zw" /></div>
-      <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="••••••••" /></div>
-      <button class="btn-full" id="authSubmitBtn" onclick="doLogin()">Sign In</button>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:#94A3B8;">
-        <span id="authPrompt">New clearing company?</span>
-        <button id="toggleAuthBtn" type="button" onclick="toggleMode()" style="background:none;border:none;color:#D6A84F;font-weight:700;text-decoration:underline;cursor:pointer;">Create Account</button>
+      <div class="field"><label>Work Email</label><input id="aEmail" type="email" placeholder="ops@borderflow.co.zw" /></div>
+      <div class="field"><label>Password (min 6 characters)</label><input id="aPass" type="password" placeholder="••••••••" /></div>
+      <div id="authMsg" style="font-size:12px;margin-bottom:8px;color:var(--bf-amber);"></div>
+      <button class="btn-full" id="authSubmitBtn" onclick="handleAuth()">Sign In</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--bf-muted);">
+        <span id="authPrompt">New logistics company?</span>
+        <button type="button" onclick="toggleAuthMode()" id="toggleAuthBtn" style="background:none;border:none;color:var(--bf-gold);font-weight:700;cursor:pointer;text-decoration:underline;">Create Account</button>
       </div>
     </div>
   </div>
+
+  <!-- COMMAND CENTRE DASHBOARD -->
   <div id="appShell" class="app-shell">
-    <aside>
-      <div class="brand">
-        <div><span class="logo">BF</span><strong style="font-size:17px;">BorderFlow</strong></div>
-        <div id="companyBadge" style="font-size:11px;color:#D6A84F;margin-top:6px;">Workspace</div>
-      </div>
-      <nav>
-        <button class="nav-btn active" onclick="go('overview',this)">1. Overview</button>
-        <button class="nav-btn" onclick="go('shipments',this)">2. Shipments</button>
-        <button class="nav-btn" onclick="go('documents',this)">3. Documents & AI</button>
-        <button class="nav-btn" onclick="go('clearance',this)">4. Clearance Management</button>
-        <button class="nav-btn" onclick="go('borders',this)">5. Border Network</button>
-        <button class="nav-btn" onclick="go('fleet',this)">6. Vehicles & Drivers</button>
-        <button class="nav-btn" onclick="go('delays',this)">7. Delay Management</button>
-        <button class="nav-btn" onclick="go('expenses',this)">8. Payments & Expenses</button>
-        <button class="nav-btn" onclick="go('clients',this)">9. Clients</button>
-        <button class="nav-btn" onclick="go('communication',this)">10. Communication</button>
-        <button class="nav-btn" onclick="go('reports',this)">11. Reports & Analytics</button>
-        <button class="nav-btn" onclick="go('settings',this)">12. Settings</button>
-      </nav>
-    </aside>
-
-    <div class="main-wrap">
-      <header>
-        <div>
-          <small id="userLabel" style="color:#94A3B8;font-weight:700;font-size:10px;">CLOUD SYNCED</small>
-          <h2 id="title" style="font-size:18px;">1. Executive Dashboard</h2>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;">
-          <a href="https://udify.app" target="_blank" class="btn-gold" style="text-decoration:none;">⚡ AI Doc Checker</a>
-          <button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Create Shipment</button>
-          <button class="btn-out" onclick="doLogout()">Logout</button>
-        </div>
-      </header>
-      <main id="app"></main>
-    </div>
-  </div>
-
-  <div id="m" class="modal-bg">
-    <div class="modal">
-      <strong>Create International Cross-Border Shipment</strong>
-      <div class="grid2">
-        <input id="c1" placeholder="Client (e.g. Harare Mining)" />
-        <select id="c2"><option>Mining Equipment</option><option>FMCG / Groceries</option><option>Fuel & Chemicals</option></select>
-        <input id="c3" placeholder="Origin (e.g. Johannesburg, ZA)" />
-        <input id="c4" placeholder="Destination (e.g. Lusaka, ZM)" />
-        <select id="c5"><option>Beitbridge (ZA↔ZW)</option><option>Chirundu (ZW↔ZM)</option><option>Forbes (ZW↔MZ)</option><option>Kazungula (BW↔ZM)</option><option>Kasumbalesa (ZM↔DRC)</option></select>
-        <input id="c6" placeholder="Truck Reg (e.g. AGH 4821)" />
-        <input id="c7" placeholder="Driver WhatsApp (e.g. +263771234567)" style="grid-column: span 2;" />
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button onclick="document.getElementById('m').classList.remove('open')" style="padding:8px 12px;background:#1E293B;color:#fff;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
-        <button class="btn-gold" onclick="saveShipment()">Save to Cloud</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const SB_URL = "https://supabase.co";
-    const SB_KEY = "sb_publishable_AmXkFCBMzNI96gloQZKMEw_irbyDCtB";
-    const SB_HEADERS = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
-    const DIFY_URL = "https://udify.app";
-    const MS = ["1. Created","2. At Border","3. Docs Checked","4. Declaration","5. Assessment","6. Duty Paid","7. Inspection","8. Released","9. Cleared to Go","10. Delivered"];
-
-    let list = [], page = "overview", isSignup = false, currentUser = JSON.parse(localStorage.getItem("bf_user") || "null");
-    let delays = [{ ref: "BF-101", border: "Beitbridge", reason: "ZIMRA Scanner Queue", hours: "2.5 hrs", status: "Delayed" }];
-    let msgs = [{ from: "Company Owner", text: "Beitbridge Southbound lane active." }];
-    const bdg = s => (s === "Cleared" || s === "Resolved") ? `<span class="b bg">${s}</span>` : (s === "Delayed") ? `<span class="b br">${s}</span>` : `<span class="b ba">${s}</span>`;
-
-    async function loadCloud() {
-      try {
-        const res = await fetch(SB_URL + "?select=*&order=id.desc", { headers: SB_HEADERS });
-        const data = await res.json();
-        if (Array.isArray(data)) { list = data; draw(); }
-      } catch (e) {}
-    }
-    async function saveShipment() {
-      const item = {
-        ref: "BF-" + (101 + list.length), client: document.getElementById("c1").value || "SADC Mining Corp",
-        cargo: document.getElementById("c2").value, route: (document.getElementById("c3").value || "Johannesburg") + " → " + (document.getElementById("c4").value || "Harare"),
-        border: document.getElementById("c5").value, truck: document.getElementById("c6").value || "AFZ 9012",
-        phone: document.getElementById("c7").value || "", milestone_step: 0, status: "Pending"
-      };
-      document.getElementById("m").classList.remove("open");
-      const res = await fetch(SB_URL, { method: "POST", headers: SB_HEADERS, body: JSON.stringify([item]) });
-      if (res.ok) await loadCloud();
-    }
-    async function nextStep(id, step) {
-      if (step < 9) {
-        const next = step + 1, status = next >= 8 ? "Cleared" : "Pending";
-        await fetch(SB_URL + "?id=eq." + id, { method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ milestone_step: next, status }) });
-        await loadCloud();
-      }
-    }
-    function sendWhatsApp(ref, truck, border, stage, phone) {
-      const clean = (phone || "").replace(/[^0-9]/g, "");
-      const msg = encodeURIComponent(`*BorderFlow Update*\nShipment: ${ref}\nTruck: ${truck}\nCorridor: ${border}\nStatus: ${stage}\nDocs: ${DIFY_URL}`);
-      window.open(`https://wa.me{clean}?text=${msg}`, "_blank");
-    }
-    function showAuth(signup) {
-      if (currentUser) return enterApp();
-      isSignup = !!signup;
-      document.getElementById("signupFields").style.display = isSignup ? "block" : "none";
-      document.getElementById("authHeading").innerText = isSignup ? "Register Clearing Company" : "Sign In to BorderFlow";
-      document.getElementById("authSubmitBtn").innerText = isSignup ? "Create Company Account" : "Sign In";
-      document.getElementById("authScreen").style.display = "flex";
-    }
-    function toggleMode() { showAuth(!isSignup); }
-    function doLogin() {
-      currentUser = { email: document.getElementById("aEmail").value.trim() || "owner@beitbridgehub.co.zw", company: document.getElementById("aCompany").value.trim() || "Beitbridge Customs Hub", role: document.getElementById("aRole").value || "Company Owner" };
-      localStorage.setItem("bf_user", JSON.stringify(currentUser));
-      enterApp();
-    }
-    function doLogout() { localStorage.removeItem("bf_user"); currentUser = null; document.getElementById("appShell").classList.remove("active"); document.getElementById("landingPage").style.display = "block"; }
-    function enterApp() {
-      document.getElementById("landingPage").style.display = "none";
-      document.getElementById("authScreen").style.display = "none";
-      document.getElementById("appShell").classList.add("active");
-      document.getElementById("companyBadge").innerText = currentUser.company;
-      document.getElementById("userLabel").innerText = "LIVE SUPABASE CLOUD • " + currentUser.email;
-      draw();
-      loadCloud();
-    }
-    function go(p, btn) { page = p; document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); if (btn) btn.classList.add("active"); draw(); }
-    function addChat() { const v = document.getElementById("chatInp").value.trim(); if (v) { msgs.unshift({ from: currentUser.role, text: v }); draw(); } }
-
-    function draw() {
-      const el = document.getElementById("app"), t = document.getElementById("title");
-      const c = list.filter(x => x.status === "Cleared").length, p = list.filter(x => x.status === "Pending").length;
-      const rows = list.map(s => `<tr><td><strong>${s.ref}</strong></td><td>${s.client}</td><td>${s.route}</td><td>${s.border}</td><td>${s.truck}</td><td>${MS[s.milestone_step||0]}</td><td>${bdg(s.status)}</td><td style="display:flex;gap:6px;"><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Advance →</button><button onclick="sendWhatsApp('${s.ref}','${s.truck}','${s.border}','${MS[s.milestone_step||0]}','${s.phone||''}')" style="background:#16A34A;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-weight:700;font-size:11.5px;cursor:pointer;">WhatsApp</button></td></tr>`).join("");
-      const views = {
-        overview: ["1. Executive Dashboard (Live Cloud)", `<div class="kpi-grid"><div class="kpi"><small>Cloud Shipments</small><div>${list.length}</div></div><div class="kpi g"><small>Cleared</small><div style="color:#34D399">${c}</div></div><div class="kpi a"><small>In Clearance</small><div style="color:#FBBF24">${p}</div></div><div class="kpi r"><small>Active Delays</small><div style="color:#F87171">${delays.length}</div></div></div><div class="card"><div class="card-h"><span>Supabase Live Consignments (${list.length})</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ Add Truck</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows || '<tr><td colspan="8" style="text-align:center;color:#94A3B8;">No cloud shipments yet — click + Create Shipment!</td></tr>'}</tbody></table></div>`],
-        shipments: ["2. Shipment Management", `<div class="card"><div class="card-h"><span>Cloud Shipments</span><button class="btn-gold" onclick="document.getElementById('m').classList.add('open')">+ New Shipment</button></div><table><thead><tr><th>Ref</th><th>Client</th><th>Route</th><th>Corridor</th><th>Truck</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`],
-        documents: ["3. Customs Documents & AI", `<div class="card" style="padding:18px;border-left:4px solid #D6A84F;display:flex;justify-content:space-between;align-items:center;"><div><strong>⚡ BorderFlow AI Document Checker</strong><p style="font-size:12px;color:#94A3B8;margin-top:4px;">Verify invoices, weights & plates via Dify + GroqCloud.</p></div><a href="${DIFY_URL}" target="_blank" class="btn-gold" style="text-decoration:none;">Launch AI Checker →</a></div>`],
-        clearance: ["4. 10-Stage Customs Clearance", list.map(s => `<div class="card" style="padding:16px;"><div style="display:flex;justify-content:space-between;"><strong>${s.ref} • ${s.client} (${s.border})</strong><button class="btn-gold" onclick="nextStep(${s.id},${s.milestone_step||0})">Next Stage →</button></div><div class="steps">${MS.map((m,i) => `<div class="st ${i<=(s.milestone_step||0)?'ok':''}">${m}</div>`).join("")}</div></div>`).join("") || '<div class="card" style="padding:20px;">Create a shipment first to track its 10 clearance stages.</div>'],
-        borders: ["5. SADC Border Network", `<div class="card"><table><thead><tr><th>Border Post</th><th>Countries</th><th>Avg Clearance</th><th>Status</th></tr></thead><tbody><tr><td><strong>Beitbridge</strong></td><td>South Africa ↔ Zimbabwe</td><td>1.8 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Chirundu OSBP</strong></td><td>Zimbabwe ↔ Zambia</td><td>1.1 hrs</td><td>${bdg("Cleared")}</td></tr><tr><td><strong>Kazungula</strong></td><td>Botswana ↔ Zambia</td><td>1.5 hrs</td><td>${bdg("Cleared")}</td></tr></tbody></table></div>`],
-        fleet: ["6. Vehicles & Drivers", `<div class="card"><table><thead><tr><th>Truck Reg</th><th>Shipment</th><th>Driver WhatsApp</th><th>Corridor</th><th>Status</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.truck}</strong></td><td>${s.ref}</td><td>+${s.phone || 'Not set'}</td><td>${s.border}</td><td>${bdg(s.status)}</td></tr>`).join("")}</tbody></table></div>`],
-        delays: ["7. Delay & Bottleneck Management", `<div class="card"><table><thead><tr><th>Ref</th><th>Border</th><th>Reason</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead><tbody>${delays.map((x,i) => `<tr><td>${x.ref}</td><td>${x.border}</td><td>${x.reason}</td><td>${x.hours}</td><td>${bdg(x.status)}</td><td><button class="btn-gold" onclick="delays[${i}].status='Resolved';draw()">Resolve</button></td></tr>`).join("")}</tbody></table></div>`],
-        expenses: ["8. Border Wallet & Duty Payments", `<div class="kpi-grid"><div class="kpi g"><small>Border Wallet</small><div style="color:#34D399">$14,250</div></div><div class="kpi"><small>Duty Paid</small><div>$1,450</div></div></div>`],
-        clients: ["9. Importers & Exporters", `<div class="card"><table><thead><tr><th>Company</th><th>Cargo Type</th><th>Primary Corridor</th></tr></thead><tbody>${list.map(s => `<tr><td><strong>${s.client}</strong></td><td>${s.cargo}</td><td>${s.route}</td></tr>`).join("")}</tbody></table></div>`],
-        communication: ["10. Border Agent Dispatch", `<div class="card" style="padding:16px;"><div style="display:flex;gap:8px;margin-bottom:14px;"><input id="chatInp" placeholder="Broadcast update..."/><button class="btn-gold" onclick="addChat()">Send</button></div>${msgs.map(m => `<p style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);"><strong>${m.from}:</strong> ${m.text}</p>`).join("")}</div>`],
-        reports: ["11. Reports & Corridor Analytics", `<div class="kpi-grid"><div class="kpi g"><small>On-Time Clearance</small><div>98.4%</div></div><div class="kpi"><small>Avg Border Dwell</small><div>1.8 hrs</div></div></div>`],
-        settings: ["12. Workspace Settings", `<div class="card" style="padding:20px;max-width:440px;"><strong>Agency:</strong> ${currentUser.company}<br/><br/><strong>Cloud DB:</strong> ngkmbpbdaachqymnfffe.supabase.co</div>`]
-      };
-      const currentView = views[page];
-      t.innerText = currentView.at(0);
-      el.innerHTML = currentView.at(1);
-    }
-    if (currentUser) enterApp();
-  </script>
-</body>
-</html>
+    <aside class="sidebar">
+      <div>
+        <div class="nav-brand" style="margin-bottom:24px;"><div class="nav-icon">BF</div>BorderFlow</div>
+        <div class="nav-item active" onclick="switchSection('Overview', true, this)">📊 Overview</div>
+        <div class="nav-item" onclick="switchSection('Shipments', false, this)">📦 Shipments</div>
