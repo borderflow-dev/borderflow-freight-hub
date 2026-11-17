@@ -3,691 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BorderFlow — Beitbridge Customs Hub | AI Document Checker</title>
-  <script src="https://jsdelivr.net"></script>
+  <title>BorderFlow — AI Trade & Customs Document Checker</title>
   <script src="https://cloudflare.com"></script>
   <style>
-    :root {
-      --bg: #09090B;
-      --glass: rgba(12, 12, 15, 0.82);
-      --glass-strong: rgba(9, 9, 11, 0.92);
-      --border: rgba(255, 255, 255, 0.16);
-      --border-strong: rgba(255, 255, 255, 0.35);
-      --text: #FAFAFA;
-      --muted: #D4D4D8;
-      --white: #FFFFFF;
-      --black: #09090B;
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+    body { background: #09090B; color: #FAFAFA; overflow-x: hidden; }
+    .bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.58); pointer-events: none; }
+    .wrap { position: relative; z-index: 10; }
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 16px 40px; background: rgba(9,9,11,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.16); }
     .logo-wrap { display: flex; align-items: center; gap: 12px; }
-    .logo-mark {
-      width: 42px; height: 42px; border-radius: 11px; background: var(--white);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .logo-title { font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: var(--white); line-height: 1; }
-    .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
-    button { position: relative; z-index: 50; cursor: pointer; }
-    .btn-white {
-      background: var(--white); color: var(--black); border: 1px solid var(--white);
-      padding: 12px 22px; border-radius: 8px; font-weight: 800; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
-    }
-    .btn-white:hover { background: #E4E4E7; }
-    .btn-white:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-outline {
-      background: rgba(18, 18, 21, 0.85); color: var(--white); border: 1px solid var(--border-strong);
-      padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
-    }
-    .btn-outline:hover { border-color: var(--white); }
-    .bg-video {
-      position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover;
-      z-index: 0; filter: contrast(110%) brightness(0.62); pointer-events: none;
-    }
-    .landing-section { position: relative; z-index: 10; }
-    .top-nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; justify-content: space-between; align-items: center; padding: 16px 40px;
-      background: rgba(9, 9, 11, 0.88); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-    }
-    .hero { min-height: 92vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .logo-mark { width: 42px; height: 42px; border-radius: 11px; background: #FFF; display: flex; align-items: center; justify-content: center; }
+    .logo-title { font-size: 19px; font-weight: 900; color: #FFF; }
+    .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; color: #D4D4D8; }
+    button { cursor: pointer; }
+    .btn-white { background: #FFF; color: #09090B; border: 1px solid #FFF; padding: 11px 20px; border-radius: 8px; font-weight: 800; font-size: 12px; text-transform: uppercase; }
+    .btn-outline { background: rgba(18,18,21,0.85); color: #FFF; border: 1px solid rgba(255,255,255,0.35); padding: 11px 18px; border-radius: 8px; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: space-between; }
     .hero-main { max-width: 820px; padding: 80px 40px 40px; }
-    .badge-live {
-      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
-      background: var(--glass-strong); border: 1px solid var(--white); color: var(--white);
-      font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
-    }
-    .hero-main h1 { font-size: 56px; font-weight: 900; line-height: 1.06; letter-spacing: -0.03em; margin: 20px 0; text-transform: uppercase; text-shadow: 0 4px 24px rgba(0,0,0,0.7); }
-    .hero-main p { color: #F4F4F5; font-size: 17px; line-height: 1.6; margin-bottom: 30px; max-width: 600px; }
-    .spec-strip {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      background: var(--glass-strong); backdrop-filter: blur(14px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    }
-    .spec-box { padding: 22px 32px; border-right: 1px solid var(--border); }
-    .spec-num { font-size: 24px; font-weight: 900; color: var(--white); letter-spacing: -0.02em; }
-    .spec-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A1A1AA; text-transform: uppercase; margin-top: 4px; }
-    .showcase-banner {
-      min-height: 85vh; display: flex; align-items: flex-end; padding: 64px 40px;
-      background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
-    }
-    .showcase-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      border-bottom: 1px solid var(--border); background: #09090B;
-    }
-    .showcase-tile {
-      min-height: 520px; display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 40px; background-size: cover; background-position: center;
-      border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    }
-    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: #FFFFFF; text-transform: uppercase; margin-bottom: 8px; }
-    .sec-title { font-size: 36px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase; margin-bottom: 12px; }
-    .sec-desc { color: #E4E4E7; font-size: 14px; line-height: 1.6; max-width: 520px; margin-bottom: 20px; }
-
-    /* App Shell - Only 1 Section Kept */
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(9,9,11,0.9); border: 1px solid #FFF; font-size: 11px; font-weight: 800; }
+    .hero h1 { font-size: 52px; font-weight: 900; line-height: 1.06; margin: 18px 0; text-transform: uppercase; }
+    .hero p { font-size: 17px; line-height: 1.6; color: #F4F4F5; margin-bottom: 28px; max-width: 600px; }
+    .spec-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); background: rgba(9,9,11,0.92); border-top: 1px solid rgba(255,255,255,0.16); border-bottom: 1px solid rgba(255,255,255,0.16); }
+    .spec-box { padding: 22px 32px; border-right: 1px solid rgba(255,255,255,0.16); }
+    .spec-num { font-size: 22px; font-weight: 900; }
+    .spec-lbl { font-size: 10px; color: #A1A1AA; margin-top: 4px; text-transform: uppercase; }
+    .banner { min-height: 75vh; display: flex; align-items: flex-end; padding: 60px 40px; background-size: cover; background-position: center; border-bottom: 1px solid rgba(255,255,255,0.16); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); background: #09090B; }
+    .tile { min-height: 440px; display: flex; flex-direction: column; justify-content: flex-end; padding: 36px; background-size: cover; background-position: center; border-right: 1px solid rgba(255,255,255,0.16); border-bottom: 1px solid rgba(255,255,255,0.16); }
     .app-shell { display: none; min-height: 100vh; position: relative; z-index: 10; }
-    .sidebar {
-      width: 255px; background: var(--glass-strong); backdrop-filter: blur(14px);
-      border-right: 1px solid var(--border); padding: 18px 12px;
-      display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0;
-    }
-    .nav-list { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
-    .nav-btn {
-      width: 100%; text-align: left; background: rgba(255,255,255,0.14); border: 1px solid var(--border-strong);
-      color: var(--white); padding: 11px 12px; border-radius: 8px; font-size: 13px; font-weight: 700;
-    }
+    .sidebar { width: 250px; background: rgba(9,9,11,0.94); border-right: 1px solid rgba(255,255,255,0.16); padding: 18px 14px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
+    .nav-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); color: #FFF; padding: 11px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 18px; }
     .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-    .topbar {
-      height: 64px; background: var(--glass-strong); backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border); padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    }
-    .dash-body { padding: 24px; max-width: 1350px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
-    .glass-card { background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
-    .kpi-num { font-size: 32px; font-weight: 800; color: var(--white); margin-top: 6px; }
+    .topbar { height: 64px; background: rgba(9,9,11,0.94); border-bottom: 1px solid rgba(255,255,255,0.16); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .dash { padding: 24px; max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    .card { background: rgba(12,12,15,0.86); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 20px; }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+    .kpi-num { font-size: 30px; font-weight: 900; margin-top: 6px; }
+    .drop { border: 2px dashed rgba(255,255,255,0.35); border-radius: 10px; padding: 30px; text-align: center; cursor: pointer; margin-top: 12px; background: rgba(255,255,255,0.03); }
+    .drop:hover { border-color: #FFF; }
+    .q-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-top: 14px; }
+    .q-item { background: #09090B; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px; font-size: 12px; }
+    .issue { background: #09090B; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #EF4444; border-radius: 8px; padding: 14px; margin-top: 10px; }
+    .issue.warn { border-left-color: #F59E0B; }
+    .issue.ok { border-left-color: #10B981; }
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
-    th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .tag-white { background: var(--white); color: var(--black); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-    .tag-dark { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid var(--border-strong); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-    .dropzone {
-      border: 2px dashed var(--border-strong); border-radius: 10px; padding: 32px;
-      text-align: center; background: rgba(255,255,255,0.03); cursor: pointer; margin-top: 14px;
-    }
-    .dropzone:hover { border-color: var(--white); background: rgba(255,255,255,0.07); }
-    .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
-    .doc-card { background: rgba(9,9,11,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-    .issue-box { background: rgba(9,9,11,0.9); border: 1px solid var(--border); border-left: 4px solid #EF4444; border-radius: 8px; padding: 14px; margin-top: 10px; }
-    .issue-box.warn { border-left-color: #F59E0B; }
-    .issue-box.ok { border-left-color: #10B981; }
-    .fix-note { background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 6px; margin-top: 8px; font-size: 12px; }
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; padding: 16px; }
-    .modal-card { background: #121215; border: 1px solid var(--border-strong); border-radius: 14px; padding: 26px; width: 100%; max-width: 440px; position: relative; }
-    .modal-close { position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--muted); font-size: 18px; }
-    .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
-    .field input, .field select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: #09090B; color: var(--white); font-size: 13px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; padding: 16px; }
+    .modal { background: #121215; border: 1px solid rgba(255,255,255,0.35); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; }
+    .modal input { width: 100%; padding: 10px; margin: 8px 0 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); background: #09090B; color: #FFF; }
   </style>
 </head>
 <body>
+  <video class="bg-video" autoplay muted loop playsinline><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" /></video>
 
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" />
-  </video>
-
-  <main id="landingView" class="landing-section">
+  <div id="landingView" class="wrap">
     <header class="top-nav">
       <div class="logo-wrap">
-        <div class="logo-mark">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 4H14C16.7614 4 19 6.23858 19 9C19 10.6356 18.2145 12.0878 17.0005 13C18.5186 13.9122 19.5 15.5811 19.5 17.5C19.5 20.5376 17.0376 23 14 23H5V4Z" fill="#09090B"/>
-            <path d="M9 12H16M16 12L13 9M16 12L13 15" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <div class="logo-title">BorderFlow</div>
-          <div class="logo-sub">BEITBRIDGE CUSTOMS HUB</div>
-        </div>
+        <div class="logo-mark"><strong style="color:#09090B; font-size:20px;">B→</strong></div>
+        <div><div class="logo-title">BorderFlow</div><div class="logo-sub">BEITBRIDGE CUSTOMS HUB</div></div>
       </div>
       <div style="display:flex; gap:10px;">
-  <section id="appShell" class="app-shell">
+        <button class="btn-outline" onclick="openM('loginM')">SIGN IN</button>
+        <button class="btn-white" onclick="goApp()">LAUNCH SYSTEM</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <span class="badge">● BEITBRIDGE • CHIRUNDU • FORBES • KAZUNGULA</span>
+        <h1>TACTICAL CROSS-BORDER AI DOCUMENT CHECKER.</h1>
+        <p>Built at the Beitbridge Border Post. Upload Commercial Invoices, Packing Lists, Bills of Lading, Certificates of Origin, and ZIMRA & SARS declarations to catch errors before border holds.</p>
+        <div style="display:flex; gap:12px;">
+          <button class="btn-white" onclick="goApp()">OPEN AI DOC CHECKER →</button>
+          <a href="#pics"><button class="btn-outline">SEE WHAT IT DOES ↓</button></a>
+        </div>
+      </div>
+      <div class="spec-strip">
+        <div class="spec-box"><div class="spec-num">AI DOC CHECKER</div><div class="spec-lbl">INVOICES, PACKING LISTS & CUSTOMS</div></div>
+        <div class="spec-box"><div class="spec-num">CROSS-CHECK</div><div class="spec-lbl">ZERO-ERROR DOCUMENT COMPARISON</div></div>
+        <div class="spec-box"><div class="spec-num">4 CORRIDORS</div><div class="spec-lbl">SA • ZW • ZM • MZ • BW</div></div>
+        <div class="spec-box"><div class="spec-num">24/7 LIVE</div><div class="spec-lbl">BEITBRIDGE HUB TELEMETRY</div></div>
+      </div>
+    </section>
+
+    <section id="pics" class="banner" style="background-image:linear-gradient(to top, rgba(9,9,11,0.92) 15%, rgba(9,9,11,0.25)), url('pic1.jpg');">
+      <div style="max-width:640px;">
+        <div style="font-size:11px; font-weight:800; letter-spacing:0.15em;">01 // AI DOCUMENT VERIFICATION</div>
+        <h2 style="font-size:34px; font-weight:900; margin:10px 0;">NEVER LOSE A TRUCK TO DOCUMENT ERRORS.</h2>
+        <p style="color:#E4E4E7; margin-bottom:18px;">Verify commercial invoices, packing lists, bills of lading, certificates of origin, and customs declarations across Beitbridge and Musina.</p>
+        <button class="btn-white" onclick="goApp()">OPEN AI DOC CHECKER →</button>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="tile" style="background-image:linear-gradient(to top, rgba(9,9,11,0.94) 20%, rgba(9,9,11,0.25)), url('pic2.jpg');">
+        <div style="font-size:11px; font-weight:800;">02 // EXECUTIVE COMMAND</div>
+        <h3 style="font-size:26px; font-weight:900; margin:8px 0;">CENTRALIZED HUB CONTROL</h3>
+        <p style="color:#E4E4E7;">Manage clearing accounts, audit history, and downloadable verification reports from one dashboard.</p>
+      </div>
+      <div class="tile" style="background-image:linear-gradient(to top, rgba(9,9,11,0.94) 20%, rgba(9,9,11,0.25)), url('pic3.jpg');">
+        <div style="font-size:11px; font-weight:800;">03 // AI DOCUMENT SHIELD</div>
+        <h3 style="font-size:26px; font-weight:900; margin:8px 0;">INSTANT INVOICE & BILL OF ENTRY CHECK</h3>
+        <p style="color:#E4E4E7;">Detect missing fields, quantity mismatches, wrong dates, and reference errors before ZIMRA or SARS submission.</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="appShell" class="app-shell">
     <aside class="sidebar">
       <div>
         <div class="logo-wrap">
-          <div class="logo-mark">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M5 4H14C16.7614 4 19 6.23858 19 9C19 10.6356 18.2145 12.0878 17.0005 13C18.5186 13.9122 19.5 15.5811 19.5 17.5C19.5 20.5376 17.0376 23 14 23H5V4Z" fill="#09090B"/>
-              <path d="M9 12H16M16 12L13 9M16 12L13 15" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <div class="logo-title">BorderFlow</div>
-            <div class="logo-sub">BEITBRIDGE CUSTOMS HUB</div>
-          </div>
+          <div class="logo-mark"><strong style="color:#09090B; font-size:18px;">B→</strong></div>
+          <div><div class="logo-title">BorderFlow</div><div class="logo-sub">BEITBRIDGE CUSTOMS HUB</div></div>
         </div>
-
-        <div class="nav-list">
-          <button class="nav-btn">1. AI Document Checker</button>
-        </div>
-
-        <div style="margin-top:18px; padding:12px; border:1px solid var(--border); border-radius:8px; font-size:11.5px; color:var(--muted); line-height:1.7;">
-          <div style="font-weight:800; color:var(--white); margin-bottom:6px; text-transform:uppercase;">Supported Documents</div>
-          ✓ Commercial Invoices<br/>
-          ✓ Packing Lists<br/>
-          ✓ Bills of Lading<br/>
-          ✓ Certificates of Origin<br/>
-          ✓ Customs Declarations<br/>
-          ✓ Consignment Notes<br/>
-          ✓ Import/Export Docs
-        </div>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="btn-outline" style="width:100%; font-size:11px;" onclick="openModal('aiKeyModal')">⚙ CONNECT GEMINI AI</button>
-        <button class="btn-outline" style="width:100%; font-size:11px;" onclick="exitApp()">← BACK TO WEBSITE</button>
-      </div>
-    </aside>
-
-    <div class="main-col">
-      <header class="topbar">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="tag-dark" id="hubEmail">LIVE HUB • owner@beitbridgehub.co.zw</span>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn-outline" onclick="loadSampleDocs()">LOAD SAMPLE PACK</button>
-          <button class="btn-white" id="checkBtn" onclick="runAICheck()">RUN AI DOC CHECK</button>
-        </div>
-      </header>
-
-      <div class="dash-body">
-        <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <h2 style="font-size:22px; font-weight:900;">1. AI Document Checker (Live Cloud)</h2>
-            <p style="font-size:13px; color:var(--muted); margin-top:4px;">Upload PDF, JPG, or PNG trade documents to detect missing fields, errors, and document-to-document mismatches.</p>
-          </div>
-          <span class="tag-white">● AI CHECKER ACTIVE</span>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="glass-card">
-            <div class="kpi-label">DOCUMENTS UPLOADED</div>
-            <div class="kpi-num" id="kpiDocs">0</div>
-          </div>
-          <div class="glass-card">
-            <div class="kpi-label">PROBLEMS DETECTED</div>
-            <div class="kpi-num" id="kpiProblems">0</div>
-          </div>
-          <div class="glass-card">
-            <div class="kpi-label">CHECKS COMPLETED</div>
-            <div class="kpi-num" id="kpiHistory">0</div>
-          </div>
-          <div class="glass-card">
-            <div class="kpi-label">COMPLIANCE SCORE</div>
-            <div class="kpi-num" id="kpiScore">—</div>
-          </div>
-        </div>
-
-        <div class="glass-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div>
-              <h3 style="font-size:16px; font-weight:800;">Upload Shipping & Customs Documents (PDF, JPG, PNG)</h3>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">Upload multiple files together (e.g., Commercial Invoice + Packing List + Customs Declaration) for cross-document comparison.</p>
-            </div>
-            <button class="btn-outline" style="padding:8px 14px; font-size:11px;" onclick="clearDocs()">CLEAR FILES</button>
-          </div>
-
-          <div class="dropzone" onclick="document.getElementById('docInput').click()">
-            <input type="file" id="docInput" multiple accept=".pdf,image/jpeg,image/png" style="display:none;" onchange="handleUpload(event)" />
-            <div style="font-size:15px; font-weight:800; color:var(--white);">+ CLICK TO SELECT PDF, JPG, OR PNG DOCUMENTS</div>
-            <div style="font-size:12px; color:var(--muted); margin-top:6px;">Commercial Invoices • Packing Lists • Bills of Lading • Certificates of Origin • ZIMRA/SARS Declarations • Consignment Notes</div>
-          </div>
-
-          <div id="docQueue" class="doc-list"></div>
-        </div>
-
-        <div id="reportSection" class="glass-card" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-            <div>
-              <h3 style="font-size:18px; font-weight:900;">AI Checking Results & Suggested Corrections</h3>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;" id="reportMeta"></p>
-            </div>
-            <button class="btn-white" onclick="downloadCheckingReport()">⬇ DOWNLOAD CHECKING REPORT</button>
-          </div>
-
-          <div id="issuesList"></div>
-
-          <h4 style="font-size:14px; font-weight:800; margin-top:20px; text-transform:uppercase;">Document-to-Document Comparison</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Field Checked</th>
-                <th>Values Found Across Documents</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody id="compareBody"></tbody>
-          </table>
-
-          <h4 style="font-size:14px; font-weight:800; margin-top:20px; text-transform:uppercase;">Extracted Text & Document Quality</h4>
-          <pre id="extractedBox" style="margin-top:8px; background:#09090B; border:1px solid var(--border); padding:12px; border-radius:8px; font-size:12px; color:var(--muted); white-space:pre-wrap; max-height:200px; overflow-y:auto;"></pre>
-        </div>
-
-        <div class="glass-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <h3 style="font-size:16px; font-weight:800;">Document Checking History</h3>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">Previous document checks saved to your workspace.</p>
-            </div>
-            <button class="btn-outline" style="padding:7px 12px; font-size:11px;" onclick="clearHistory()">CLEAR HISTORY</button>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Date / Time</th>
-                <th>Reference</th>
-                <th>Documents</th>
-                <th>Issues</th>
-                <th>Score</th>
-                <th>Report</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody">
-              <tr><td colspan="6" style="color:var(--muted);">No checks run yet. Upload documents above and click RUN AI DOC CHECK.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Sign In Modal -->
-  <div id="loginModal" class="modal-bg">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
-      <h3 style="font-size:19px; font-weight:900; margin-bottom:4px;">Sign In to BorderFlow</h3>
-      <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Beitbridge Customs Hub</p>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="loginEmail" value="owner@beitbridgehub.co.zw" />
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" value="••••••••••••" />
-      </div>
-      <button class="btn-white" style="width:100%;" onclick="doLogin()">ENTER SYSTEM →</button>
-    </div>
-  </div>
-
-  <!-- Gemini AI Key Modal -->
-  <div id="aiKeyModal" class="modal-bg">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeModal('aiKeyModal')">✕</button>
-      <h3 style="font-size:19px; font-weight:900; margin-bottom:4px;">Connect Google Gemini AI</h3>
-      <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Paste your free Gemini API key from ://google.com so the checker can read photos (JPG/PNG) and scanned PDFs.</p>
-      <div class="field">
-        <label>Gemini API Key</label>
-        <input type="password" id="geminiKeyInput" placeholder="AIzaSy..." />
-      </div>
-      <button class="btn-white" style="width:100%;" onclick="saveGeminiKey()">SAVE API KEY</button>
-    </div>
-  </div>
-
-  <script>
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cloudflare.com';
-    }
-
-    let docs = [];
-    let latestReport = null;
-    let historyList = JSON.parse(localStorage.getItem('bf_history') || '[]');
-
-    function enterApp() {
-      document.getElementById('landingView').style.display = 'none';
-      document.getElementById('appShell').style.display = 'flex';
-      renderHistory();
-      refreshKPIs();
-    }
-    function exitApp() {
-      document.getElementById('appShell').style.display = 'none';
-      document.getElementById('landingView').style.display = 'block';
-    }
-    function openModal(id) {
-      if (id === 'aiKeyModal') {
-        document.getElementById('geminiKeyInput').value = localStorage.getItem('bf_gemini_key') || '';
-      }
-      document.getElementById(id).style.display = 'flex';
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-    function doLogin() {
-      const email = document.getElementById('loginEmail').value;
-      document.getElementById('hubEmail').textContent = 'LIVE HUB • ' + email;
-      closeModal('loginModal');
-      enterApp();
-    }
-    function saveGeminiKey() {
-      const key = document.getElementById('geminiKeyInput').value.trim();
-      localStorage.setItem('bf_gemini_key', key);
-      closeModal('aiKeyModal');
-      alert('Gemini AI key saved! You can now upload photos and PDFs.');
-    }
-
-    function detectType(name) {
-      const n = name.toLowerCase();
-      if (n.includes('inv')) return 'Commercial Invoice';
-      if (n.includes('pack') || n.includes('pl')) return 'Packing List';
-      if (n.includes('bol') || n.includes('lading')) return 'Bill of Lading';
-      if (n.includes('origin') || n.includes('coo') || n.includes('sadc')) return 'Certificate of Origin';
-      if (n.includes('zimra') || n.includes('sars') || n.includes('decl') || n.includes('form21')) return 'Customs Declaration';
-      if (n.includes('consign') || n.includes('cmr')) return 'Consignment Note';
-      return 'Commercial Invoice';
-    }
-
-    async function handleUpload(e) {
-      const files = Array.from(e.target.files);
-      for (const file of files) {
-        if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
-          alert('Only PDF, JPG, and PNG files are supported.');
-          continue;
-        }
-        const dataUrl = await new Promise(res => {
-          const r = new FileReader();
-          r.onload = () => res(r.result);
-          r.readAsDataURL(file);
-        });
-        let text = '';
-        if (file.type === 'application/pdf' && window.pdfjsLib) {
-          try {
-            const buf = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-            for (let p = 1; p <= Math.min(pdf.numPages, 8); p++) {
-              const page = await pdf.getPage(p);
-              const tc = await page.getTextContent();
-              text += tc.items.map(i => i.str).join(' ') + '\n';
-            }
-          } catch (_) {}
-        }
-        docs.push({
-          name: file.name,
-          type: file.type,
-          sizeKB: Math.round(file.size / 1024),
-          docType: detectType(file.name),
-          base64: dataUrl.split(',')[1],
-          text: text.trim()
-        });
-      }
-      e.target.value = '';
-      renderDocs();
-      refreshKPIs();
-    }
-
-    function renderDocs() {
-      const box = document.getElementById('docQueue');
-      const types = ['Commercial Invoice', 'Packing List', 'Bill of Lading', 'Certificate of Origin', 'Customs Declaration', 'Consignment Note', 'Import/Export Supporting Doc'];
-      box.innerHTML = docs.map((d, i) => `
-        <div class="doc-card">
-          <div style="display:flex; justify-content:space-between; gap:8px;">
-            <strong style="font-size:13px; word-break:break-all;">${d.name}</strong>
-            <button onclick="docs.splice(${i},1); renderDocs(); refreshKPIs();" style="background:none; border:none; color:#FCA5A5;">✕</button>
-          </div>
-          <div style="font-size:11px; color:var(--muted); margin:4px 0 8px;">${d.sizeKB} KB ${d.sizeKB < 25 ? '• Low quality warning' : '• Quality OK'}</div>
-          <select style="width:100%; padding:6px; background:#121215; color:#fff; border:1px solid var(--border-strong); border-radius:6px; font-size:12px;" onchange="docs[${i}].docType=this.value">
-            ${types.map(t => `<option ${d.docType === t ? 'selected' : ''}>${t}</option>`).join('')}
-          </select>
-        </div>
-      `).join('');
-    }
-
-    function clearDocs() {
-      docs = [];
-      renderDocs();
-      refreshKPIs();
-    }
-
-    function loadSampleDocs() {
-      docs = [
-        {
-          name: 'INV-2026-8841_Commercial_Invoice.pdf',
-          type: 'application/pdf',
-          sizeKB: 185,
-          docType: 'Commercial Invoice',
-          base64: null,
-          text: 'COMMERCIAL INVOICE | No: INV-2026-8841 | Date: 2026-11-15 | Exporter: Gauteng Mining Supplies (Pty) Ltd | Consignee: Harare Mining Corp Ltd | Qty: 48 Units | Gross Weight: 2,400 KG | Value: $21,600.00'
-        },
-        {
-          name: 'PL-2026-8841_Packing_List.pdf',
-          type: 'application/pdf',
-          sizeKB: 160,
-          docType: 'Packing List',
-          base64: null,
-          text: 'PACKING LIST | Ref: INV-2026-8841 | Date: 2026-11-16 | Exporter: Gauteng Mining Supplies (Pty) Ltd | Consignee: Harare Mining Corporation | Qty: 45 Units | Gross Weight: 2,250 KG'
-        },
-        {
-          name: 'ZIMRA_Form21_Declaration.png',
-          type: 'image/png',
-          sizeKB: 310,
-          docType: 'Customs Declaration',
-          base64: null,
-          text: 'ZIMRA DECLARATION | Invoice Ref: INV-2026-8840 | Qty: 48 Units | Value: $21,600.00 | Certificate of Origin: MISSING'
-        }
-      ];
-      renderDocs();
-      refreshKPIs();
-    }
-
-    async function runAICheck() {
-      if (!docs.length) {
-        alert('Please upload PDF, JPG, or PNG documents first (or click LOAD SAMPLE PACK).');
-        return;
-      }
-      const btn = document.getElementById('checkBtn');
-      btn.disabled = true;
-      btn.textContent = 'CHECKING DOCUMENTS...';
-
-      const apiKey = localStorage.getItem('bf_gemini_key');
-      let result = null;
-
-      try {
-        if (apiKey && docs.some(d => d.base64)) {
-          const parts = [{
-            text: `You are an international trade & customs document auditor. Check these documents (${docs.map(d => d.name + ' as ' + d.docType).join(', ')}) for missing info, wrong values, quality issues, and cross-document mismatches (quantities, dates, names, reference numbers). Return ONLY JSON: {"ref":"string","score":number,"issues":[{"level":"err"|"warn"|"ok","title":"string","why":"string","fix":"string"}],"comparisons":[{"field":"string","values":"string","status":"MATCH"|"MISMATCH"|"MISSING"}]}`
-          }];
-          docs.forEach(d => {
-            if (d.base64) parts.push({ inline_data: { mime_type: d.type, data: d.base64 } });
-            else if (d.text) parts.push({ text: d.docType + ': ' + d.text });
-          });
-          const res = await fetch('https://googleapis.com' + encodeURIComponent(apiKey), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } })
-          });
-          if (!res.ok) throw new Error('Gemini API error ' + res.status);
-          const data = await res.json();
-          result = JSON.parse(data.candidates[0].content.parts[0].text);
-        } else {
-          result = localAudit(docs);
-        }
-      } catch (err) {
-        alert('AI Note: ' + err.message + ' — Running local verification.');
-        result = localAudit(docs);
-      }
-
-      latestReport = {
-        id: 'CHK-' + Date.now().toString().slice(-5),
-        time: new Date().toLocaleString(),
-        ref: result.ref || 'BB-' + Math.floor(1000 + Math.random() * 9000),
-        docCount: docs.length,
-        docNames: docs.map(d => d.name + ' (' + d.docType + ')'),
-        score: result.score,
-        issues: result.issues,
-        comparisons: result.comparisons,
-        extracted: docs.map(d => '--- ' + d.docType + ': ' + d.name + ' ---\n' + (d.text || '[Image scanned by Gemini AI]')).join('\n\n')
-      };
-
-      showReport(latestReport);
-      historyList.unshift(latestReport);
-      localStorage.setItem('bf_history', JSON.stringify(historyList.slice(0, 25)));
-      renderHistory();
-      refreshKPIs();
-
-      btn.disabled = false;
-      btn.textContent = 'RUN AI DOC CHECK';
-    }
-
-    function localAudit(list) {
-      const all = list.map(d => d.text || '').join('\n');
-      const issues = [];
-      const comparisons = [];
-
-      if (all.includes('48 Units') && all.includes('45 Units')) {
-        issues.push({
-          level: 'err',
-          title: 'Quantity & Weight Mismatch (Invoice vs Packing List)',
-          why: 'Commercial Invoice shows 48 Units (2,400 KG), but Packing List shows 45 Units (2,250 KG).',
-          fix: 'Verify physical cargo count and update either the Packing List to 48 Units or the Commercial Invoice to 45 Units.'
-        });
-        comparisons.push({ field: 'Quantity & Weight', values: 'Invoice: 48 Units (2,400 KG) vs Packing List: 45 Units (2,250 KG)', status: 'MISMATCH' });
-      }
-      if (all.includes('INV-2026-8841') && all.includes('INV-2026-8840')) {
-        issues.push({
-          level: 'err',
-          title: 'Invoice Reference Number Mismatch',
-          why: 'ZIMRA Declaration cites INV-2026-8840 while the Commercial Invoice is INV-2026-8841.',
-          fix: 'Correct the Invoice Reference on the ZIMRA Customs Declaration to INV-2026-8841.'
-        });
-        comparisons.push({ field: 'Invoice Number', values: 'Invoice: INV-2026-8841 vs Declaration: INV-2026-8840', status: 'MISMATCH' });
-      }
-      if (all.includes('2026-11-15') && all.includes('2026-11-16')) {
-        issues.push({
-          level: 'warn',
-          title: 'Date & Consignee Name Variance',
-          why: 'Invoice date is 2026-11-15 ("Harare Mining Corp Ltd") while Packing List is 2026-11-16 ("Harare Mining Corporation").',
-          fix: 'Use the exact same legal consignee name ("Harare Mining Corp Ltd") on all documents.'
-        });
-        comparisons.push({ field: 'Date & Consignee', values: '2026-11-15 / Corp Ltd vs 2026-11-16 / Corporation', status: 'MISMATCH' });
-      }
-      if (!list.some(d => d.docType === 'Certificate of Origin') || all.includes('MISSING')) {
-        issues.push({
-          level: 'warn',
-          title: 'Missing Certificate of Origin',
-          why: 'No SADC Certificate of Origin was included in the document pack.',
-          fix: 'Attach a stamped Certificate of Origin to qualify for SADC preferential duty.'
-        });
-        comparisons.push({ field: 'Certificate of Origin', values: 'Missing from upload pack', status: 'MISSING' });
-      }
-      list.forEach(d => {
-        if (d.type.startsWith('image/') && !d.text && !localStorage.getItem('bf_gemini_key')) {
-          issues.push({
-            level: 'warn',
-            title: 'Connect Gemini AI Key to Read Image: ' + d.name,
-            why: 'Image files (JPG/PNG) need your Gemini API key to extract text.',
-            fix: 'Click "CONNECT GEMINI AI" in the bottom-left sidebar and paste your API key.'
-          });
-        }
-      });
-      if (!issues.length) {
-        issues.push({
-          level: 'ok',
-          title: 'All Uploaded Documents Passed Initial Check',
-          why: 'No contradictions detected across ' + list.length + ' document(s).',
-          fix: 'Ready for final human review and customs submission.'
-        });
-        comparisons.push({ field: 'Document Pack', values: list.length + ' document(s) checked', status: 'MATCH' });
-      }
-      const errs = issues.filter(i => i.level === 'err').length;
-      const warns = issues.filter(i => i.level === 'warn').length;
-      return {
-        ref: all.includes('INV-2026-8841') ? 'INV-2026-8841' : 'BB-' + Math.floor(1000 + Math.random() * 9000),
-        score: Math.max(20, 100 - errs * 28 - warns * 10),
-        issues,
-        comparisons
-      };
-    }
-
-    function showReport(rep) {
-      document.getElementById('reportSection').style.display = 'block';
-      const problemCount = rep.issues.filter(i => i.level !== 'ok').length;
-      document.getElementById('kpiProblems').textContent = problemCount;
-      document.getElementById('kpiScore').textContent = rep.score + '%';
-      document.getElementById('reportMeta').textContent = 'Report ' + rep.id + ' • Ref: ' + rep.ref + ' • ' + rep.time;
-
-      document.getElementById('issuesList').innerHTML = rep.issues.map(i => `
-        <div class="issue-box ${i.level === 'warn' ? 'warn' : (i.level === 'ok' ? 'ok' : '')}">
-          <div style="font-weight:800; font-size:14px;">${i.title}</div>
-          <div style="font-size:13px; color:var(--muted); margin-top:4px;">${i.why}</div>
-          <div class="fix-note"><strong>Suggested Correction:</strong> ${i.fix}</div>
-        </div>
-      `).join('');
-
-      document.getElementById('compareBody').innerHTML = rep.comparisons.map(c => `
-        <tr>
-          <td><strong>${c.field}</strong></td>
-          <td>${c.values}</td>
-          <td><span class="${c.status === 'MATCH' ? 'tag-white' : 'tag-dark'}">${c.status}</span></td>
-        </tr>
-      `).join('');
-
-      document.getElementById('extractedBox').textContent = rep.extracted;
-    }
-
-    function downloadCheckingReport() {
-      if (!latestReport) return;
-      const txt = [
-        'BORDERFLOW — AI DOCUMENT CHECKING REPORT',
-        'Report ID: ' + latestReport.id,
-        'Date: ' + latestReport.time,
-        'Shipment Ref: ' + latestReport.ref,
-        'Compliance Score: ' + latestReport.score + '%',
-        '',
-        'DOCUMENTS CHECKED:',
-        ...latestReport.docNames.map(n => '- ' + n),
-        '',
-        'DETECTED ISSUES & SUGGESTED CORRECTIONS:',
-        ...latestReport.issues.map((i, idx) => `${idx + 1}. ${i.title}\n   Problem: ${i.why}\n   Suggested Fix: ${i.fix}\n`),
-        'COMPARISON SUMMARY:',
-        ...latestReport.comparisons.map(c => `- ${c.field}: ${c.values} [${c.status}]`)
-      ].join('\n');
-
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }));
-      a.download = 'BorderFlow_Check_' + latestReport.ref + '.txt';
-      a.click();
-    }
-
-    function renderHistory() {
-      const tbody = document.getElementById('historyBody');
-      if (!historyList.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);">No checks run yet. Upload documents above and click RUN AI DOC CHECK.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = historyList.map((h, idx) => {
-        const cnt = h.issues.filter(i => i.level !== 'ok').length;
-        return `
-          <tr>
-            <td>${h.time}</td>
-            <td><strong>${h.ref}</strong></td>
-            <td>${h.docCount} doc(s)</td>
-            <td>${cnt} problem(s)</td>
-            <td><strong>${h.score}%</strong></td>
-            <td><button class="btn-outline" style="padding:5px 10px; font-size:11px;" onclick="showReport(historyList[${idx}])">VIEW</button></td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function clearHistory() {
-      historyList = [];
-      localStorage.removeItem('bf_history');
-      renderHistory();
-      refreshKPIs();
-    }
-
-    function refreshKPIs() {
-      document.getElementById('kpiDocs').textContent = docs.length;
-      document.getElementById('kpiHistory').textContent = historyList.length;
-    }
-  </script>
-</body>
-</html>
