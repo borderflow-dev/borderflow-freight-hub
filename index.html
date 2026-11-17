@@ -9,8 +9,8 @@
   <style>
     :root {
       --bg: #09090B;
-      --glass: rgba(12, 12, 15, 0.84);
-      --glass-strong: rgba(9, 9, 11, 0.92);
+      --glass: rgba(12, 12, 15, 0.86);
+      --glass-strong: rgba(9, 9, 11, 0.94);
       --border: rgba(255, 255, 255, 0.16);
       --border-strong: rgba(255, 255, 255, 0.35);
       --text: #FAFAFA;
@@ -23,7 +23,7 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+    body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
     .logo-wrap { display: flex; align-items: center; gap: 12px; }
     .logo-mark {
       width: 42px; height: 42px; border-radius: 11px; background: var(--white);
@@ -48,8 +48,7 @@
       z-index: 0; filter: contrast(110%) brightness(0.55); pointer-events: none;
     }
 
-    /* Landing View */
-    #landingView { position: relative; z-index: 10; }
+    #landingView { position: relative; z-index: 10; display: block; }
     .top-nav {
       position: sticky; top: 0; z-index: 100;
       display: flex; justify-content: space-between; align-items: center; padding: 16px 40px;
@@ -72,7 +71,7 @@
     .spec-num { font-size: 24px; font-weight: 900; color: var(--white); letter-spacing: -0.02em; }
     .spec-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #A1A1AA; text-transform: uppercase; margin-top: 4px; }
     .showcase-banner {
-      min-height: 78vh; display: flex; align-items: flex-end; padding: 64px 40px;
+      min-height: 75vh; display: flex; align-items: flex-end; padding: 64px 40px;
       background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
     }
     .showcase-grid {
@@ -80,7 +79,7 @@
       border-bottom: 1px solid var(--border); background: #09090B;
     }
     .showcase-tile {
-      min-height: 460px; display: flex; flex-direction: column; justify-content: flex-end;
+      min-height: 440px; display: flex; flex-direction: column; justify-content: flex-end;
       padding: 40px; background-size: cover; background-position: center;
       border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
     }
@@ -88,7 +87,6 @@
     .sec-title { font-size: 34px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase; margin-bottom: 12px; }
     .sec-desc { color: #E4E4E7; font-size: 14px; line-height: 1.6; max-width: 520px; margin-bottom: 20px; }
 
-    /* App Shell (Single Focused Dashboard) */
     .app-shell { display: none; min-height: 100vh; position: relative; z-index: 10; }
     .sidebar {
       width: 260px; background: var(--glass-strong); backdrop-filter: blur(14px);
@@ -121,7 +119,6 @@
     .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
     .kpi-num { font-size: 32px; font-weight: 900; color: var(--white); margin-top: 6px; }
 
-    /* Dropzone & File Cards */
     .dropzone {
       border: 2px dashed var(--border-strong); border-radius: 12px; padding: 34px 20px;
       text-align: center; background: rgba(255, 255, 255, 0.03); cursor: pointer; transition: 0.2s;
@@ -140,7 +137,6 @@
       background: #121215; color: var(--white); font-size: 12px;
     }
 
-    /* Audit Report & Findings */
     .audit-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
     @media (max-width: 1024px) { .audit-grid { grid-template-columns: 1fr; } }
     .finding-card {
@@ -158,3 +154,4 @@
     .pill-passed { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.5); }
     .finding-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
     .finding-fix {
+      font-size: 12px; color: var(--white); background: rgba(255, 255, 255, 0.06);
