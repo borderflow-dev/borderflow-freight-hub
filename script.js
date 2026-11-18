@@ -90,7 +90,7 @@ async function initWorkspace() {
   if (!user) return;
   currentUser = user;
 
-  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('landingView').style.display = 'none';
   document.getElementById('appShell').style.display = 'flex';
 
   const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
