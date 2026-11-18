@@ -358,8 +358,18 @@
   <option value="Certificate of Origin">Certificate of Origin</option>
   <option value="Other">Other</option>
 </select>  
-                <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
-                <div id="uploadStatus" class="status">No document selected.</div>
+              <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
+
+<button
+  type="button"
+  class="btn btn-primary"
+  id="uploadDocumentBtn"
+>
+  Upload Document
+</button>
+
+<div id="uploadStatus" class="status">No document selected.</div>
+               
               </div>
               <p class="muted">Select your shipment details and document to prepare it for secure upload.</p>
             </div>
@@ -614,17 +624,141 @@
         ". File is ready for the document-processing stage.";
     });
 
-    async function checkExistingSession() {
-      if (!supabaseClient) return;
 
-      const { data, error } = await supabaseClient.auth.getSession();
+document.getElementById("uploadDocumentBtn").addEventListener("click", async function() {
+  const status = document.getElementById("uploadStatus");
+  const fileInput = document.getElementById("documentInput");
+  const file = fileInput.files[0];
+  const shipmentRef = document.getElementById("shipmentRef").value.trim();
+  const docType = document.getElementById("documentType").value;
+  const button = this;
 
-      if (!error && data.session) {
-        showWorkspace(data.session.user);
-      }
+  if (!supabaseClient) {
+    status.textContent = "Supabase is not connected.";
+    return;
+  }
+
+  if (!shipmentRef || !docType || !file) {
+    status.textContent = "Enter the shipment reference, choose a document type and select a file.";
+    return;
+  }
+
+  const allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+  const fileName = file.name.toLowerCase();
+  const validFile = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+  if (!validFile) {
+    status.textContent = "Please select a PDF, JPG or PNG file.";
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    status.textContent = "File is too large. Maximum size is 10 MB.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Preparing secure upload...";
+
+  let uploadedPath = null;
+
+  try {
+    const { data: userData, error: userError } =
+      await supabaseClient.auth.getUser();
+
+    if (userError || !userData.user) {
+      throw new Error("Please sign in again.");
     }
 
-    checkExistingSession();
+    const user = userData.user;
+
+    const { data: membership, error: membershipError } =
+      await supabaseClient
+        .from("company_members")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+    if (membershipError) throw membershipError;
+
+    if (!membership) {
+      throw new Error("No company membership was found.");
+    }
+
+    const safeName = file.name.replace(/[^\w.-]/g, "_");
+
+    uploadedPath =
+      membership.company_id + "/" +
+      crypto.randomUUID() + "-" + safeName;
+
+    status.textContent = "Uploading document...";
+
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from("freight-documents")
+      .upload(uploadedPath, file, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    status.textContent = "Saving document information...";
+
+    const { error: recordError } = await supabaseClient
+      .from("documents")
+      .insert({
+        company_id: membership.company_id,
+        shipment_ref: shipmentRef,
+        doc_type: docType,
+        file_name: file.name,
+        file_path: uploadedPath,
+        file_type: file.type || null,
+        uploaded_by: user.id
+      });
+
+    if (recordError) {
+      await supabaseClient.storage
+        .from("freight-documents")
+        .remove([uploadedPath]);
+
+      uploadedPath = null;
+      throw recordError;
+    }
+
+    status.textContent =
+      "Success! Your document has been uploaded and saved securely.";
+
+    fileInput.value = "";
+    document.getElementById("shipmentRef").value = "";
+    document.getElementById("documentType").value = "";
+
+  } catch (error) {
+    console.error("Document upload error:", error);
+    status.textContent = "Upload failed: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+    async function checkExistingSession() {
+  if (!supabaseClient) return;
+
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (!error && data.session) {
+    showWorkspace(data.session.user);
+  }
+}
+
+checkExistingSession();
+
+
+  
+    
+    
+    
   </script>
 
 </body>
