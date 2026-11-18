@@ -493,3 +493,34 @@
 
 </body>
 </html>
+<!-- BORDERFLOW AUTHENTICATION WINDOW -->
+<div id="authModal" style="display:none; position:fixed; inset:0; background:#101d35cc; z-index:9999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; padding:30px; border-radius:14px; width:100%; max-width:430px;">
+    <h2 id="authTitle">Welcome to BorderFlow</h2>
+    <p id="authDescription">Sign in to your workspace.</p>
+
+    <form id="authForm">
+      <div id="registerFields" style="display:none;">
+        <input id="fullName" type="text" placeholder="Full name" style="width:100%;padding:12px;margin:8px 0;">
+        <input id="companyName" type="text" placeholder="Company name" style="width:100%;padding:12px;margin:8px 0;">
+        <input id="phone" type="tel" placeholder="WhatsApp number" style="width:100%;padding:12px;margin:8px 0;">
+      </div>
+
+      <input id="authEmail" type="email" placeholder="Email address" required style="width:100%;padding:12px;margin:8px 0;">
+      <input id="authPassword" type="password" placeholder="Password (at least 8 characters)" required minlength="8" style="width:100%;padding:12px;margin:8px 0;">
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:12px;">Continue</button>
+      <p id="authMessage" role="status"></p>
+    </form>
+
+    <p>
+      <span id="authSwitchText">New to BorderFlow?</span>
+      <button type="button" id="authSwitch" class="btn btn-outline">Create account</button>
+    </p>
+
+    <button type="button" class="btn btn-outline" onclick="closeAuth()">Close</button>
+  </div>
+</div>
+
+
+
