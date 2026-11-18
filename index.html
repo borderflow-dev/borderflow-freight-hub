@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BorderFlow | Freight & Customs Management</title>
-  <meta name="description" content="Simplify cross-border freight, customs documentation and shipment management.">
+  <meta name="description" content="Manage freight, shipments and customs operations with BorderFlow.">
 
   <style>
     :root {
@@ -27,14 +27,15 @@
       background: var(--light);
     }
 
-    button { cursor: pointer; font: inherit; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
 
     .topbar {
-      height: 76px;
+      min-height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 7%;
+      padding: 12px 7%;
       background: white;
       border-bottom: 1px solid var(--border);
     }
@@ -46,7 +47,6 @@
     }
 
     .brand span { color: var(--blue); }
-
     .top-actions { display: flex; gap: 12px; }
 
     .btn {
@@ -57,7 +57,11 @@
     }
 
     .btn-primary { background: var(--blue); color: white; }
-    .btn-outline { background: white; color: var(--navy); border: 1px solid var(--border); }
+    .btn-outline {
+      background: white;
+      color: var(--navy);
+      border: 1px solid var(--border);
+    }
 
     .hero {
       padding: 95px 8%;
@@ -84,10 +88,7 @@
       color: #d3deef;
       font-size: 18px;
       line-height: 1.7;
-      max-width: 620px;
     }
-
-    .hero .btn { margin-top: 20px; }
 
     .features {
       padding: 65px 8%;
@@ -96,16 +97,15 @@
       gap: 22px;
     }
 
-    .feature {
-      padding: 28px;
+    .feature, .stat, .panel {
       background: white;
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 12px;
+      padding: 24px;
     }
 
+    .feature p, .muted { color: var(--muted); line-height: 1.6; }
     .feature .symbol { font-size: 28px; }
-    .feature h3 { margin-bottom: 10px; }
-    .feature p { color: var(--muted); line-height: 1.6; }
 
     .footer {
       padding: 25px 8%;
@@ -114,10 +114,7 @@
       color: var(--muted);
     }
 
-    /* Application workspace */
-
     #appShell { display: none; min-height: 100vh; }
-
     .app-layout { display: flex; min-height: 100vh; }
 
     .sidebar {
@@ -164,13 +161,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
 
     .app-header button { margin-left: 8px; }
-
     .content { padding: 32px; max-width: 1200px; margin: auto; }
-
-    .muted { color: var(--muted); }
 
     .stats {
       display: grid;
@@ -179,19 +174,9 @@
       margin: 25px 0;
     }
 
-    .stat, .panel {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 22px;
-    }
-
     .stat p { color: var(--muted); margin: 0 0 12px; }
     .stat h2 { margin: 0; font-size: 30px; }
-
     .panel { margin-top: 20px; }
-
-    .panel h3 { margin-top: 0; }
 
     .upload-area {
       border: 2px dashed #b8c8e2;
@@ -214,15 +199,35 @@
     .section-view { display: none; }
     .section-view.active { display: block; }
 
-    .table-wrap { overflow-x: auto; }
-
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 15px 10px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
+    #authModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #101d35cc;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    th { color: var(--muted); font-size: 13px; }
+
+    .auth-card {
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .auth-card input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    .auth-card button { margin-top: 10px; }
+    #authMessage { min-height: 22px; color: #2455a5; }
 
     @media (max-width: 850px) {
       .features, .stats { grid-template-columns: repeat(2, 1fr); }
@@ -230,7 +235,7 @@
     }
 
     @media (max-width: 600px) {
-      .topbar { padding: 0 18px; }
+      .topbar { padding: 15px 18px; }
       .hero { padding: 65px 22px; }
       .features, .stats { grid-template-columns: 1fr; padding: 25px 18px; }
       .app-layout { display: block; }
@@ -238,24 +243,19 @@
       .sidebar .brand { padding-bottom: 15px; }
       .nav-item { display: inline-block; width: auto; }
       .content { padding: 20px 15px; }
-      .app-header { padding: 15px; }
+      .app-header { padding: 15px; flex-wrap: wrap; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- PUBLIC LANDING PAGE -->
   <div id="landingView">
     <header class="topbar">
       <div class="brand">Border<span>Flow</span></div>
       <div class="top-actions">
-        <button class="btn btn-outline" onclick="openAuth('login')">
-          Sign In
-        </button>
-        <button class="btn btn-primary" onclick="showWorkspace()">
-          Launch System
-        </button>
+        <button class="btn btn-outline" onclick="openAuth('login')">Sign In</button>
+        <button class="btn btn-primary" onclick="openAuth('login')">Launch System</button>
       </div>
     </header>
 
@@ -264,13 +264,8 @@
         <div class="hero-content">
           <div class="eyebrow">SMARTER CROSS-BORDER OPERATIONS</div>
           <h1>Move Freight Across Borders With Confidence.</h1>
-          <p>
-            Bring your freight documents, shipment operations and
-            customs workflow into one organised workspace.
-          </p>
-          <button class="btn btn-primary" onclick="showWorkspace()">
-            Explore BorderFlow →
-          </button>
+          <p>Bring freight documents, shipment operations and customs workflows into one organised workspace.</p>
+          <button class="btn btn-primary" onclick="openAuth('login')">Explore BorderFlow</button>
         </div>
       </section>
 
@@ -278,15 +273,13 @@
         <article class="feature">
           <div class="symbol">📄</div>
           <h3>Document Management</h3>
-          <p>Organise invoices, packing lists and other freight documents.</p>
+          <p>Organise invoices, packing lists and freight documents.</p>
         </article>
-
         <article class="feature">
           <div class="symbol">🚚</div>
           <h3>Shipment Management</h3>
           <p>Keep shipment information organised in one workspace.</p>
         </article>
-
         <article class="feature">
           <div class="symbol">🌍</div>
           <h3>Border Operations</h3>
@@ -295,18 +288,13 @@
       </section>
     </main>
 
-    <footer class="footer">
-      © 2026 BorderFlow. Freight operations made simpler.
-    </footer>
+    <footer class="footer">© 2026 BorderFlow. Freight operations made simpler.</footer>
   </div>
 
-  <!-- APPLICATION WORKSPACE -->
   <div id="appShell">
     <div class="app-layout">
-
       <aside class="sidebar">
         <div class="brand">Border<span>Flow</span></div>
-
         <div class="nav-label">WORKSPACE</div>
         <button class="nav-item active" onclick="switchSection('overview', this)">▦ Overview</button>
         <button class="nav-item" onclick="switchSection('documents', this)">▤ Document Checker</button>
@@ -314,7 +302,6 @@
         <button class="nav-item" onclick="switchSection('tracking', this)">◎ Tracking</button>
         <button class="nav-item" onclick="switchSection('customs', this)">▣ Customs</button>
         <button class="nav-item" onclick="switchSection('compliance', this)">✓ Compliance</button>
-
         <div class="nav-label">MANAGEMENT</div>
         <button class="nav-item" onclick="switchSection('finance', this)">💳 Finance</button>
         <button class="nav-item" onclick="switchSection('reports', this)">▥ Reports</button>
@@ -325,124 +312,173 @@
         <header class="app-header">
           <div>
             <strong>BorderFlow Workspace</strong>
-            <div class="muted">Freight management platform</div>
+            <div class="muted" id="userEmail">Freight management platform</div>
           </div>
-          <button class="btn btn-outline" onclick="showLanding()">Exit Workspace</button>
+          <button class="btn btn-outline" onclick="signOut()">Sign Out</button>
         </header>
 
         <div class="content">
-
           <section id="overview" class="section-view active">
             <h1>Overview</h1>
             <p class="muted">Your freight operations at a glance.</p>
-
             <div class="stats">
               <div class="stat"><p>Total Shipments</p><h2>0</h2></div>
               <div class="stat"><p>Documents</p><h2>0</h2></div>
               <div class="stat"><p>In Transit</p><h2>0</h2></div>
               <div class="stat"><p>Pending Review</p><h2>0</h2></div>
             </div>
-
             <div class="panel">
               <h3>Welcome to BorderFlow</h3>
-              <p class="muted">
-                Your workspace foundation is ready. We will connect
-                real accounts, shipment records and document processing
-                in the next development stages.
-              </p>
-              <button class="btn btn-primary" onclick="switchSection('documents')">
-                Open Document Checker
-              </button>
+              <p class="muted">Your workspace foundation is ready. Real shipment records and document processing will be connected in later stages.</p>
+              <button class="btn btn-primary" onclick="switchSection('documents')">Open Document Checker</button>
             </div>
           </section>
 
           <section id="documents" class="section-view">
             <h1>Document Checker</h1>
-            <p class="muted">Start by selecting a freight document from your computer.</p>
-
+            <p class="muted">Select a freight document from your computer.</p>
             <div class="panel">
               <div class="upload-area">
-                <h3>Upload a Document</h3>
+                <h3>Choose a Document</h3>
                 <p class="muted">Select a PDF, JPG or PNG file.</p>
                 <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
-                <div id="uploadStatus" class="status">
-                  No document selected.
-                </div>
+                <div id="uploadStatus" class="status">No document selected.</div>
               </div>
-              <p class="muted">
-                Note: This first version only selects your file.
-                Document reading and checking will be connected later.
-              </p>
+              <p class="muted">This version selects a local file only. It does not upload, store, read or check the document yet.</p>
             </div>
           </section>
 
           <section id="shipments" class="section-view">
             <h1>Shipments</h1>
-            <p class="muted">Your shipment management workspace.</p>
-            <div class="panel">
-              <h3>No shipments yet</h3>
-              <p class="muted">Shipment creation and saved records will be added in a later stage.</p>
-            </div>
+            <div class="panel"><h3>Shipment Management</h3><p class="muted">Shipment creation and saved records will be connected later.</p></div>
           </section>
 
           <section id="tracking" class="section-view">
             <h1>Tracking</h1>
-            <div class="panel">
-              <h3>Shipment Tracking</h3>
-              <p class="muted">Live carrier and border tracking integrations are not connected yet.</p>
-            </div>
+            <div class="panel"><h3>Shipment Tracking</h3><p class="muted">Live carrier tracking is not connected yet.</p></div>
           </section>
 
           <section id="customs" class="section-view">
             <h1>Customs</h1>
-            <div class="panel">
-              <h3>Customs Workspace</h3>
-              <p class="muted">Customs declarations and clearance workflows will be developed here.</p>
-            </div>
+            <div class="panel"><h3>Customs Workspace</h3><p class="muted">Customs declarations and clearance workflows will be developed here.</p></div>
           </section>
 
           <section id="compliance" class="section-view">
             <h1>Compliance</h1>
-            <div class="panel">
-              <h3>Compliance Management</h3>
-              <p class="muted">We will build document requirement checks and compliance alerts here.</p>
-            </div>
+            <div class="panel"><h3>Compliance Management</h3><p class="muted">Document requirements and compliance alerts will be developed here.</p></div>
           </section>
 
           <section id="finance" class="section-view">
             <h1>Finance</h1>
-            <div class="panel">
-              <h3>Freight Finance</h3>
-              <p class="muted">Invoices, costs and payment records will be added here.</p>
-            </div>
+            <div class="panel"><h3>Freight Finance</h3><p class="muted">Invoices, costs and payment records will be connected later.</p></div>
           </section>
 
           <section id="reports" class="section-view">
             <h1>Reports</h1>
-            <div class="panel">
-              <h3>Business Reports</h3>
-              <p class="muted">Operational reports and export tools will be added here.</p>
-            </div>
+            <div class="panel"><h3>Business Reports</h3><p class="muted">Operational reports and export tools will be developed here.</p></div>
           </section>
 
           <section id="settings" class="section-view">
             <h1>Settings</h1>
-            <div class="panel">
-              <h3>Workspace Settings</h3>
-              <p class="muted">Company settings, user permissions and preferences will be added here.</p>
-            </div>
+            <div class="panel"><h3>Workspace Settings</h3><p class="muted">Company settings, user permissions and preferences will be developed here.</p></div>
           </section>
-
         </div>
       </main>
     </div>
   </div>
 
+  <div id="authModal">
+    <div class="auth-card">
+      <h2 id="authTitle">Welcome to BorderFlow</h2>
+      <p id="authDescription">Sign in to your workspace.</p>
+
+      <form id="authForm">
+        <div id="registerFields" style="display:none;">
+          <input id="fullName" type="text" placeholder="Full name">
+          <input id="companyName" type="text" placeholder="Company name">
+          <input id="phone" type="tel" placeholder="WhatsApp number">
+        </div>
+
+        <input id="authEmail" type="email" placeholder="Email address" required>
+        <input id="authPassword" type="password" placeholder="Password (at least 8 characters)" required minlength="8">
+
+        <button class="btn btn-primary" type="submit" style="width:100%;">Continue</button>
+        <p id="authMessage" role="status"></p>
+      </form>
+
+      <p>
+        <span id="authSwitchText">New to BorderFlow?</span>
+        <button type="button" id="authSwitch" class="btn btn-outline" onclick="switchAuthMode()">Create account</button>
+      </p>
+      <button type="button" class="btn btn-outline" onclick="closeAuth()">Close</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    function showWorkspace() {
+    const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
+
+    let supabaseClient = null;
+    let authMode = "login";
+
+    if (window.supabase && SUPABASE_KEY !== "YOUR_SUPABASE_PUBLISHABLE_KEY") {
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+    }
+
+    function openAuth(mode) {
+      authMode = mode || "login";
+      updateAuthWindow();
+      document.getElementById("authMessage").textContent = "";
+      document.getElementById("authModal").style.display = "flex";
+    }
+
+    function closeAuth() {
+      document.getElementById("authModal").style.display = "none";
+    }
+
+    function switchAuthMode() {
+      authMode = authMode === "login" ? "register" : "login";
+      updateAuthWindow();
+      document.getElementById("authMessage").textContent = "";
+    }
+
+    function updateAuthWindow() {
+      const registering = authMode === "register";
+
+      document.getElementById("authTitle").textContent =
+        registering ? "Create your BorderFlow account" : "Welcome to BorderFlow";
+
+      document.getElementById("authDescription").textContent =
+        registering ? "Enter your details to register." : "Sign in to your workspace.";
+
+      document.getElementById("registerFields").style.display =
+        registering ? "block" : "none";
+
+      document.getElementById("fullName").required = registering;
+      document.getElementById("companyName").required = registering;
+
+      document.getElementById("authSwitchText").textContent =
+        registering ? "Already have an account?" : "New to BorderFlow?";
+
+      document.getElementById("authSwitch").textContent =
+        registering ? "Sign in" : "Create account";
+    }
+
+    function showWorkspace(user) {
       document.getElementById("landingView").style.display = "none";
       document.getElementById("appShell").style.display = "block";
+
+      if (user) {
+        document.getElementById("userEmail").textContent = user.email || "Signed in";
+      }
+
       switchSection("overview");
+      closeAuth();
     }
 
     function showLanding() {
@@ -456,7 +492,6 @@
       });
 
       const selectedSection = document.getElementById(sectionName);
-
       if (!selectedSection) return;
 
       selectedSection.classList.add("active");
@@ -468,14 +503,86 @@
       if (clickedButton) {
         clickedButton.classList.add("active");
       } else {
-        const buttons = document.querySelectorAll(".nav-item");
-        buttons.forEach(button => {
-          if (button.getAttribute("onclick").includes("'" + sectionName + "'")) {
+        document.querySelectorAll(".nav-item").forEach(button => {
+          if (button.getAttribute("onclick")?.includes("'" + sectionName + "'")) {
             button.classList.add("active");
           }
         });
       }
     }
+
+    async function signOut() {
+      if (!supabaseClient) {
+        showLanding();
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        alert("Could not sign out: " + error.message);
+        return;
+      }
+
+      showLanding();
+    }
+
+    document.getElementById("authForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const message = document.getElementById("authMessage");
+      const email = document.getElementById("authEmail").value.trim();
+      const password = document.getElementById("authPassword").value;
+
+      if (!supabaseClient) {
+        message.textContent = "Supabase is not connected yet. Add your publishable key first.";
+        return;
+      }
+
+      message.textContent = "Please wait...";
+
+      if (authMode === "register") {
+        const fullName = document.getElementById("fullName").value.trim();
+        const companyName = document.getElementById("companyName").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              company_name: companyName,
+              phone_whatsapp: phone,
+              country: "Zimbabwe"
+            }
+          }
+        });
+
+        if (error) {
+          message.textContent = error.message;
+          return;
+        }
+
+        if (data.session) {
+          showWorkspace(data.user);
+        } else {
+          message.textContent = "Account created. Check your email to confirm your address, then sign in.";
+        }
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          message.textContent = error.message;
+          return;
+        }
+
+        showWorkspace(data.user);
+      }
+    });
 
     document.getElementById("documentInput").addEventListener("change", function() {
       const status = document.getElementById("uploadStatus");
@@ -489,35 +596,19 @@
       status.textContent = "Selected: " + file.name +
         ". File is ready for the document-processing stage.";
     });
+
+    async function checkExistingSession() {
+      if (!supabaseClient) return;
+
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (!error && data.session) {
+        showWorkspace(data.session.user);
+      }
+    }
+
+    checkExistingSession();
   </script>
 
 </body>
-  <!-- BORDERFLOW AUTHENTICATION WINDOW -->
-<div id="authModal" style="display:none; position:fixed; inset:0; background:#101d35cc; z-index:9999; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:white; padding:30px; border-radius:14px; width:100%; max-width:430px;">
-    <h2 id="authTitle">Welcome to BorderFlow</h2>
-    <p id="authDescription">Sign in to your workspace.</p>
-
-    <form id="authForm">
-      <div id="registerFields" style="display:none;">
-        <input id="fullName" type="text" placeholder="Full name">
-        <input id="companyName" type="text" placeholder="Company name">
-        <input id="phone" type="tel" placeholder="WhatsApp number">
-      </div>
-
-      <input id="authEmail" type="email" placeholder="Email address" required>
-      <input id="authPassword" type="password" placeholder="Password (at least 8 characters)" required minlength="8">
-
-      <button type="submit">Continue</button>
-      <p id="authMessage" role="status"></p>
-    </form>
-
-    <p>
-      <span id="authSwitchText">New to BorderFlow?</span>
-      <button type="button" id="authSwitch">Create account</button>
-    </p>
-
-    <button type="button" onclick="closeAuth()">Close</button>
-  </div>
-</div>
 </html>
