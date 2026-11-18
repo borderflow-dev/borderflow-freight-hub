@@ -367,6 +367,20 @@
 >
   Upload Document
 </button>
+                <button
+  type="button"
+  class="btn btn-primary"
+  id="readDocumentBtn"
+>
+  Read Document
+</button>
+
+<div id="ocrStatus" class="status">
+  Waiting for a document.
+</div>
+                <div id="ocrResult" class="status" style="white-space: pre-wrap;">
+  Extracted text will appear here.
+</div>
 
 <div id="uploadStatus" class="status">No document selected.</div>
                
@@ -441,6 +455,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -742,6 +757,66 @@ document.getElementById("uploadDocumentBtn").addEventListener("click", async fun
   }
 });
 
+  
+document.getElementById("readDocumentBtn").addEventListener("click", async function() {
+  const fileInput = document.getElementById("documentInput");
+  const status = document.getElementById("ocrStatus");
+  const result = document.getElementById("ocrResult");
+  const button = this;
+  const file = fileInput.files[0];
+
+  if (!file) {
+    status.textContent = "Please select an image first.";
+    return;
+  }
+
+  if (!["image/jpeg", "image/png"].includes(file.type)) {
+    status.textContent = "For now, OCR supports JPG and PNG images only. PDF reading comes next.";
+    return;
+  }
+
+  if (typeof Tesseract === "undefined") {
+    status.textContent = "OCR library could not load. Please check your internet connection.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Reading your document. Please wait...";
+  result.textContent = "";
+
+  try {
+    const { data } = await Tesseract.recognize(
+      file,
+      "eng",
+      {
+        logger: function(message) {
+          if (message.status === "recognizing text") {
+            status.textContent =
+              "Reading document: " +
+              Math.round(message.progress * 100) + "%";
+          }
+        }
+      }
+    );
+
+    const extractedText = data.text.trim();
+
+    if (extractedText) {
+      result.textContent = extractedText;
+      status.textContent = "Document reading completed.";
+    } else {
+      result.textContent = "No readable text was found.";
+      status.textContent = "Please try a clearer image.";
+    }
+
+  } catch (error) {
+    console.error("OCR error:", error);
+    status.textContent = "Could not read document: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+  
     async function checkExistingSession() {
   if (!supabaseClient) return;
 
