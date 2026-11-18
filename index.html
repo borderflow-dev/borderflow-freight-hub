@@ -1,112 +1,495 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BORDERFLOW — AI Trade Document Checker</title>
-  <script src="https://jsdelivr.net"></script>
-  <script src="https://cloudflare.com"></script>
-  <script src="https://cloudflare.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BorderFlow | Freight & Customs Management</title>
+  <meta name="description" content="Simplify cross-border freight, customs documentation and shipment management.">
+
   <style>
-    :root { --bg:#09090B; --panel:rgba(12,12,15,0.90); --panel-solid:#111114; --border:rgba(255,255,255,0.16); --border-hi:rgba(255,255,255,0.38); --text:#FAFAFA; --muted:#A1A1AA; --white:#FFFFFF; --black:#09090B; }
-    * { box-sizing:border-box; margin:0; padding:0; font-family:'Inter',system-ui,sans-serif; }
-    body { background:var(--bg); color:var(--text); overflow-x:hidden; min-height:100vh; }
-    .bg-video { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; filter:brightness(0.50); pointer-events:none; }
-    button { cursor:pointer; transition:0.15s; }
-    .btn-w { background:var(--white); color:var(--black); border:1px solid var(--white); padding:10px 18px; border-radius:8px; font-weight:800; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
-    .btn-w:hover { background:#E4E4E7; }
-    .btn-o { background:rgba(18,18,21,0.92); color:var(--white); border:1px solid var(--border-hi); padding:10px 16px; border-radius:8px; font-weight:700; font-size:12px; letter-spacing:0.04em; text-transform:uppercase; }
-    .btn-o:hover { border-color:var(--white); background:rgba(255,255,255,0.08); }
-    .logo-box { display:flex; align-items:center; gap:12px; }
-    .bf-icon { width:42px; height:42px; border-radius:10px; background:var(--black); border:1.5px solid var(--white); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .brand-name { font-size:18px; font-weight:900; letter-spacing:0.06em; color:var(--white); line-height:1; }
-    .brand-tag { font-size:9px; font-weight:700; letter-spacing:0.16em; color:var(--muted); margin-top:4px; text-transform:uppercase; }
+    :root {
+      --navy: #101d35;
+      --blue: #2864e8;
+      --light: #f4f7fc;
+      --text: #1c2940;
+      --muted: #718096;
+      --border: #e5eaf2;
+      --white: #ffffff;
+    }
 
-    #landingView { position:relative; z-index:10; }
-    .top-nav { position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:16px 36px; background:rgba(9,9,11,0.94); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
-    .hero { min-height:88vh; display:flex; flex-direction:column; justify-content:space-between; }
-    .hero-inner { max-width:820px; padding:76px 36px 36px; }
-    .pill-live { display:inline-block; padding:6px 14px; border-radius:999px; background:var(--panel-solid); border:1px solid var(--white); font-size:11px; font-weight:800; letter-spacing:0.08em; }
-    .hero h1 { font-size:48px; font-weight:900; line-height:1.06; margin:18px 0; text-transform:uppercase; }
-    .hero p { font-size:16px; line-height:1.6; color:#E4E4E7; margin-bottom:26px; max-width:600px; }
-    .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); background:rgba(9,9,11,0.95); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .strip div { padding:20px 30px; border-right:1px solid var(--border); }
-    .strip strong { display:block; font-size:20px; font-weight:900; }
-    .strip span { font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
-    .showcase { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); background:#09090B; }
-    .tile { min-height:380px; display:flex; flex-direction:column; justify-content:flex-end; padding:32px; background-size:cover; background-position:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+    * { box-sizing: border-box; }
 
-    .app-shell { display:none; min-height:100vh; position:relative; z-index:20; }
-    .sidebar { width:250px; background:rgba(9,9,11,0.97); border-right:1px solid var(--border); padding:18px 14px; display:flex; flex-direction:column; justify-content:space-between; flex-shrink:0; }
-    .nav-menu { display:flex; flex-direction:column; gap:6px; margin-top:22px; }
-    .nav-item { width:100%; text-align:left; background:transparent; border:1px solid transparent; color:var(--muted); padding:11px 12px; border-radius:8px; font-size:13px; font-weight:600; }
-    .nav-item.active, .nav-item:hover { background:rgba(255,255,255,0.12); border-color:var(--border-hi); color:var(--white); font-weight:800; }
-    .main-area { flex:1; display:flex; flex-direction:column; min-width:0; }
-    .topbar { height:64px; background:rgba(9,9,11,0.97); border-bottom:1px solid var(--border); padding:0 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .content { padding:24px; max-width:1360px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
-    .view-sec { display:none; flex-direction:column; gap:18px; }
-    .view-sec.active { display:flex; }
-    .card { background:var(--panel); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:12px; padding:20px; }
-    .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    .kpi-lbl { font-size:10px; font-weight:800; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; }
-    .kpi-val { font-size:30px; font-weight:900; margin-top:6px; }
-    .dropzone { border:2px dashed var(--border-hi); border-radius:10px; padding:30px; text-align:center; cursor:pointer; background:rgba(255,255,255,0.02); margin-top:12px; }
-    .dropzone:hover { border-color:var(--white); background:rgba(255,255,255,0.06); }
-    .file-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; margin-top:14px; }
-    .file-card { background:#09090B; border:1px solid var(--border-hi); border-radius:8px; padding:12px; font-size:12px; }
-    .file-card select, .inp { width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border-hi); background:#09090B; color:var(--white); font-size:12px; margin-top:6px; }
-    .finding { background:#09090B; border:1px solid var(--border-hi); border-left-width:4px; border-radius:8px; padding:14px; margin-top:10px; }
-    .finding.ERROR { border-left-color:#FFFFFF; }
-    .finding.WARNING { border-left-color:#A1A1AA; }
-    .finding.INFO { border-left-color:#52525B; }
-    .badge-w { background:var(--white); color:var(--black); padding:2px 8px; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }
-    .badge-d { background:rgba(255,255,255,0.12); color:var(--white); border:1px solid var(--border-hi); padding:2px 8px; border-radius:999px; font-size:10px; font-weight:700; text-transform:uppercase; }
-    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
-    th, td { text-align:left; padding:11px; border-bottom:1px solid var(--border); }
-    th { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
-    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:9999; align-items:center; justify-content:center; padding:16px; }
-    .modal { background:#111114; border:1px solid var(--border-hi); border-radius:12px; padding:24px; width:100%; max-width:420px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: var(--light);
+    }
+
+    button { cursor: pointer; font: inherit; }
+
+    .topbar {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7%;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .brand span { color: var(--blue); }
+
+    .top-actions { display: flex; gap: 12px; }
+
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: 700;
+    }
+
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-outline { background: white; color: var(--navy); border: 1px solid var(--border); }
+
+    .hero {
+      padding: 95px 8%;
+      background: linear-gradient(120deg, #101d35, #1c3b69);
+      color: white;
+    }
+
+    .hero-content { max-width: 720px; }
+
+    .eyebrow {
+      color: #91b5ff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 64px);
+      line-height: 1.08;
+      margin: 20px 0;
+    }
+
+    .hero p {
+      color: #d3deef;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 620px;
+    }
+
+    .hero .btn { margin-top: 20px; }
+
+    .features {
+      padding: 65px 8%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .feature {
+      padding: 28px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .feature .symbol { font-size: 28px; }
+    .feature h3 { margin-bottom: 10px; }
+    .feature p { color: var(--muted); line-height: 1.6; }
+
+    .footer {
+      padding: 25px 8%;
+      background: white;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* Application workspace */
+
+    #appShell { display: none; min-height: 100vh; }
+
+    .app-layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 245px;
+      flex-shrink: 0;
+      background: var(--navy);
+      color: white;
+      padding: 25px 16px;
+    }
+
+    .sidebar .brand { color: white; padding: 0 12px 30px; }
+
+    .nav-label {
+      color: #91a0b8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 15px 12px 8px;
+    }
+
+    .nav-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 13px 12px;
+      margin: 3px 0;
+      border: 0;
+      border-radius: 8px;
+      color: #d3deef;
+      background: transparent;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: #263c60;
+      color: white;
+    }
+
+    .workspace { flex: 1; min-width: 0; }
+
+    .app-header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-header button { margin-left: 8px; }
+
+    .content { padding: 32px; max-width: 1200px; margin: auto; }
+
+    .muted { color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin: 25px 0;
+    }
+
+    .stat, .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .stat p { color: var(--muted); margin: 0 0 12px; }
+    .stat h2 { margin: 0; font-size: 30px; }
+
+    .panel { margin-top: 20px; }
+
+    .panel h3 { margin-top: 0; }
+
+    .upload-area {
+      border: 2px dashed #b8c8e2;
+      border-radius: 12px;
+      padding: 45px 20px;
+      text-align: center;
+      background: #f8faff;
+    }
+
+    .upload-area input { margin-top: 18px; max-width: 100%; }
+
+    .status {
+      padding: 12px;
+      background: #edf4ff;
+      color: #2455a5;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .section-view { display: none; }
+    .section-view.active { display: block; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 15px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 850px) {
+      .features, .stats { grid-template-columns: repeat(2, 1fr); }
+      .sidebar { width: 190px; }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 0 18px; }
+      .hero { padding: 65px 22px; }
+      .features, .stats { grid-template-columns: 1fr; padding: 25px 18px; }
+      .app-layout { display: block; }
+      .sidebar { width: 100%; }
+      .sidebar .brand { padding-bottom: 15px; }
+      .nav-item { display: inline-block; width: auto; }
+      .content { padding: 20px 15px; }
+      .app-header { padding: 15px; }
+    }
   </style>
 </head>
-<body>
-  <video class="bg-video" autoplay muted loop playsinline><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4" /></video>
 
+<body>
+
+  <!-- PUBLIC LANDING PAGE -->
   <div id="landingView">
-    <header class="top-nav">
-      <div class="logo-box">
-        <div class="bf-icon">
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-            <path d="M6 6H15C17.76 6 20 8.24 20 11C20 12.64 19.21 14.09 18 15C19.52 15.91 20.5 17.58 20.5 19.5C20.5 22.54 18.04 25 15 25H6V6Z" stroke="#FFFFFF" stroke-width="2.4"/>
-            <path d="M10 15.5H26M26 15.5L22.5 12M26 15.5L22.5 19" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div><div class="brand-name">BORDERFLOW</div><div class="brand-tag">AI Document Checker</div></div>
-      </div>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-o" onclick="openModal('loginModal')">Sign In</button>
-        <button class="btn-w" onclick="enterApp('overview')">Launch System</button>
+    <header class="topbar">
+      <div class="brand">Border<span>Flow</span></div>
+      <div class="top-actions">
+        <button class="btn btn-outline" onclick="showWorkspace()">
+          Sign In
+        </button>
+        <button class="btn btn-primary" onclick="showWorkspace()">
+          Launch System
+        </button>
       </div>
     </header>
 
-    <section class="hero">
-      <div class="hero-inner">
-        <span class="pill-live">● INTERNATIONAL TRADE DOCUMENT VERIFICATION</span>
-        <h1>AI-Powered Trade & Customs Document Checker.</h1>
-        <p>Verify Commercial Invoices, Packing Lists, Bills of Lading, Certificates of Origin, and Customs Declarations. Detect missing fields, calculation errors, and cross-document discrepancies before border delays happen.</p>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <button class="btn-w" onclick="enterApp('checker')">Start Document Check →</button>
-          <button class="btn-o" onclick="enterApp('overview')">Open Dashboard</button>
+    <main>
+      <section class="hero">
+        <div class="hero-content">
+          <div class="eyebrow">SMARTER CROSS-BORDER OPERATIONS</div>
+          <h1>Move Freight Across Borders With Confidence.</h1>
+          <p>
+            Bring your freight documents, shipment operations and
+            customs workflow into one organised workspace.
+          </p>
+          <button class="btn btn-primary" onclick="showWorkspace()">
+            Explore BorderFlow →
+          </button>
         </div>
-      </div>
-      <div class="strip">
-        <div><strong>7 DOC TYPES</strong><span>Invoices, Packing Lists, BOL & Customs</span></div>
-        <div><strong>AI AUDIT ENGINE</strong><span>Errors, Warnings & Info Findings</span></div>
-        <div><strong>SIDE-BY-SIDE</strong><span>Cross-Document Comparison</span></div>
-        <div><strong>PDF REPORTS</strong><span>Downloadable Compliance Audits</span></div>
-      </div>
-    </section>
+      </section>
 
-    <section class="showcase">
-      <div class="tile" style="background-image:linear-gradient(to top, rgba(9,9,11,0.95) 20%, rgba(9,9,11,0.25)), url('pic1.jpg');">
-        <span style="font-size:11px; font-weight:800;">01 // DOCUMENT EXTRACTION</span>
-        <h3 style="font-size:24px; font-weight:900; margin:8px 0;">PDF, JPG & PNG OCR READING</h3>
+      <section class="features">
+        <article class="feature">
+          <div class="symbol">📄</div>
+          <h3>Document Management</h3>
+          <p>Organise invoices, packing lists and other freight documents.</p>
+        </article>
+
+        <article class="feature">
+          <div class="symbol">🚚</div>
+          <h3>Shipment Management</h3>
+          <p>Keep shipment information organised in one workspace.</p>
+        </article>
+
+        <article class="feature">
+          <div class="symbol">🌍</div>
+          <h3>Border Operations</h3>
+          <p>Keep important customs and compliance information together.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      © 2026 BorderFlow. Freight operations made simpler.
+    </footer>
+  </div>
+
+  <!-- APPLICATION WORKSPACE -->
+  <div id="appShell">
+    <div class="app-layout">
+
+      <aside class="sidebar">
+        <div class="brand">Border<span>Flow</span></div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <button class="nav-item active" onclick="switchSection('overview', this)">▦ Overview</button>
+        <button class="nav-item" onclick="switchSection('documents', this)">▤ Document Checker</button>
+        <button class="nav-item" onclick="switchSection('shipments', this)">🚚 Shipments</button>
+        <button class="nav-item" onclick="switchSection('tracking', this)">◎ Tracking</button>
+        <button class="nav-item" onclick="switchSection('customs', this)">▣ Customs</button>
+        <button class="nav-item" onclick="switchSection('compliance', this)">✓ Compliance</button>
+
+        <div class="nav-label">MANAGEMENT</div>
+        <button class="nav-item" onclick="switchSection('finance', this)">💳 Finance</button>
+        <button class="nav-item" onclick="switchSection('reports', this)">▥ Reports</button>
+        <button class="nav-item" onclick="switchSection('settings', this)">⚙ Settings</button>
+      </aside>
+
+      <main class="workspace">
+        <header class="app-header">
+          <div>
+            <strong>BorderFlow Workspace</strong>
+            <div class="muted">Freight management platform</div>
+          </div>
+          <button class="btn btn-outline" onclick="showLanding()">Exit Workspace</button>
+        </header>
+
+        <div class="content">
+
+          <section id="overview" class="section-view active">
+            <h1>Overview</h1>
+            <p class="muted">Your freight operations at a glance.</p>
+
+            <div class="stats">
+              <div class="stat"><p>Total Shipments</p><h2>0</h2></div>
+              <div class="stat"><p>Documents</p><h2>0</h2></div>
+              <div class="stat"><p>In Transit</p><h2>0</h2></div>
+              <div class="stat"><p>Pending Review</p><h2>0</h2></div>
+            </div>
+
+            <div class="panel">
+              <h3>Welcome to BorderFlow</h3>
+              <p class="muted">
+                Your workspace foundation is ready. We will connect
+                real accounts, shipment records and document processing
+                in the next development stages.
+              </p>
+              <button class="btn btn-primary" onclick="switchSection('documents')">
+                Open Document Checker
+              </button>
+            </div>
+          </section>
+
+          <section id="documents" class="section-view">
+            <h1>Document Checker</h1>
+            <p class="muted">Start by selecting a freight document from your computer.</p>
+
+            <div class="panel">
+              <div class="upload-area">
+                <h3>Upload a Document</h3>
+                <p class="muted">Select a PDF, JPG or PNG file.</p>
+                <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
+                <div id="uploadStatus" class="status">
+                  No document selected.
+                </div>
+              </div>
+              <p class="muted">
+                Note: This first version only selects your file.
+                Document reading and checking will be connected later.
+              </p>
+            </div>
+          </section>
+
+          <section id="shipments" class="section-view">
+            <h1>Shipments</h1>
+            <p class="muted">Your shipment management workspace.</p>
+            <div class="panel">
+              <h3>No shipments yet</h3>
+              <p class="muted">Shipment creation and saved records will be added in a later stage.</p>
+            </div>
+          </section>
+
+          <section id="tracking" class="section-view">
+            <h1>Tracking</h1>
+            <div class="panel">
+              <h3>Shipment Tracking</h3>
+              <p class="muted">Live carrier and border tracking integrations are not connected yet.</p>
+            </div>
+          </section>
+
+          <section id="customs" class="section-view">
+            <h1>Customs</h1>
+            <div class="panel">
+              <h3>Customs Workspace</h3>
+              <p class="muted">Customs declarations and clearance workflows will be developed here.</p>
+            </div>
+          </section>
+
+          <section id="compliance" class="section-view">
+            <h1>Compliance</h1>
+            <div class="panel">
+              <h3>Compliance Management</h3>
+              <p class="muted">We will build document requirement checks and compliance alerts here.</p>
+            </div>
+          </section>
+
+          <section id="finance" class="section-view">
+            <h1>Finance</h1>
+            <div class="panel">
+              <h3>Freight Finance</h3>
+              <p class="muted">Invoices, costs and payment records will be added here.</p>
+            </div>
+          </section>
+
+          <section id="reports" class="section-view">
+            <h1>Reports</h1>
+            <div class="panel">
+              <h3>Business Reports</h3>
+              <p class="muted">Operational reports and export tools will be added here.</p>
+            </div>
+          </section>
+
+          <section id="settings" class="section-view">
+            <h1>Settings</h1>
+            <div class="panel">
+              <h3>Workspace Settings</h3>
+              <p class="muted">Company settings, user permissions and preferences will be added here.</p>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function showWorkspace() {
+      document.getElementById("landingView").style.display = "none";
+      document.getElementById("appShell").style.display = "block";
+      switchSection("overview");
+    }
+
+    function showLanding() {
+      document.getElementById("appShell").style.display = "none";
+      document.getElementById("landingView").style.display = "block";
+    }
+
+    function switchSection(sectionName, clickedButton) {
+      document.querySelectorAll(".section-view").forEach(section => {
+        section.classList.remove("active");
+      });
+
+      const selectedSection = document.getElementById(sectionName);
+
+      if (!selectedSection) return;
+
+      selectedSection.classList.add("active");
+
+      document.querySelectorAll(".nav-item").forEach(button => {
+        button.classList.remove("active");
+      });
+
+      if (clickedButton) {
+        clickedButton.classList.add("active");
+      } else {
+        const buttons = document.querySelectorAll(".nav-item");
+        buttons.forEach(button => {
+          if (button.getAttribute("onclick").includes("'" + sectionName + "'")) {
+            button.classList.add("active");
+          }
+        });
+      }
+    }
+
+    document.getElementById("documentInput").addEventListener("change", function() {
+      const status = document.getElementById("uploadStatus");
+      const file = this.files[0];
+
+      if (!file) {
+        status.textContent = "No document selected.";
+        return;
+      }
+
+      status.textContent = "Selected: " + file.name +
+        ". File is ready for the document-processing stage.";
+    });
+  </script>
+
+</body>
+</html>
