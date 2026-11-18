@@ -341,10 +341,27 @@
               <div class="upload-area">
                 <h3>Choose a Document</h3>
                 <p class="muted">Select a PDF, JPG or PNG file.</p>
+               <label for="shipmentRef">Shipment Reference</label>
+<input
+  type="text"
+  id="shipmentRef"
+  placeholder="Enter shipment reference"
+  required
+> 
+              <label for="documentType">Document Type</label>
+<select id="documentType" required>
+  <option value="">Choose document type</option>
+  <option value="Commercial Invoice">Commercial Invoice</option>
+  <option value="Bill of Lading">Bill of Lading</option>
+  <option value="Packing List">Packing List</option>
+  <option value="Customs Declaration">Customs Declaration</option>
+  <option value="Certificate of Origin">Certificate of Origin</option>
+  <option value="Other">Other</option>
+</select>  
                 <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
                 <div id="uploadStatus" class="status">No document selected.</div>
               </div>
-              <p class="muted">This version selects a local file only. It does not upload, store, read or check the document yet.</p>
+              <p class="muted">Select your shipment details and document to prepare it for secure upload.</p>
             </div>
           </section>
 
