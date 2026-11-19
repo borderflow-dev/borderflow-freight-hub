@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,8 +26,9 @@
       background: var(--light);
     }
 
-    button, input { font: inherit; }
+    button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .topbar {
       min-height: 76px;
@@ -52,8 +52,13 @@
     .btn {
       border: 0;
       border-radius: 8px;
-      padding: 12px 20px;
+      padding: 10px 18px;
       font-weight: 700;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
     }
 
     .btn-primary { background: var(--blue); color: white; }
@@ -118,33 +123,34 @@
     .app-layout { display: flex; min-height: 100vh; }
 
     .sidebar {
-      width: 245px;
+      width: 250px;
       flex-shrink: 0;
       background: var(--navy);
       color: white;
-      padding: 25px 16px;
+      padding: 22px 14px;
     }
 
-    .sidebar .brand { color: white; padding: 0 12px 30px; }
+    .sidebar .brand { color: white; padding: 0 12px 20px; }
 
     .nav-label {
       color: #91a0b8;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 1px;
-      padding: 15px 12px 8px;
+      padding: 14px 12px 6px;
     }
 
     .nav-item {
       display: block;
       width: 100%;
       text-align: left;
-      padding: 13px 12px;
-      margin: 3px 0;
+      padding: 10px 12px;
+      margin: 2px 0;
       border: 0;
       border-radius: 8px;
       color: #d3deef;
       background: transparent;
+      font-size: 14px;
     }
 
     .nav-item:hover, .nav-item.active {
@@ -157,7 +163,7 @@
     .app-header {
       background: white;
       border-bottom: 1px solid var(--border);
-      padding: 20px 30px;
+      padding: 18px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -165,35 +171,150 @@
     }
 
     .app-header button { margin-left: 8px; }
-    .content { padding: 32px; max-width: 1200px; margin: auto; }
+    .content { padding: 28px 32px; max-width: 1200px; margin: auto; }
 
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 18px;
-      margin: 25px 0;
+      margin: 22px 0;
     }
 
-    .stat p { color: var(--muted); margin: 0 0 12px; }
-    .stat h2 { margin: 0; font-size: 30px; }
+    .stat p { color: var(--muted); margin: 0 0 10px; font-size: 14px; }
+    .stat h2 { margin: 0; font-size: 28px; }
     .panel { margin-top: 20px; }
+
+    .backend-notice {
+      background: #fff8eb;
+      border: 1px solid #f5d69c;
+      color: #7c4a03;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .backend-live {
+      background: #ecfdf3;
+      border: 1px solid #a6f4c5;
+      color: #065f46;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: white;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8faff;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #edf4ff;
+      color: #2455a5;
+    }
+
+    .badge-warn { background: #fff4e5; color: #9a5b00; }
+    .badge-ok { background: #e7f8ef; color: #0f6b3e; }
 
     .upload-area {
       border: 2px dashed #b8c8e2;
       border-radius: 12px;
-      padding: 45px 20px;
+      padding: 32px 20px;
       text-align: center;
       background: #f8faff;
     }
 
-    .upload-area input { margin-top: 18px; max-width: 100%; }
+    .upload-controls {
+      max-width: 520px;
+      margin: 18px auto 0;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .upload-controls input,
+    .upload-controls select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: white;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
     .status {
       padding: 12px;
       background: #edf4ff;
       color: #2455a5;
       border-radius: 8px;
-      margin-top: 15px;
+      margin-top: 12px;
+      font-size: 14px;
+      white-space: pre-line;
     }
 
     .section-view { display: none; }
@@ -230,18 +351,20 @@
     #authMessage { min-height: 22px; color: #2455a5; }
 
     @media (max-width: 850px) {
-      .features, .stats { grid-template-columns: repeat(2, 1fr); }
-      .sidebar { width: 190px; }
+      .features, .stats, .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .sidebar { width: 205px; }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .topbar { padding: 15px 18px; }
       .hero { padding: 65px 22px; }
-      .features, .stats { grid-template-columns: 1fr; padding: 25px 18px; }
+      .features, .stats, .form-grid { grid-template-columns: 1fr; }
+      .features { padding: 25px 18px; }
       .app-layout { display: block; }
-      .sidebar { width: 100%; }
-      .sidebar .brand { padding-bottom: 15px; }
-      .nav-item { display: inline-block; width: auto; }
+      .sidebar { width: 100%; padding: 14px; }
+      .sidebar .brand { padding-bottom: 10px; }
+      .nav-label { display: none; }
+      .nav-item { display: inline-block; width: auto; padding: 8px 10px; font-size: 13px; }
       .content { padding: 20px 15px; }
       .app-header { padding: 15px; flex-wrap: wrap; }
     }
@@ -295,17 +418,24 @@
     <div class="app-layout">
       <aside class="sidebar">
         <div class="brand">Border<span>Flow</span></div>
-        <div class="nav-label">WORKSPACE</div>
+
+        <div class="nav-label">OPERATIONS</div>
         <button class="nav-item active" onclick="switchSection('overview', this)">▦ Overview</button>
         <button class="nav-item" onclick="switchSection('documents', this)">▤ Document Checker</button>
+        <button class="nav-item" onclick="switchSection('library', this)">🗂 Document Library</button>
         <button class="nav-item" onclick="switchSection('shipments', this)">🚚 Shipments</button>
-        <button class="nav-item" onclick="switchSection('tracking', this)">◎ Tracking</button>
-        <button class="nav-item" onclick="switchSection('customs', this)">▣ Customs</button>
+        <button class="nav-item" onclick="switchSection('tracking', this)">◎ Live Tracking</button>
+
+        <div class="nav-label">BORDER & RISK</div>
+        <button class="nav-item" onclick="switchSection('customs', this)">▣ Customs Management</button>
         <button class="nav-item" onclick="switchSection('compliance', this)">✓ Compliance</button>
-        <div class="nav-label">MANAGEMENT</div>
+
+        <div class="nav-label">COMMERCIAL & ADMIN</div>
+        <button class="nav-item" onclick="switchSection('customers', this)">👥 Customers</button>
+        <button class="nav-item" onclick="switchSection('invoices', this)">🧾 Invoices & Payments</button>
         <button class="nav-item" onclick="switchSection('finance', this)">💳 Finance</button>
-        <button class="nav-item" onclick="switchSection('reports', this)">▥ Reports</button>
-        <button class="nav-item" onclick="switchSection('settings', this)">⚙ Settings</button>
+        <button class="nav-item" onclick="switchSection('reports', this)">▥ Reports & Analytics</button>
+        <button class="nav-item" onclick="switchSection('settings', this)">⚙ Settings & Admin</button>
       </aside>
 
       <main class="workspace">
@@ -318,121 +448,451 @@
         </header>
 
         <div class="content">
+          <!-- 1. OVERVIEW -->
           <section id="overview" class="section-view active">
             <h1>Overview</h1>
             <p class="muted">Your freight operations at a glance.</p>
             <div class="stats">
-              <div class="stat"><p>Total Shipments</p><h2>0</h2></div>
-              <div class="stat"><p>Documents</p><h2>0</h2></div>
-              <div class="stat"><p>In Transit</p><h2>0</h2></div>
-              <div class="stat"><p>Pending Review</p><h2>0</h2></div>
+              <div class="stat"><p>Uploaded Documents</p><h2 id="statDocuments">0</h2></div>
+              <div class="stat"><p>Session Shipments</p><h2 id="statShipments">0</h2></div>
+              <div class="stat"><p>Session Customers</p><h2 id="statCustomers">0</h2></div>
+              <div class="stat"><p>Session Invoices</p><h2 id="statInvoices">0</h2></div>
             </div>
             <div class="panel">
-              <h3>Welcome to BorderFlow</h3>
-              <p class="muted">Your workspace foundation is ready. Real shipment records and document processing will be connected in later stages.</p>
-              <button class="btn btn-primary" onclick="switchSection('documents')">Open Document Checker</button>
+              <h3>Workspace Status</h3>
+              <p class="muted">Authentication, Document Checker OCR, and secure Supabase Storage uploads are connected. Additional operational modules below include working client-side tools and clearly marked backend integration points.</p>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="switchSection('documents')">Open Document Checker</button>
+                <button class="btn btn-outline" onclick="switchSection('library')">View Document Library</button>
+                <button class="btn btn-outline" onclick="switchSection('shipments')">Log Shipment</button>
+              </div>
             </div>
           </section>
 
+          <!-- 2. DOCUMENT CHECKER -->
           <section id="documents" class="section-view">
             <h1>Document Checker</h1>
-            <p class="muted">Select a freight document from your computer.</p>
+            <p class="muted">Run OCR checks on JPG/PNG freight documents and upload files securely to Supabase Storage.</p>
+            <div class="backend-live">
+              <strong>Connected Backend:</strong> Supabase Storage (<code>freight-documents</code> bucket) and <code>documents</code> database table.
+            </div>
             <div class="panel">
               <div class="upload-area">
                 <h3>Choose a Document</h3>
-                <p class="muted">Select a PDF, JPG or PNG file.</p>
-               <label for="shipmentRef">Shipment Reference</label>
-<input
-  type="text"
-  id="shipmentRef"
-  placeholder="Enter shipment reference"
-  required
-> 
-              <label for="documentType">Document Type</label>
-<select id="documentType" required>
-  <option value="">Choose document type</option>
-  <option value="Commercial Invoice">Commercial Invoice</option>
-  <option value="Bill of Lading">Bill of Lading</option>
-  <option value="Packing List">Packing List</option>
-  <option value="Customs Declaration">Customs Declaration</option>
-  <option value="Certificate of Origin">Certificate of Origin</option>
-  <option value="Other">Other</option>
-</select>  
-              <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
+                <p class="muted">Select a PDF, JPG or PNG file (max 10 MB).</p>
 
-<button
-  type="button"
-  class="btn btn-primary"
-  id="uploadDocumentBtn"
->
-  Upload Document
-</button>
-                <button
-  type="button"
-  class="btn btn-primary"
-  id="readDocumentBtn"
->
-  Read Document
-</button>
+                <div class="upload-controls">
+                  <label for="shipmentRef"><strong>Shipment Reference</strong></label>
+                  <input type="text" id="shipmentRef" placeholder="Enter shipment reference (e.g. BF-2026-001)" required>
 
-<div id="ocrStatus" class="status">
-  Waiting for a document.
-</div>
-                <div id="ocrResult" class="status" style="white-space: pre-wrap;">
-  Extracted text will appear here.
-</div>
-                <button
-  type="button"
-  class="btn btn-primary"
-  id="validateDocumentBtn"
->
-  Check Document
-</button>
+                  <label for="documentType"><strong>Document Type</strong></label>
+                  <select id="documentType" required>
+                    <option value="">Choose document type</option>
+                    <option value="Commercial Invoice">Commercial Invoice</option>
+                    <option value="Bill of Lading">Bill of Lading</option>
+                    <option value="Packing List">Packing List</option>
+                    <option value="Customs Declaration">Customs Declaration</option>
+                    <option value="Certificate of Origin">Certificate of Origin</option>
+                    <option value="Other">Other</option>
+                  </select>
 
-<div id="validationResult" class="status">
-  Waiting for document validation.
-</div>
+                  <label for="documentInput"><strong>Document File</strong></label>
+                  <input type="file" id="documentInput" accept=".pdf,.jpg,.jpeg,.png">
 
-<div id="uploadStatus" class="status">No document selected.</div>
-               
+                  <div class="btn-row">
+                    <button type="button" class="btn btn-outline" id="readDocumentBtn">Read Document (OCR)</button>
+                    <button type="button" class="btn btn-outline" id="validateDocumentBtn">Check Document</button>
+                    <button type="button" class="btn btn-primary" id="uploadDocumentBtn">Upload Document</button>
+                  </div>
+
+                  <div id="ocrStatus" class="status">Waiting for a document.</div>
+                  <div id="ocrResult" class="status" style="white-space: pre-wrap;">Extracted text will appear here.</div>
+                  <div id="validationResult" class="status">Waiting for document validation.</div>
+                  <div id="uploadStatus" class="status">No document selected.</div>
+                </div>
               </div>
-              <p class="muted">Select your shipment details and document to prepare it for secure upload.</p>
             </div>
           </section>
 
+          <!-- 3. DOCUMENT LIBRARY -->
+          <section id="library" class="section-view">
+            <h1>Document Library</h1>
+            <p class="muted">View and open freight documents saved to your company account in Supabase.</p>
+            <div class="backend-live">
+              <strong>Connected Backend:</strong> Reads directly from your Supabase <code>documents</code> table and generates temporary signed download links from <code>freight-documents</code>.
+            </div>
+            <div class="panel">
+              <div class="btn-row" style="justify-content: space-between; align-items: center;">
+                <input type="text" id="librarySearch" placeholder="Filter by shipment ref, type, or file name..." style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; min-width: 260px;">
+                <button type="button" class="btn btn-primary" id="refreshLibraryBtn">Refresh Library</button>
+              </div>
+              <div id="libraryStatus" class="status">Click "Refresh Library" or open this tab while signed in to load saved documents.</div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Shipment Ref</th>
+                      <th>Document Type</th>
+                      <th>File Name</th>
+                      <th>Uploaded</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="libraryTableBody">
+                    <tr><td colspan="5" class="muted">No documents loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. SHIPMENTS -->
           <section id="shipments" class="section-view">
             <h1>Shipments</h1>
-            <div class="panel"><h3>Shipment Management</h3><p class="muted">Shipment creation and saved records will be connected later.</p></div>
+            <p class="muted">Create and manage cross-border freight consignments.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Records added here are validated and held in your current browser session only. Persistent storage requires creating a <code>shipments</code> table with Row Level Security in Supabase.
+            </div>
+            <div class="panel">
+              <h3>New Shipment Record</h3>
+              <form id="shipmentForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="shipRefInput">Shipment Reference *</label>
+                    <input type="text" id="shipRefInput" placeholder="e.g. BF-2026-104" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="shipModeInput">Transport Mode *</label>
+                    <select id="shipModeInput" required>
+                      <option value="">Select mode</option>
+                      <option value="Road Freight">Road Freight</option>
+                      <option value="Air Freight">Air Freight</option>
+                      <option value="Sea Freight">Sea Freight</option>
+                      <option value="Rail Freight">Rail Freight</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="shipOriginInput">Origin *</label>
+                    <input type="text" id="shipOriginInput" placeholder="e.g. Johannesburg, ZA" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="shipDestInput">Destination *</label>
+                    <input type="text" id="shipDestInput" placeholder="e.g. Harare, ZW" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="shipBorderInput">Border Post</label>
+                    <input type="text" id="shipBorderInput" placeholder="e.g. Beitbridge">
+                  </div>
+                  <div class="form-group">
+                    <label for="shipStatusInput">Status</label>
+                    <select id="shipStatusInput">
+                      <option value="Pending Docs">Pending Docs</option>
+                      <option value="In Transit">In Transit</option>
+                      <option value="At Border">At Border</option>
+                      <option value="Cleared">Cleared</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Add Shipment to Session</button>
+                </div>
+              </form>
+              <div id="shipmentMsg" class="status" style="display:none;"></div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Reference</th>
+                      <th>Route</th>
+                      <th>Border Post</th>
+                      <th>Mode</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="shipmentsTableBody">
+                    <tr><td colspan="5" class="muted">No shipments recorded in this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
 
+          <!-- 5. LIVE TRACKING -->
           <section id="tracking" class="section-view">
-            <h1>Tracking</h1>
-            <div class="panel"><h3>Shipment Tracking</h3><p class="muted">Live carrier tracking is not connected yet.</p></div>
+            <h1>Live Tracking</h1>
+            <p class="muted">Look up shipment milestone status by reference number.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Live GPS telematics and third-party carrier APIs are not yet connected. Lookup below checks shipments recorded in your current session.
+            </div>
+            <div class="panel">
+              <div class="btn-row" style="align-items: center;">
+                <input type="text" id="trackingSearchInput" placeholder="Enter shipment reference (e.g. BF-2026-104)" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; min-width: 280px;">
+                <button type="button" class="btn btn-primary" id="trackShipmentBtn">Check Status</button>
+              </div>
+              <div id="trackingResult" class="status">Enter a shipment reference above to view its current milestone status.</div>
+            </div>
           </section>
 
+          <!-- 6. CUSTOMS MANAGEMENT -->
           <section id="customs" class="section-view">
-            <h1>Customs</h1>
-            <div class="panel"><h3>Customs Workspace</h3><p class="muted">Customs declarations and clearance workflows will be developed here.</p></div>
+            <h1>Customs Management</h1>
+            <p class="muted">Prepare border clearance details and verify required customs documentation.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Direct electronic submission to customs authorities (e.g. ASYCUDA World / SARS EDI) and a <code>customs_declarations</code> Supabase table are not yet connected.
+            </div>
+            <div class="panel">
+              <h3>Customs Clearance Worksheet</h3>
+              <form id="customsForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="custShipRef">Shipment Reference *</label>
+                    <input type="text" id="custShipRef" placeholder="e.g. BF-2026-104" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="custPort">Border Post / Port of Entry *</label>
+                    <select id="custPort" required>
+                      <option value="">Select border post</option>
+                      <option value="Beitbridge">Beitbridge (ZA / ZW)</option>
+                      <option value="Chirundu">Chirundu (ZW / ZM)</option>
+                      <option value="Plumtree">Plumtree (ZW / BW)</option>
+                      <option value="Forbes / Machipanda">Forbes / Machipanda (ZW / MZ)</option>
+                      <option value="Kazungula">Kazungula (BW / ZM)</option>
+                      <option value="Other">Other Port</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="custHsCode">Primary HS Tariff Code *</label>
+                    <input type="text" id="custHsCode" placeholder="e.g. 8471.30.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="custRegime">Customs Regime *</label>
+                    <select id="custRegime" required>
+                      <option value="Import Clearance">Import Clearance</option>
+                      <option value="Export Clearance">Export Clearance</option>
+                      <option value="Transit / Bond">Transit / Bond</option>
+                      <option value="Temporary Import">Temporary Import</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Validate Declaration Draft</button>
+                </div>
+              </form>
+              <div id="customsStatus" class="status">Fill in the customs fields above to validate a declaration draft.</div>
+            </div>
           </section>
-
+          <!-- 7. COMPLIANCE -->
           <section id="compliance" class="section-view">
             <h1>Compliance</h1>
-            <div class="panel"><h3>Compliance Management</h3><p class="muted">Document requirements and compliance alerts will be developed here.</p></div>
+            <p class="muted">Pre-clearance readiness check for cross-border freight shipments.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Automated sanctions screening, tariff rule lookups, and persistent audit logs require backend compliance APIs and database storage.
+            </div>
+            <div class="panel">
+              <h3>Pre-Clearance Readiness Checklist</h3>
+              <p class="muted">Verify mandatory items before dispatching cargo to the border:</p>
+              <div style="display:flex; flex-direction:column; gap:10px; margin: 14px 0;">
+                <label><input type="checkbox" class="comp-check"> Commercial Invoice matches Packing List quantities & values</label>
+                <label><input type="checkbox" class="comp-check"> Shipment Reference verified in Document Checker</label>
+                <label><input type="checkbox" class="comp-check"> HS Tariff Codes confirmed for all line items</label>
+                <label><input type="checkbox" class="comp-check"> Certificate of Origin attached (if claiming SADC / COMESA preference)</label>
+                <label><input type="checkbox" class="comp-check"> Importer / Exporter Tax & Customs Registration numbers valid</label>
+              </div>
+              <button type="button" class="btn btn-primary" id="evaluateComplianceBtn">Evaluate Readiness</button>
+              <div id="complianceResult" class="status">Select completed checks and click "Evaluate Readiness".</div>
+            </div>
           </section>
 
+          <!-- 8. CUSTOMERS -->
+          <section id="customers" class="section-view">
+            <h1>Customers</h1>
+            <p class="muted">Manage shippers, importers, and consignee contacts.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Customer records added below are stored in your active browser session only until a <code>customers</code> table is created in Supabase.
+            </div>
+            <div class="panel">
+              <h3>Add Customer</h3>
+              <form id="customerForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="custCompanyInput">Company Name *</label>
+                    <input type="text" id="custCompanyInput" placeholder="e.g. Zambezi Traders Pvt Ltd" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="custContactInput">Contact Person *</label>
+                    <input type="text" id="custContactInput" placeholder="e.g. T. Moyo" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="custEmailInput">Email Address *</label>
+                    <input type="email" id="custEmailInput" placeholder="logistics@company.co.zw" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="custCountryInput">Country *</label>
+                    <input type="text" id="custCountryInput" placeholder="e.g. Zimbabwe" required>
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Save Customer to Session</button>
+                </div>
+              </form>
+              <div id="customerMsg" class="status" style="display:none;"></div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Company</th>
+                      <th>Contact</th>
+                      <th>Email</th>
+                      <th>Country</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customersTableBody">
+                    <tr><td colspan="4" class="muted">No customers added in this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 9. INVOICES AND PAYMENTS -->
+          <section id="invoices" class="section-view">
+            <h1>Invoices & Payments</h1>
+            <p class="muted">Track client freight invoices and payment statuses.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Invoice records below are stored in your current session only. Persistent billing and payment gateway webhooks require an <code>invoices</code> table in Supabase.
+            </div>
+            <div class="panel">
+              <h3>Record Freight Invoice</h3>
+              <form id="invoiceForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="invNumberInput">Invoice Number *</label>
+                    <input type="text" id="invNumberInput" placeholder="e.g. INV-2026-009" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="invClientInput">Customer Name *</label>
+                    <input type="text" id="invClientInput" placeholder="e.g. Zambezi Traders Pvt Ltd" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="invAmountInput">Amount (USD) *</label>
+                    <input type="number" id="invAmountInput" step="0.01" min="0.01" placeholder="e.g. 1450.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="invStatusInput">Payment Status *</label>
+                    <select id="invStatusInput">
+                      <option value="Unpaid">Unpaid</option>
+                      <option value="Part Paid">Part Paid</option>
+                      <option value="Paid">Paid</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Add Invoice to Session</button>
+                </div>
+              </form>
+              <div id="invoiceMsg" class="status" style="display:none;"></div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Invoice #</th>
+                      <th>Customer</th>
+                      <th>Amount (USD)</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoicesTableBody">
+                    <tr><td colspan="4" class="muted">No invoices recorded in this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 10. FINANCE -->
           <section id="finance" class="section-view">
             <h1>Finance</h1>
-            <div class="panel"><h3>Freight Finance</h3><p class="muted">Invoices, costs and payment records will be connected later.</p></div>
+            <p class="muted">Calculate shipment gross margin and track session billing totals.</p>
+            <div class="backend-notice">
+              <strong>Backend Integration Needed:</strong> Automated general ledger, multi-currency FX rates, and duty disbursement accounting require backend financial tables in Supabase.
+            </div>
+            <div class="stats">
+              <div class="stat"><p>Session Billed (USD)</p><h2 id="finTotalBilled">$0.00</h2></div>
+              <div class="stat"><p>Session Collected (USD)</p><h2 id="finTotalPaid">$0.00</h2></div>
+              <div class="stat"><p>Session Outstanding</p><h2 id="finTotalUnpaid">$0.00</h2></div>
+              <div class="stat"><p>Saved Documents</p><h2 id="finDocCount">0</h2></div>
+            </div>
+            <div class="panel">
+              <h3>Shipment Cost & Margin Calculator</h3>
+              <form id="marginForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="finRevenue">Client Freight Charge (USD) *</label>
+                    <input type="number" id="finRevenue" step="0.01" min="0" placeholder="e.g. 2200.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="finCarrierCost">Linehaul / Carrier Cost (USD) *</label>
+                    <input type="number" id="finCarrierCost" step="0.01" min="0" placeholder="e.g. 1550.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="finBorderCost">Border & Clearing Fees (USD)</label>
+                    <input type="number" id="finBorderCost" step="0.01" min="0" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="finOtherCost">Other Disbursements (USD)</label>
+                    <input type="number" id="finOtherCost" step="0.01" min="0" value="0">
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Calculate Margin</button>
+                </div>
+              </form>
+              <div id="marginResult" class="status">Enter shipment revenue and costs above to compute net margin.</div>
+            </div>
           </section>
 
+          <!-- 11. REPORTS AND ANALYTICS -->
           <section id="reports" class="section-view">
-            <h1>Reports</h1>
-            <div class="panel"><h3>Business Reports</h3><p class="muted">Operational reports and export tools will be developed here.</p></div>
+            <h1>Reports & Analytics</h1>
+            <p class="muted">Export operational data and inspect document activity.</p>
+            <div class="backend-live">
+              <strong>Connected Export:</strong> Exports your loaded Supabase <code>documents</code> metadata to a CSV spreadsheet.
+            </div>
+            <div class="panel">
+              <h3>Document Activity Breakdown</h3>
+              <p class="muted" id="reportSummaryText">Load your Document Library to generate a breakdown by document type.</p>
+              <div class="btn-row">
+                <button type="button" class="btn btn-primary" id="exportDocsCsvBtn">Export Saved Documents (CSV)</button>
+                <button type="button" class="btn btn-outline" onclick="loadDocumentLibrary()">Sync Latest Data</button>
+              </div>
+              <div id="reportStatus" class="status">Ready to export loaded document metadata.</div>
+            </div>
           </section>
 
+          <!-- 12. SETTINGS AND ADMINISTRATION -->
           <section id="settings" class="section-view">
-            <h1>Settings</h1>
-            <div class="panel"><h3>Workspace Settings</h3><p class="muted">Company settings, user permissions and preferences will be developed here.</p></div>
+            <h1>Settings & Administration</h1>
+            <p class="muted">Account identity, company membership, and system integration status.</p>
+            <div class="panel">
+              <h3>Current User & Company Membership</h3>
+              <div id="settingsAccountInfo" class="status">Sign in to inspect your Supabase user ID and company membership.</div>
+              <div class="btn-row">
+                <button type="button" class="btn btn-outline" id="refreshAccountBtn">Refresh Account Info</button>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>System Architecture & Backend Checklist</h3>
+              <ul class="muted" style="line-height: 1.8; padding-left: 20px;">
+                <li><strong>Connected:</strong> Supabase Auth (Sign In, Registration, Session Persistence, Sign Out).</li>
+                <li><strong>Connected:</strong> Supabase Storage (<code>freight-documents</code> bucket with company-scoped paths).</li>
+                <li><strong>Connected:</strong> Supabase PostgreSQL table <code>documents</code> and <code>company_members</code> lookup.</li>
+                <li><strong>Connected:</strong> Client-side OCR via Tesseract.js (JPG/PNG) and Document Checker rules.</li>
+                <li><strong>Pending Backend Tables (RLS required):</strong> <code>shipments</code>, <code>customers</code>, <code>invoices</code>, and <code>customs_declarations</code>.</li>
+              </ul>
+            </div>
           </section>
         </div>
       </main>
@@ -476,11 +936,26 @@
     let supabaseClient = null;
     let authMode = "login";
 
+    // In-memory state for loaded Supabase documents & session-only modules
+    let loadedDocuments = [];
+    const sessionShipments = [];
+    const sessionCustomers = [];
+    const sessionInvoices = [];
+
     if (window.supabase && SUPABASE_KEY !== "YOUR_SUPABASE_PUBLISHABLE_KEY") {
       supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
       );
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function openAuth(mode) {
@@ -532,6 +1007,8 @@
 
       switchSection("overview");
       closeAuth();
+      loadDocumentLibrary();
+      loadAccountSettings();
     }
 
     function showLanding() {
@@ -562,6 +1039,13 @@
           }
         });
       }
+
+      if (sectionName === "library" || sectionName === "reports") {
+        loadDocumentLibrary();
+      }
+      if (sectionName === "settings") {
+        loadAccountSettings();
+      }
     }
 
     async function signOut() {
@@ -577,6 +1061,7 @@
         return;
       }
 
+      loadedDocuments = [];
       showLanding();
     }
 
@@ -637,6 +1122,7 @@
       }
     });
 
+    // --- PRESERVED DOCUMENT INPUT, UPLOAD, OCR & VALIDATION ---
     document.getElementById("documentInput").addEventListener("change", function() {
       const status = document.getElementById("uploadStatus");
       const file = this.files[0];
@@ -650,265 +1136,651 @@
         ". File is ready for the document-processing stage.";
     });
 
+    document.getElementById("uploadDocumentBtn").addEventListener("click", async function() {
+      const status = document.getElementById("uploadStatus");
+      const fileInput = document.getElementById("documentInput");
+      const file = fileInput.files[0];
+      const shipmentRef = document.getElementById("shipmentRef").value.trim();
+      const docType = document.getElementById("documentType").value;
+      const button = this;
 
-document.getElementById("uploadDocumentBtn").addEventListener("click", async function() {
-  const status = document.getElementById("uploadStatus");
-  const fileInput = document.getElementById("documentInput");
-  const file = fileInput.files[0];
-  const shipmentRef = document.getElementById("shipmentRef").value.trim();
-  const docType = document.getElementById("documentType").value;
-  const button = this;
+      if (!supabaseClient) {
+        status.textContent = "Supabase is not connected.";
+        return;
+      }
 
-  if (!supabaseClient) {
-    status.textContent = "Supabase is not connected.";
-    return;
-  }
+      if (!shipmentRef || !docType || !file) {
+        status.textContent = "Enter the shipment reference, choose a document type and select a file.";
+        return;
+      }
 
-  if (!shipmentRef || !docType || !file) {
-    status.textContent = "Enter the shipment reference, choose a document type and select a file.";
-    return;
-  }
+      const allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+      const fileName = file.name.toLowerCase();
+      const validFile = allowedExtensions.some(ext => fileName.endsWith(ext));
 
-  const allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
-  const fileName = file.name.toLowerCase();
-  const validFile = allowedExtensions.some(ext => fileName.endsWith(ext));
+      if (!validFile) {
+        status.textContent = "Please select a PDF, JPG or PNG file.";
+        return;
+      }
 
-  if (!validFile) {
-    status.textContent = "Please select a PDF, JPG or PNG file.";
-    return;
-  }
+      if (file.size > 10 * 1024 * 1024) {
+        status.textContent = "File is too large. Maximum size is 10 MB.";
+        return;
+      }
 
-  if (file.size > 10 * 1024 * 1024) {
-    status.textContent = "File is too large. Maximum size is 10 MB.";
-    return;
-  }
+      button.disabled = true;
+      status.textContent = "Preparing secure upload...";
 
-  button.disabled = true;
-  status.textContent = "Preparing secure upload...";
+      let uploadedPath = null;
 
-  let uploadedPath = null;
+      try {
+        const { data: userData, error: userError } =
+          await supabaseClient.auth.getUser();
 
-  try {
-    const { data: userData, error: userError } =
-      await supabaseClient.auth.getUser();
+        if (userError || !userData.user) {
+          throw new Error("Please sign in again.");
+        }
 
-    if (userError || !userData.user) {
-      throw new Error("Please sign in again.");
+        const user = userData.user;
+
+        const { data: membership, error: membershipError } =
+          await supabaseClient
+            .from("company_members")
+            .select("company_id")
+            .eq("user_id", user.id)
+            .limit(1)
+            .maybeSingle();
+
+        if (membershipError) throw membershipError;
+
+        if (!membership) {
+          throw new Error("No company membership was found.");
+        }
+
+        const safeName = file.name.replace(/[^\w.-]/g, "_");
+
+        uploadedPath =
+          membership.company_id + "/" +
+          crypto.randomUUID() + "-" + safeName;
+
+        status.textContent = "Uploading document...";
+
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from("freight-documents")
+          .upload(uploadedPath, file, {
+            contentType: file.type || "application/octet-stream",
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        status.textContent = "Saving document information...";
+
+        const { error: recordError } = await supabaseClient
+          .from("documents")
+          .insert({
+            company_id: membership.company_id,
+            shipment_ref: shipmentRef,
+            doc_type: docType,
+            file_name: file.name,
+            file_path: uploadedPath,
+            file_type: file.type || null,
+            uploaded_by: user.id
+          });
+
+        if (recordError) {
+          await supabaseClient.storage
+            .from("freight-documents")
+            .remove([uploadedPath]);
+
+          uploadedPath = null;
+          throw recordError;
+        }
+
+        status.textContent =
+          "Success! Your document has been uploaded and saved securely.";
+
+        fileInput.value = "";
+        document.getElementById("shipmentRef").value = "";
+        document.getElementById("documentType").value = "";
+
+        loadDocumentLibrary();
+
+      } catch (error) {
+        console.error("Document upload error:", error);
+        status.textContent = "Upload failed: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.getElementById("readDocumentBtn").addEventListener("click", async function() {
+      const fileInput = document.getElementById("documentInput");
+      const status = document.getElementById("ocrStatus");
+      const result = document.getElementById("ocrResult");
+      const button = this;
+      const file = fileInput.files[0];
+
+      if (!file) {
+        status.textContent = "Please select an image first.";
+        return;
+      }
+
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        status.textContent = "For now, OCR supports JPG and PNG images only. PDF reading comes next.";
+        return;
+      }
+
+      if (typeof Tesseract === "undefined") {
+        status.textContent = "OCR library could not load. Please check your internet connection.";
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = "Reading your document. Please wait...";
+      result.textContent = "";
+
+      try {
+        const { data } = await Tesseract.recognize(
+          file,
+          "eng",
+          {
+            logger: function(message) {
+              if (message.status === "recognizing text") {
+                status.textContent =
+                  "Reading document: " +
+                  Math.round(message.progress * 100) + "%";
+              }
+            }
+          }
+        );
+
+        const extractedText = data.text.trim();
+
+        if (extractedText) {
+          result.textContent = extractedText;
+          status.textContent = "Document reading completed.";
+        } else {
+          result.textContent = "No readable text was found.";
+          status.textContent = "Please try a clearer image.";
+        }
+
+      } catch (error) {
+        console.error("OCR error:", error);
+        status.textContent = "Could not read document: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.getElementById("validateDocumentBtn").addEventListener("click", function () {
+      const extractedText = document.getElementById("ocrResult").textContent.trim();
+      const shipmentRef = document.getElementById("shipmentRef").value.trim();
+      const documentType = document.getElementById("documentType").value;
+      const result = document.getElementById("validationResult");
+
+      const problems = [];
+
+      if (!shipmentRef) {
+        problems.push("Enter a shipment reference.");
+      }
+
+      if (!documentType) {
+        problems.push("Select a document type.");
+      }
+
+      if (!extractedText || extractedText === "Extracted text will appear here.") {
+        problems.push("Read a document first.");
+      }
+
+      if (problems.length > 0) {
+        result.textContent = "Document check needs attention:\n" + problems.join("\n");
+        result.style.color = "red";
+        return;
+      }
+
+      const normalizeReference = (value) =>
+        value.toUpperCase()
+          .replace(/[^A-Z0-9]/g, "")
+          .replace(/O/g, "0")
+          .replace(/I/g, "1")
+          .replace(/L/g, "1");
+
+      const normalizedText = normalizeReference(extractedText);
+      const normalizedReference = normalizeReference(shipmentRef);
+
+      if (!normalizedText.includes(normalizedReference)) {
+        result.textContent =
+          "Check incomplete: shipment reference could not be matched. Please review the extracted text.";
+        result.style.color = "red";
+        return;
+      }
+
+      const requiredFields = [
+        { name: "Company name", pattern: /company\s*:\s*\S+/i },
+        { name: "Invoice number", pattern: /invoice\s*(number|no\.?)\s*[:#-]?\s*\S+/i },
+        { name: "Invoice amount", pattern: /amount\s*[:#-]?\s*(USD|ZWL|ZAR|\$)?\s*\d[\d,.]*/i }
+      ];
+
+      const missingFields = requiredFields
+        .filter(field => !field.pattern.test(extractedText))
+        .map(field => field.name);
+
+      if (missingFields.length > 0) {
+        result.textContent =
+          "Shipment reference found, but missing information:\n" +
+          missingFields.join("\n");
+        result.style.color = "orange";
+      } else {
+        result.textContent =
+          "Basic invoice check passed! Shipment reference, company name, invoice number and amount were found. Please review the original document manually.";
+        result.style.color = "green";
+      }
+    });
+
+    // --- 3. DOCUMENT LIBRARY (CONNECTED TO SUPABASE) ---
+    async function loadDocumentLibrary() {
+      const statusEl = document.getElementById("libraryStatus");
+      const tbody = document.getElementById("libraryTableBody");
+
+      if (!supabaseClient) {
+        statusEl.textContent = "Supabase is not connected.";
+        return;
+      }
+
+      statusEl.textContent = "Loading saved documents from Supabase...";
+
+      try {
+        const { data: userData } = await supabaseClient.auth.getUser();
+        if (!userData?.user) {
+          statusEl.textContent = "Please sign in to view saved documents.";
+          return;
+        }
+
+        const { data, error } = await supabaseClient
+          .from("documents")
+          .select("id, shipment_ref, doc_type, file_name, file_path, created_at")
+          .order("created_at", { ascending: false })
+          .limit(100);
+
+        if (error) throw error;
+
+        loadedDocuments = data || [];
+        document.getElementById("statDocuments").textContent = loadedDocuments.length;
+        document.getElementById("finDocCount").textContent = loadedDocuments.length;
+        updateReportSummary();
+        renderDocumentLibrary();
+        statusEl.textContent = "Loaded " + loadedDocuments.length + " document(s) from Supabase.";
+      } catch (err) {
+        console.error("Library load error:", err);
+        statusEl.textContent = "Could not load documents: " + err.message;
+        tbody.innerHTML = '<tr><td colspan="5" class="muted">Unable to fetch documents. Verify RLS policies on the documents table.</td></tr>';
+      }
     }
 
-    const user = userData.user;
+    function renderDocumentLibrary() {
+      const tbody = document.getElementById("libraryTableBody");
+      const query = document.getElementById("librarySearch").value.trim().toLowerCase();
 
-    const { data: membership, error: membershipError } =
-      await supabaseClient
+      const filtered = loadedDocuments.filter(doc => {
+        if (!query) return true;
+        return (
+          (doc.shipment_ref || "").toLowerCase().includes(query) ||
+          (doc.doc_type || "").toLowerCase().includes(query) ||
+          (doc.file_name || "").toLowerCase().includes(query)
+        );
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="muted">No matching documents found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(doc => {
+        const dateStr = doc.created_at ? new Date(doc.created_at).toLocaleDateString() : "-";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(doc.shipment_ref)}</strong></td>
+            <td><span class="badge">${escapeHtml(doc.doc_type)}</span></td>
+            <td>${escapeHtml(doc.file_name)}</td>
+            <td>${escapeHtml(dateStr)}</td>
+            <td><button type="button" class="btn btn-outline btn-sm" onclick="openStorageDocument('${escapeHtml(doc.file_path)}')">Open File</button></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function openStorageDocument(filePath) {
+      if (!supabaseClient || !filePath) return;
+      const statusEl = document.getElementById("libraryStatus");
+      statusEl.textContent = "Generating secure temporary link...";
+
+      const { data, error } = await supabaseClient
+        .storage
+        .from("freight-documents")
+        .createSignedUrl(filePath, 60);
+
+      if (error) {
+        statusEl.textContent = "Could not open file: " + error.message;
+        return;
+      }
+
+      statusEl.textContent = "Document opened in a new tab.";
+      window.open(data.signedUrl, "_blank", "noopener");
+    }
+
+    document.getElementById("refreshLibraryBtn").addEventListener("click", loadDocumentLibrary);
+    document.getElementById("librarySearch").addEventListener("input", renderDocumentLibrary);
+
+    // --- 4 & 5. SHIPMENTS & LIVE TRACKING (SESSION-SCOPED) ---
+    document.getElementById("shipmentForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const ref = document.getElementById("shipRefInput").value.trim();
+      const mode = document.getElementById("shipModeInput").value;
+      const origin = document.getElementById("shipOriginInput").value.trim();
+      const dest = document.getElementById("shipDestInput").value.trim();
+      const border = document.getElementById("shipBorderInput").value.trim() || "Direct";
+      const status = document.getElementById("shipStatusInput").value;
+      const msgEl = document.getElementById("shipmentMsg");
+
+      if (!ref || !mode || !origin || !dest) {
+        msgEl.style.display = "block";
+        msgEl.textContent = "Please complete all required shipment fields.";
+        return;
+      }
+
+      sessionShipments.unshift({
+        ref,
+        mode,
+        origin,
+        dest,
+        border,
+        status,
+        updatedAt: new Date().toLocaleTimeString()
+      });
+
+      document.getElementById("statShipments").textContent = sessionShipments.length;
+      renderShipments();
+      this.reset();
+      msgEl.style.display = "block";
+      msgEl.textContent = "Shipment " + ref + " added to current session (connect a Supabase shipments table to persist permanently).";
+    });
+
+    function renderShipments() {
+      const tbody = document.getElementById("shipmentsTableBody");
+      if (sessionShipments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="muted">No shipments recorded in this session.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sessionShipments.map(s => `
+        <tr>
+          <td><strong>${escapeHtml(s.ref)}</strong></td>
+          <td>${escapeHtml(s.origin)} → ${escapeHtml(s.dest)}</td>
+          <td>${escapeHtml(s.border)}</td>
+          <td>${escapeHtml(s.mode)}</td>
+          <td><span class="badge">${escapeHtml(s.status)}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    document.getElementById("trackShipmentBtn").addEventListener("click", function() {
+      const query = document.getElementById("trackingSearchInput").value.trim().toLowerCase();
+      const resEl = document.getElementById("trackingResult");
+
+      if (!query) {
+        resEl.textContent = "Please enter a shipment reference to search.";
+        return;
+      }
+
+      const match = sessionShipments.find(s => s.ref.toLowerCase() === query);
+      const docMatches = loadedDocuments.filter(d => (d.shipment_ref || "").toLowerCase() === query);
+
+      if (match) {
+        resEl.textContent =
+          "Shipment: " + match.ref +
+          "\nRoute: " + match.origin + " → " + match.dest + " (via " + match.border + ")" +
+          "\nCurrent Milestone: " + match.status + " (Updated at " + match.updatedAt + ")" +
+          "\nUploaded Documents Linked: " + docMatches.length;
+      } else if (docMatches.length > 0) {
+        resEl.textContent =
+          "Found " + docMatches.length + " uploaded document(s) for " + query.toUpperCase() +
+          ", but no live carrier GPS feed is connected yet.";
+      } else {
+        resEl.textContent =
+          "No shipment record found for \"" + query + "\" in the current session, and live carrier APIs are not yet connected.";
+      }
+    });
+
+    // --- 6. CUSTOMS MANAGEMENT ---
+    document.getElementById("customsForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const ref = document.getElementById("custShipRef").value.trim();
+      const port = document.getElementById("custPort").value;
+      const hs = document.getElementById("custHsCode").value.trim();
+      const regime = document.getElementById("custRegime").value;
+      const statusEl = document.getElementById("customsStatus");
+
+      if (!ref || !port || !hs) {
+        statusEl.textContent = "Please enter Shipment Reference, Border Post, and HS Tariff Code.";
+        return;
+      }
+
+      const matchingDocs = loadedDocuments.filter(d => (d.shipment_ref || "").toLowerCase() === ref.toLowerCase());
+      statusEl.textContent =
+        "Declaration Draft Validated (Client-Side Only):\n" +
+        "Reference: " + ref + " | Port: " + port + " | Regime: " + regime + " | HS Code: " + hs + "\n" +
+        "Saved Supabase Documents Found for Reference: " + matchingDocs.length + "\n" +
+        "Note: Electronic customs filing requires backend customs gateway integration.";
+    });
+
+    // --- 7. COMPLIANCE ---
+    document.getElementById("evaluateComplianceBtn").addEventListener("click", function() {
+      const checks = Array.from(document.querySelectorAll(".comp-check"));
+      const checkedCount = checks.filter(c => c.checked).length;
+      const resEl = document.getElementById("complianceResult");
+
+      if (checkedCount === checks.length) {
+        resEl.style.color = "green";
+        resEl.textContent = "All " + checks.length + " pre-clearance checklist items confirmed. Proceed with manual broker verification.";
+      } else {
+        resEl.style.color = "#9a5b00";
+        resEl.textContent = checkedCount + " of " + checks.length + " items confirmed. Complete remaining items before border dispatch.";
+      }
+    });
+
+    // --- 8. CUSTOMERS ---
+    document.getElementById("customerForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const company = document.getElementById("custCompanyInput").value.trim();
+      const contact = document.getElementById("custContactInput").value.trim();
+      const email = document.getElementById("custEmailInput").value.trim();
+      const country = document.getElementById("custCountryInput").value.trim();
+      const msgEl = document.getElementById("customerMsg");
+
+      if (!company || !contact || !email || !country) return;
+
+      sessionCustomers.unshift({ company, contact, email, country });
+      document.getElementById("statCustomers").textContent = sessionCustomers.length;
+
+      const tbody = document.getElementById("customersTableBody");
+      tbody.innerHTML = sessionCustomers.map(c => `
+        <tr>
+          <td><strong>${escapeHtml(c.company)}</strong></td>
+          <td>${escapeHtml(c.contact)}</td>
+          <td>${escapeHtml(c.email)}</td>
+          <td>${escapeHtml(c.country)}</td>
+        </tr>
+      `).join("");
+
+      this.reset();
+      msgEl.style.display = "block";
+      msgEl.textContent = "Customer added to current session (connect a Supabase customers table for permanent storage).";
+    });
+
+    // --- 9 & 10. INVOICES AND FINANCE ---
+    document.getElementById("invoiceForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const number = document.getElementById("invNumberInput").value.trim();
+      const client = document.getElementById("invClientInput").value.trim();
+      const amount = parseFloat(document.getElementById("invAmountInput").value);
+      const status = document.getElementById("invStatusInput").value;
+      const msgEl = document.getElementById("invoiceMsg");
+
+      if (!number || !client || isNaN(amount) || amount <= 0) return;
+
+      sessionInvoices.unshift({ number, client, amount, status });
+      document.getElementById("statInvoices").textContent = sessionInvoices.length;
+      renderInvoicesAndFinance();
+
+      this.reset();
+      msgEl.style.display = "block";
+      msgEl.textContent = "Invoice " + number + " added to current session (connect a Supabase invoices table for permanent storage).";
+    });
+
+    function renderInvoicesAndFinance() {
+      const tbody = document.getElementById("invoicesTableBody");
+      let totalBilled = 0;
+      let totalPaid = 0;
+
+      tbody.innerHTML = sessionInvoices.map(inv => {
+        totalBilled += inv.amount;
+        if (inv.status === "Paid") totalPaid += inv.amount;
+        const badgeClass = inv.status === "Paid" ? "badge badge-ok" : "badge badge-warn";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(inv.number)}</strong></td>
+            <td>${escapeHtml(inv.client)}</td>
+            <td>$${inv.amount.toFixed(2)}</td>
+            <td><span class="${badgeClass}">${escapeHtml(inv.status)}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      const unpaid = totalBilled - totalPaid;
+      document.getElementById("finTotalBilled").textContent = "$" + totalBilled.toFixed(2);
+      document.getElementById("finTotalPaid").textContent = "$" + totalPaid.toFixed(2);
+      document.getElementById("finTotalUnpaid").textContent = "$" + unpaid.toFixed(2);
+    }
+
+    document.getElementById("marginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const rev = parseFloat(document.getElementById("finRevenue").value) || 0;
+      const carrier = parseFloat(document.getElementById("finCarrierCost").value) || 0;
+      const border = parseFloat(document.getElementById("finBorderCost").value) || 0;
+      const other = parseFloat(document.getElementById("finOtherCost").value) || 0;
+
+      const totalCost = carrier + border + other;
+      const netMargin = rev - totalCost;
+      const pct = rev > 0 ? ((netMargin / rev) * 100).toFixed(1) : "0.0";
+      const resEl = document.getElementById("marginResult");
+
+      resEl.style.color = netMargin >= 0 ? "green" : "red";
+      resEl.textContent =
+        "Total Revenue: $" + rev.toFixed(2) +
+        " | Total Costs: $" + totalCost.toFixed(2) +
+        "\nEstimated Gross Margin: $" + netMargin.toFixed(2) + " (" + pct + "%)";
+    });
+
+    // --- 11. REPORTS AND ANALYTICS ---
+    function updateReportSummary() {
+      const summaryEl = document.getElementById("reportSummaryText");
+      if (loadedDocuments.length === 0) {
+        summaryEl.textContent = "No saved documents loaded yet. Upload documents in Document Checker or refresh your library.";
+        return;
+      }
+
+      const counts = {};
+      loadedDocuments.forEach(d => {
+        const key = d.doc_type || "Uncategorized";
+        counts[key] = (counts[key] || 0) + 1;
+      });
+
+      const breakdown = Object.entries(counts)
+        .map(([type, count]) => type + ": " + count)
+        .join(" | ");
+
+      summaryEl.textContent = "Total Saved Documents: " + loadedDocuments.length + " (" + breakdown + ")";
+    }
+
+    document.getElementById("exportDocsCsvBtn").addEventListener("click", function() {
+      const statusEl = document.getElementById("reportStatus");
+      if (loadedDocuments.length === 0) {
+        statusEl.textContent = "No saved documents available to export.";
+        return;
+      }
+
+      const headers = ["Shipment Reference", "Document Type", "File Name", "Storage Path", "Uploaded At"];
+      const rows = loadedDocuments.map(d => [
+        `"${(d.shipment_ref || "").replace(/"/g, '""')}"`,
+        `"${(d.doc_type || "").replace(/"/g, '""')}"`,
+        `"${(d.file_name || "").replace(/"/g, '""')}"`,
+        `"${(d.file_path || "").replace(/"/g, '""')}"`,
+        `"${(d.created_at || "").replace(/"/g, '""')}"`
+      ].join(","));
+
+      const csvContent = [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "borderflow-documents-export.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      statusEl.textContent = "Exported " + loadedDocuments.length + " document record(s) to CSV.";
+    });
+
+    // --- 12. SETTINGS AND ADMINISTRATION ---
+    async function loadAccountSettings() {
+      const infoEl = document.getElementById("settingsAccountInfo");
+      if (!supabaseClient) {
+        infoEl.textContent = "Supabase client is not initialized.";
+        return;
+      }
+
+      const { data: userData, error: userErr } = await supabaseClient.auth.getUser();
+      if (userErr || !userData?.user) {
+        infoEl.textContent = "Not signed in.";
+        return;
+      }
+
+      const user = userData.user;
+      const { data: membership, error: memErr } = await supabaseClient
         .from("company_members")
         .select("company_id")
         .eq("user_id", user.id)
         .limit(1)
         .maybeSingle();
 
-    if (membershipError) throw membershipError;
+      const companyStatus = memErr
+        ? "Error checking membership: " + memErr.message
+        : membership
+          ? "Linked Company ID: " + membership.company_id
+          : "No company_members record found (required before uploading documents).";
 
-    if (!membership) {
-      throw new Error("No company membership was found.");
+      infoEl.textContent =
+        "Email: " + (user.email || "-") +
+        "\nUser ID: " + user.id +
+        "\n" + companyStatus;
     }
 
-    const safeName = file.name.replace(/[^\w.-]/g, "_");
+    document.getElementById("refreshAccountBtn").addEventListener("click", loadAccountSettings);
 
-    uploadedPath =
-      membership.company_id + "/" +
-      crypto.randomUUID() + "-" + safeName;
-
-    status.textContent = "Uploading document...";
-
-    const { error: uploadError } = await supabaseClient
-      .storage
-      .from("freight-documents")
-      .upload(uploadedPath, file, {
-        contentType: file.type || "application/octet-stream",
-        upsert: false
-      });
-
-    if (uploadError) throw uploadError;
-
-    status.textContent = "Saving document information...";
-
-    const { error: recordError } = await supabaseClient
-      .from("documents")
-      .insert({
-        company_id: membership.company_id,
-        shipment_ref: shipmentRef,
-        doc_type: docType,
-        file_name: file.name,
-        file_path: uploadedPath,
-        file_type: file.type || null,
-        uploaded_by: user.id
-      });
-
-    if (recordError) {
-      await supabaseClient.storage
-        .from("freight-documents")
-        .remove([uploadedPath]);
-
-      uploadedPath = null;
-      throw recordError;
-    }
-
-    status.textContent =
-      "Success! Your document has been uploaded and saved securely.";
-
-    fileInput.value = "";
-    document.getElementById("shipmentRef").value = "";
-    document.getElementById("documentType").value = "";
-
-  } catch (error) {
-    console.error("Document upload error:", error);
-    status.textContent = "Upload failed: " + error.message;
-  } finally {
-    button.disabled = false;
-  }
-});
-
-  
-document.getElementById("readDocumentBtn").addEventListener("click", async function() {
-  const fileInput = document.getElementById("documentInput");
-  const status = document.getElementById("ocrStatus");
-  const result = document.getElementById("ocrResult");
-  const button = this;
-  const file = fileInput.files[0];
-
-  if (!file) {
-    status.textContent = "Please select an image first.";
-    return;
-  }
-
-  if (!["image/jpeg", "image/png"].includes(file.type)) {
-    status.textContent = "For now, OCR supports JPG and PNG images only. PDF reading comes next.";
-    return;
-  }
-
-  if (typeof Tesseract === "undefined") {
-    status.textContent = "OCR library could not load. Please check your internet connection.";
-    return;
-  }
-
-  button.disabled = true;
-  status.textContent = "Reading your document. Please wait...";
-  result.textContent = "";
-
-  try {
-    const { data } = await Tesseract.recognize(
-      file,
-      "eng",
-      {
-        logger: function(message) {
-          if (message.status === "recognizing text") {
-            status.textContent =
-              "Reading document: " +
-              Math.round(message.progress * 100) + "%";
-          }
-        }
-      }
-    );
-
-    const extractedText = data.text.trim();
-
-    if (extractedText) {
-      result.textContent = extractedText;
-      status.textContent = "Document reading completed.";
-    } else {
-      result.textContent = "No readable text was found.";
-      status.textContent = "Please try a clearer image.";
-    }
-
-  } catch (error) {
-    console.error("OCR error:", error);
-    status.textContent = "Could not read document: " + error.message;
-  } finally {
-    button.disabled = false;
-  }
-});
-  
-  document.getElementById("validateDocumentBtn").addEventListener("click", function () {
-  const extractedText = document.getElementById("ocrResult").textContent.trim();
-  const shipmentRef = document.getElementById("shipmentRef").value.trim();
-  const documentType = document.getElementById("documentType").value;
-  const result = document.getElementById("validationResult");
-
-  const problems = [];
-
-  if (!shipmentRef) {
-    problems.push("Enter a shipment reference.");
-  }
-
-  if (!documentType) {
-    problems.push("Select a document type.");
-  }
-
-  if (!extractedText || extractedText === "Extracted text will appear here.") {
-    problems.push("Read a document first.");
-  }
-
-  if (problems.length > 0) {
-    result.textContent = "Document check needs attention:\n" + problems.join("\n");
-    result.style.color = "red";
-    return;
-  }
-
-  const normalizeReference = (value) =>
-  value.toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .replace(/O/g, "0")
-    .replace(/I/g, "1")
-    .replace(/L/g, "1");
-
-const normalizedText = normalizeReference(extractedText);
-const normalizedReference = normalizeReference(shipmentRef);
-
-if (!normalizedText.includes(normalizedReference)) {
-  result.textContent =
-    "Check incomplete: shipment reference could not be matched. Please review the extracted text.";
-  result.style.color = "red";
-  return;
-}
-
-  const requiredFields = [
-  { name: "Company name", pattern: /company\s*:\s*\S+/i },
-  { name: "Invoice number", pattern: /invoice\s*(number|no\.?)\s*[:#-]?\s*\S+/i },
-  { name: "Invoice amount", pattern: /amount\s*[:#-]?\s*(USD|ZWL|ZAR|\$)?\s*\d[\d,.]*/i }
-];
-
-const missingFields = requiredFields
-  .filter(field => !field.pattern.test(extractedText))
-  .map(field => field.name);
-
-if (missingFields.length > 0) {
-  result.textContent =
-    "Shipment reference found, but missing information:\n" +
-    missingFields.join("\n");
-  result.style.color = "orange";
-} else {
-  result.textContent =
-    "Basic invoice check passed! Shipment reference, company name, invoice number and amount were found. Please review the original document manually.";
-  result.style.color = "green";
-}
-});  
     async function checkExistingSession() {
-  if (!supabaseClient) return;
+      if (!supabaseClient) return;
 
-  const { data, error } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient.auth.getSession();
 
-  if (!error && data.session) {
-    showWorkspace(data.session.user);
-  }
-}
+      if (!error && data.session) {
+        showWorkspace(data.session.user);
+      }
+    }
 
-checkExistingSession();
-
-
-  
-    
-    
-    
+    checkExistingSession();
   </script>
 
 </body>
