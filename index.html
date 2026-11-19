@@ -871,8 +871,26 @@ if (!normalizedText.includes(normalizedReference)) {
   return;
 }
 
-  result.textContent = "Basic check passed! The shipment reference was found in the extracted text. Please review the document manually.";
+  const requiredFields = [
+  { name: "Company name", pattern: /company\s*:\s*\S+/i },
+  { name: "Invoice number", pattern: /invoice\s*(number|no\.?)\s*[:#-]?\s*\S+/i },
+  { name: "Invoice amount", pattern: /amount\s*[:#-]?\s*(USD|ZWL|ZAR|\$)?\s*\d[\d,.]*/i }
+];
+
+const missingFields = requiredFields
+  .filter(field => !field.pattern.test(extractedText))
+  .map(field => field.name);
+
+if (missingFields.length > 0) {
+  result.textContent =
+    "Shipment reference found, but missing information:\n" +
+    missingFields.join("\n");
+  result.style.color = "orange";
+} else {
+  result.textContent =
+    "Basic invoice check passed! Shipment reference, company name, invoice number and amount were found. Please review the original document manually.";
   result.style.color = "green";
+}
 });  
     async function checkExistingSession() {
   if (!supabaseClient) return;
