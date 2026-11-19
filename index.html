@@ -854,11 +854,22 @@ document.getElementById("readDocumentBtn").addEventListener("click", async funct
     return;
   }
 
-  if (!extractedText.toLowerCase().includes(shipmentRef.toLowerCase())) {
-    result.textContent = "Check incomplete: the shipment reference was not found in the document text.";
-    result.style.color = "red";
-    return;
-  }
+  const normalizeReference = (value) =>
+  value.toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .replace(/O/g, "0")
+    .replace(/I/g, "1")
+    .replace(/L/g, "1");
+
+const normalizedText = normalizeReference(extractedText);
+const normalizedReference = normalizeReference(shipmentRef);
+
+if (!normalizedText.includes(normalizedReference)) {
+  result.textContent =
+    "Check incomplete: shipment reference could not be matched. Please review the extracted text.";
+  result.style.color = "red";
+  return;
+}
 
   result.textContent = "Basic check passed! The shipment reference was found in the extracted text. Please review the document manually.";
   result.style.color = "green";
