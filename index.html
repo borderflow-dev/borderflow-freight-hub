@@ -1,512 +1,2713 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BorderFlow | Freight & Customs Management</title>
-<meta name="description" content="BorderFlow - AI-powered freight, customs and cross-border operations.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<style>
-:root{
- --navy:#101d35;--blue:#2864e8;--light:#f4f7fc;
- --white:#fff;--text:#1b2940;--muted:#718096;
- --border:#e4eaf2;--green:#159b69;--red:#d64a4a;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--light);font-family:Inter,Arial,sans-serif;color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-#loginView{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login-card{background:white;padding:32px;border-radius:16px;width:min(420px,100%);box-shadow:0 12px 40px #14294b12}
-.brand{font-size:25px;font-weight:800;color:var(--navy)}
-.brand span{color:var(--blue)}
-.login-card input{width:100%;padding:13px;margin:8px 0 14px;border:1px solid var(--border);border-radius:8px}
-.primary{background:var(--blue);color:white;border:0;padding:11px 17px;border-radius:8px;font-weight:600}
-.secondary{background:#edf2ff;color:var(--blue);border:0;padding:10px 14px;border-radius:8px}
-.danger{background:#fff0f0;color:var(--red);border:0;padding:9px 12px;border-radius:8px}
-#appShell{min-height:100vh}
-.sidebar{width:245px;background:var(--navy);color:white;position:fixed;inset:0 auto 0 0;padding:24px 14px;overflow-y:auto;z-index:5}
-.sidebar .brand{color:white;padding:0 12px 25px}
-.nav-label{font-size:10px;letter-spacing:1.5px;color:#8da1bf;padding:17px 12px 8px}
-.nav-btn{display:flex;width:100%;gap:12px;align-items:center;text-align:left;padding:12px;border:0;background:transparent;color:#c7d2e2;border-radius:8px;margin:3px 0}
-.nav-btn:hover,.nav-btn.active{background:#253b60;color:white}
-.main{margin-left:245px;min-height:100vh}
-.topbar{height:72px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:3}
-.content{padding:28px;max-width:1500px;margin:auto}
-.page-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
-h1{font-size:25px;margin:0 0 6px}
-h2{font-size:18px;margin:0 0 15px}
-.muted{color:var(--muted);font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.card{background:white;border:1px solid var(--border);border-radius:12px;padding:19px;margin-bottom:17px}
-.metric{font-size:28px;font-weight:800;margin:12px 0 4px}
-.metric-label{font-size:13px;color:var(--muted)}
-.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:17px}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:12px;font-weight:650;color:#526078}
-.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;background:white}
-.field textarea{min-height:100px;resize:vertical}
-.full{grid-column:1/-1}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:600px}
-th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:13px}
-th{color:var(--muted);font-weight:600}
-.status{display:inline-block;padding:5px 9px;border-radius:20px;background:#edf2ff;color:var(--blue);font-size:11px}
-.status.Cleared{background:#e5f7ef;color:var(--green)}
-.status.Rejected{background:#fff0f0;color:var(--red)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.notice{padding:12px;border-radius:8px;background:#edf3ff;color:#31558c;font-size:13px;margin:12px 0}
-#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:white;padding:13px 18px;border-radius:9px;z-index:20;display:none;max-width:90vw}
-#mobileMenu{display:none}
-.agent-card{border:1px solid var(--border);padding:15px;border-radius:10px}
-.agent-card strong{display:block;margin-bottom:5px}
-@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){
- .sidebar{display:none;width:245px}
- .sidebar.open{display:block}
- .main{margin-left:0}
- #mobileMenu{display:inline-block}
- .content{padding:17px}
- .topbar{padding:0 15px}
- .grid{grid-template-columns:1fr 1fr}
- .two-col{grid-template-columns:1fr}
- .form-grid{grid-template-columns:1fr}
- .page-heading{align-items:flex-start;flex-direction:column}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BorderFlow freight, customs and document intelligence platform.">
+  <title>BorderFlow | Freight & Customs</title>
+
+  <style>
+    :root {
+      --navy: #101d35;
+      --navy-light: #192b49;
+      --blue: #2864e8;
+      --blue-dark: #1e50c4;
+      --light: #f4f7fc;
+      --white: #ffffff;
+      --text: #1c2940;
+      --muted: #738099;
+      --border: #e4eaf3;
+      --green: #15966b;
+      --orange: #d88724;
+      --red: #d94b55;
+      --shadow: 0 8px 30px rgba(16, 29, 53, .07);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: var(--light);
+      color: var(--text);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--blue);
+      color: white;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 17px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .btn-secondary {
+      background: #edf2fc;
+      color: var(--navy);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--blue);
+      border: 1px solid var(--border);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px;
+      outline: none;
+      background: white;
+      color: var(--text);
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(40, 100, 232, .1);
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Landing page */
+
+    .landing {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(40,100,232,.2), transparent 28%),
+        linear-gradient(135deg, #101d35, #172d50);
+      color: white;
+    }
+
+    .landing-nav {
+      max-width: 1180px;
+      margin: auto;
+      padding: 25px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .landing-nav .brand {
+      color: white;
+    }
+
+    .landing-nav-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .landing-content {
+      max-width: 1180px;
+      margin: auto;
+      padding: 90px 24px 110px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      align-items: center;
+      gap: 55px;
+    }
+
+    .landing-content h1 {
+      max-width: 700px;
+      font-size: clamp(40px, 6vw, 66px);
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      margin: 0 0 22px;
+    }
+
+    .landing-content p {
+      max-width: 610px;
+      color: #c2cee1;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .landing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .landing-preview {
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.2);
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .preview-line {
+      background: rgba(255,255,255,.12);
+      padding: 16px;
+      border-radius: 11px;
+      margin-top: 12px;
+    }
+
+    .preview-line small {
+      display: block;
+      color: #b8c8e1;
+      margin-bottom: 6px;
+    }
+
+    .preview-line strong {
+      font-size: 15px;
+    }
+
+    .preview-status {
+      color: #7de0b8;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Authentication */
+
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 25px;
+      background: var(--light);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      padding: 34px;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-card .brand {
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .auth-card h2 {
+      text-align: center;
+      margin: 0 0 8px;
+    }
+
+    .auth-card > p {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .auth-switch {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+      color: var(--muted);
+    }
+
+    .auth-switch a {
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .auth-message {
+      padding: 11px;
+      background: #fff4e8;
+      color: #945a12;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    /* Dashboard layout */
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background: var(--navy);
+      color: white;
+      min-height: 100vh;
+      padding: 23px 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar .brand {
+      padding: 0 9px 27px;
+    }
+
+    .sidebar-label {
+      color: #8293b0;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+      padding: 14px 11px 9px;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav-link {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-align: left;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #c1cce0;
+      padding: 12px 11px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: #243b60;
+      color: white;
+    }
+
+    .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 15px;
+    }
+
+    .sidebar-user {
+      padding: 12px 10px;
+      color: #c1cce0;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .main-area {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .topbar {
+      height: 72px;
+      padding: 0 28px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .topbar h2 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .connection-status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .page-content {
+      padding: 28px;
+      max-width: 1450px;
+      margin: auto;
+    }
+
+    .page-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 24px;
+    }
+
+    .page-heading h1 {
+      font-size: 25px;
+      margin: 0 0 7px;
+    }
+
+    .page-heading p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card,
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card {
+      padding: 20px;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 27px;
+      margin-top: 9px;
+    }
+
+    .panel {
+      padding: 21px;
+      margin-bottom: 20px;
+    }
+
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .panel-heading h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #eaf7f1;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-pending {
+      background: #fff4e5;
+      color: var(--orange);
+    }
+
+    .status-error {
+      background: #fff0f0;
+      color: var(--red);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 15px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 15px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .notice {
+      background: #edf4ff;
+      border: 1px solid #d7e5ff;
+      color: #31558d;
+      padding: 13px;
+      border-radius: 9px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .result-box {
+      background: #f7f9fd;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      max-width: 360px;
+      padding: 13px 17px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      font-size: 13px;
+    }
+
+    .mobile-menu {
+      display: none;
+      border: 0;
+      background: #edf2fc;
+      border-radius: 8px;
+      padding: 9px 11px;
+    }
+
+    @media (max-width: 1000px) {
+      .sidebar {
+        width: 220px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .landing-content {
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .landing-content {
+        grid-template-columns: 1fr;
+        padding-top: 55px;
+      }
+
+      .landing-preview {
+        max-width: 500px;
+      }
+
+      .sidebar {
+        position: fixed;
+        z-index: 100;
+        left: -260px;
+        top: 0;
+        transition: left .2s ease;
+        width: 250px;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .mobile-menu {
+        display: inline-block;
+      }
+
+      .topbar {
+        padding: 0 15px;
+      }
+
+      .page-content {
+        padding: 18px 14px;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-heading {
+        flex-direction: column;
+      }
+
+      .connection-status {
+        display: none;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+
+      .stat-card {
+        padding: 14px;
+      }
+
+      .stat-card strong {
+        font-size: 22px;
+      }
+
+      .auth-card {
+        padding: 24px 19px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .landing-nav {
+        padding: 18px;
+      }
+
+      .landing-nav-actions .btn {
+        padding: 9px 11px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="loginView">
- <div class="login-card">
-  <div class="brand">Border<span>Flow</span></div>
-  <p class="muted">Freight, customs and document intelligence.</p>
-  <h2 id="authHeading">Welcome back</h2>
-  <form id="authForm">
-   <div class="field">
-    <label>Email address</label>
-    <input id="email" type="email" required autocomplete="email">
-   </div>
-   <div class="field">
-    <label>Password</label>
-    <input id="password" type="password" required minlength="8" autocomplete="current-password">
-   </div>
-   <button class="primary" id="authSubmit" style="width:100%">Sign in</button>
-  </form>
-  <p class="muted" id="authToggle">New to BorderFlow? <a href="#" id="toggleAuth">Create an account</a></p>
-  <p class="muted" id="authMessage"></p>
- </div>
-</div>
+  <!-- LANDING PAGE -->
+  <section id="landingView" class="landing">
+    <nav class="landing-nav">
+      <div class="brand">
+        <span class="brand-mark">B</span>
+        <span>BorderFlow</span>
+      </div>
 
-<div id="appShell" class="hidden">
- <aside class="sidebar" id="sidebar">
-  <div class="brand">Border<span>Flow</span></div>
-  <div class="nav-label">WORKSPACE</div>
-  <button class="nav-btn active" data-page="overview">▦ Overview</button>
-  <button class="nav-btn" data-page="documents">▤ Document Checker</button>
-  <button class="nav-btn" data-page="library">▧ Document Library</button>
-  <button class="nav-btn" data-page="shipments">▣ Shipments</button>
-  <button class="nav-btn" data-page="tracking">⌖ Live Tracking</button>
-  <button class="nav-btn" data-page="customs">⚖ Customs Management</button>
-  <button class="nav-btn" data-page="compliance">✓ Compliance</button>
-  <button class="nav-btn" data-page="customers">♙ Customers</button>
-  <button class="nav-btn" data-page="invoices">▤ Invoices & Payments</button>
-  <button class="nav-btn" data-page="finance">▥ Finance</button>
-  <button class="nav-btn" data-page="reports">▥ Reports & Analytics</button>
-  <div class="nav-label">SYSTEM</div>
-  <button class="nav-btn" data-page="agents">✧ AI Agents</button>
-  <button class="nav-btn" data-page="settings">⚙ Settings & Admin</button>
-  <button class="nav-btn" id="logoutBtn">⇥ Sign out</button>
- </aside>
+      <div class="landing-nav-actions">
+        <button class="btn btn-outline" id="landingLogin">Sign in</button>
+        <button class="btn btn-primary" id="landingSignup">Get started</button>
+      </div>
+    </nav>
 
- <main class="main">
-  <header class="topbar">
-   <div class="actions">
-    <button class="secondary" id="mobileMenu">☰</button>
-    <strong id="pageTitle">Overview</strong>
-   </div>
-   <div class="actions">
-    <span class="muted" id="userEmail"></span>
-    <span class="status">Connected workspace</span>
-   </div>
-  </header>
-  <section class="content" id="pageContent"></section>
- </main>
-</div>
-<div id="toast"></div>
+    <div class="landing-content">
+      <div>
+        <p style="color:#8fb4ff;font-weight:800;letter-spacing:1.5px;font-size:12px;">
+          FREIGHT • CUSTOMS • DOCUMENT INTELLIGENCE
+        </p>
 
-<script>
-/* 1. CONFIGURATION: replace these two values with your Supabase project details. */
-const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
-const BUCKET = "freight-documents";
+        <h1>Move cargo across borders with confidence.</h1>
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let currentUser = null;
-let currentPage = "overview";
-let signupMode = false;
-let cachedShipments = [];
-let cachedCustomers = [];
+        <p>
+          Manage freight operations, organise shipment records and check
+          trade documents from one workspace. BorderFlow helps clearing
+          agents and logistics teams work with greater clarity.
+        </p>
 
-const $ = id => document.getElementById(id);
-const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-function toast(message){
- $("toast").textContent=message;
- $("toast").style.display="block";
- setTimeout(()=>$("toast").style.display="none",3500);
+        <div class="landing-actions">
+          <button class="btn btn-primary" id="heroGetStarted">
+            Get started
+          </button>
+          <button class="btn btn-outline" id="heroSignIn">
+            Sign in to your workspace
+          </button>
+        </div>
+      </div>
+
+      <div class="landing-preview">
+        <div class="preview-top">
+          <strong>BorderFlow Workspace</strong>
+          <span class="preview-status">● Workspace preview</span>
+        </div>
+
+        <div class="preview-line">
+          <small>Document intelligence</small>
+          <strong>Review trade documents in one place</strong>
+        </div>
+
+        <div class="preview-line">
+          <small>Shipment management</small>
+          <strong>Organise shipment references and records</strong>
+        </div>
+
+        <div class="preview-line">
+          <small>Customs operations</small>
+          <strong>Keep important clearance information together</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN AND SIGN-UP -->
+  <section id="loginView" class="auth-screen hidden">
+    <div class="auth-card">
+      <div class="brand">
+        <span class="brand-mark">B</span>
+        <span>BorderFlow</span>
+      </div>
+
+      <h2 id="authHeading">Welcome back</h2>
+      <p id="authDescription">Sign in to access your workspace.</p>
+
+      <div id="authMessage" class="auth-message hidden"></div>
+
+      <form id="authForm">
+        <div class="field hidden" id="fullNameField">
+          <label for="fullName">Full name</label>
+          <input id="fullName" type="text" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="authEmail">Email address</label>
+          <input id="authEmail" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="authPassword">Password</label>
+          <input id="authPassword" type="password"
+                 autocomplete="current-password" minlength="6" required>
+        </div>
+
+        <button class="btn btn-primary" id="authSubmit" type="submit"
+                style="width:100%;">
+          Sign in
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        <span id="authSwitchText">New to BorderFlow?</span>
+        <a href="#" id="toggleAuth">Create an account</a>
+      </div>
+
+      <p style="margin-top:20px;">
+        <a href="#" id="backToLanding" style="color:#738099;text-decoration:none;">
+          ← Back to home
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- MAIN APPLICATION -->
+  <section id="appShell" class="app-shell hidden">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand-mark">B</span>
+        <span>BorderFlow</span>
+      </div>
+
+      <div class="sidebar-label">Workspace</div>
+
+      <nav class="nav-list" id="mainNavigation">
+        <button class="nav-link active" data-page="overview">
+          <span class="nav-icon">⌂</span> Overview
+        </button>
+        <button class="nav-link" data-page="documents">
+          <span class="nav-icon">▤</span> AI Document Checker
+        </button>
+        <button class="nav-link" data-page="library">
+          <span class="nav-icon">▣</span> Document Library
+        </button>
+        <button class="nav-link" data-page="shipments">
+          <span class="nav-icon">▰</span> Shipments
+        </button>
+        <button class="nav-link" data-page="tracking">
+          <span class="nav-icon">⌖</span> Live Tracking
+        </button>
+        <button class="nav-link" data-page="customs">
+          <span class="nav-icon">⇄</span> Customs Management
+        </button>
+        <button class="nav-link" data-page="customers">
+          <span class="nav-icon">♙</span> Customers
+        </button>
+        <button class="nav-link" data-page="invoices">
+          <span class="nav-icon">▧</span> Invoices
+        </button>
+        <button class="nav-link" data-page="reports">
+          <span class="nav-icon">▥</span> Reports
+        </button>
+      </nav>
+
+      <div class="sidebar-label">Account</div>
+
+      <nav class="nav-list">
+        <button class="nav-link" data-page="settings">
+          <span class="nav-icon">⚙</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-user" id="sidebarUser">
+          Signed in
+        </div>
+        <button class="nav-link" id="logoutButton">
+          <span class="nav-icon">↪</span> Sign out
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div class="topbar-right">
+          <button class="mobile-menu" id="mobileMenu">☰</button>
+          <h2 id="topbarTitle">Overview</h2>
+        </div>
+
+        <div class="topbar-right">
+          <span class="connection-status" id="connectionStatus">
+            <span class="status-dot"></span> Checking connection
+          </span>
+          <strong id="topbarUser" style="font-size:13px;">Account</strong>
+        </div>
+      </header>
+
+      <main class="page-content">
+
+        <!-- OVERVIEW -->
+        <section class="app-page" id="page-overview">
+          <div class="page-heading">
+            <div>
+              <h1>Welcome to BorderFlow</h1>
+              <p>Your freight and customs operations workspace.</p>
+            </div>
+            <button class="btn btn-primary" data-goto="documents">
+              Check a document
+            </button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Total shipments</span>
+              <strong id="statShipments">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Documents uploaded</span>
+              <strong id="statDocuments">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Customers</span>
+              <strong id="statCustomers">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Invoices recorded</span>
+              <strong id="statInvoices">0</strong>
+            </div>
+          </div>
+
+          <div class="content-grid">
+            <div class="panel">
+              <div class="panel-heading">
+                <h3>Recent shipments</h3>
+                <button class="btn btn-secondary" data-goto="shipments">
+                  View all
+                </button>
+              </div>
+              <div id="overviewShipments" class="empty-state">
+                Your shipment records will appear here.
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-heading">
+                <h3>Recent documents</h3>
+                <button class="btn btn-secondary" data-goto="library">
+                  View library
+                </button>
+              </div>
+              <div id="overviewDocuments" class="empty-state">
+                Your uploaded documents will appear here.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCUMENT CHECKER -->
+        <section class="app-page hidden" id="page-documents">
+          <div class="page-heading">
+            <div>
+              <h1>AI Document Checker</h1>
+              <p>Upload a trade document for text extraction and AI review.</p>
+            </div>
+          </div>
+
+          <div class="notice">
+            BorderFlow can help identify missing information and possible
+            inconsistencies. AI results are assistance, not official customs
+            approval. Always have a qualified person verify important documents.
+          </div>
+
+          <div class="panel">
+            <form id="documentForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="documentShipmentRef">Shipment reference</label>
+                  <input id="documentShipmentRef" name="shipment_ref"
+                         placeholder="Example: BF001" required>
+                </div>
+
+                <div class="field">
+                  <label for="documentType">Document type</label>
+                  <select id="documentType" name="document_type" required>
+                    <option value="">Select document type</option>
+                    <option>Commercial Invoice</option>
+                    <option>Packing List</option>
+                    <option>Bill of Lading</option>
+                    <option>Certificate of Origin</option>
+                    <option>Customs Declaration</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="documentFile">Choose document (maximum 10 MB)</label>
+                <input id="documentFile" name="file" type="file"
+                       accept=".png,.jpg,.jpeg,.webp,.pdf" required>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary" id="checkDocumentButton"
+                        type="submit">
+                  Upload and check document
+                </button>
+                <button class="btn btn-secondary" type="reset">
+                  Clear form
+                </button>
+              </div>
+            </form>
+
+            <div id="documentProgress" class="notice hidden"
+                 style="margin-top:18px;"></div>
+
+            <h3 style="font-size:15px;margin-top:24px;">AI review result</h3>
+            <div id="aiResult" class="result-box">
+              Your document analysis will appear here.
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCUMENT LIBRARY -->
+        <section class="app-page hidden" id="page-library">
+          <div class="page-heading">
+            <div>
+              <h1>Document Library</h1>
+              <p>View the documents saved in your workspace.</p>
+            </div>
+            <button class="btn btn-primary" data-goto="documents">
+              Upload document
+            </button>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>File name</th>
+                    <th>Shipment reference</th>
+                    <th>Document type</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="documentsTableBody">
+                  <tr><td colspan="5" class="muted">No documents loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SHIPMENTS -->
+        <section class="app-page hidden" id="page-shipments">
+          <div class="page-heading">
+            <div>
+              <h1>Shipments</h1>
+              <p>Create and manage shipment records.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Create shipment</h3>
+            <form id="shipmentForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="shipmentRef">Shipment reference</label>
+                  <input id="shipmentRef" name="shipment_ref" required>
+                </div>
+                <div class="field">
+                  <label for="truckRegistration">Truck registration</label>
+                  <input id="truckRegistration" name="truck_registration">
+                </div>
+                <div class="field">
+                  <label for="driverName">Driver name</label>
+                  <input id="driverName" name="driver_name">
+                </div>
+                <div class="field">
+                  <label for="driverPhone">Driver phone</label>
+                  <input id="driverPhone" name="driver_phone">
+                </div>
+                <div class="field">
+                  <label for="originCity">Origin</label>
+                  <input id="originCity" name="origin_city">
+                </div>
+                <div class="field">
+                  <label for="destinationCity">Destination</label>
+                  <input id="destinationCity" name="destination_city">
+                </div>
+                <div class="field">
+                  <label for="borderPost">Border post</label>
+                  <input id="borderPost" name="border_post">
+                </div>
+                <div class="field">
+                  <label for="shipmentStatus">Status</label>
+                  <select id="shipmentStatus" name="status">
+                    <option>Created</option>
+                    <option>Arrived at Border</option>
+                    <option>Documents Checked</option>
+                    <option>Duty Paid</option>
+                    <option>Cleared to Go</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="cargoDescription">Cargo description</label>
+                <textarea id="cargoDescription" name="cargo_description"></textarea>
+              </div>
+
+              <button class="btn btn-primary" type="submit">
+                Save shipment
+              </button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading"><h3>Shipment records</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Route</th>
+                    <th>Border post</th>
+                    <th>Status</th>
+                    <th>Date created</th>
+                  </tr>
+                </thead>
+                <tbody id="shipmentsTableBody">
+                  <tr><td colspan="5" class="muted">No shipments loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRACKING -->
+        <section class="app-page hidden" id="page-tracking">
+          <div class="page-heading">
+            <div>
+              <h1>Shipment Tracking</h1>
+              <p>Review the latest recorded shipment statuses.</p>
+            </div>
+          </div>
+          <div class="notice">
+            This version displays manually recorded shipment updates. Live
+            GPS tracking requires a connected driver location service or GPS
+            integration; it is not enabled by this page alone.
+          </div>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Shipment</th>
+                    <th>Route</th>
+                    <th>Current status</th>
+                    <th>Last recorded</th>
+                  </tr>
+                </thead>
+                <tbody id="trackingTableBody">
+                  <tr><td colspan="4" class="muted">No tracking records loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- CUSTOMS -->
+        <section class="app-page hidden" id="page-customs">
+          <div class="page-heading">
+            <div>
+              <h1>Customs Management</h1>
+              <p>Keep customs and clearance records organised.</p>
+            </div>
+          </div>
+          <div class="notice">
+            This workspace stores operational information. It does not submit
+            declarations to government customs systems or calculate official
+            duties unless the relevant official integrations are added.
+          </div>
+          <div class="panel">
+            <h3>Clearance status</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Shipment</th>
+                    <th>Border post</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="customsTableBody">
+                  <tr><td colspan="4" class="muted">No customs records loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- CUSTOMERS -->
+        <section class="app-page hidden" id="page-customers">
+          <div class="page-heading">
+            <div>
+              <h1>Customers</h1>
+              <p>Keep customer contact records in one place.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Add customer</h3>
+            <form id="customerForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="customerName">Customer or company name</label>
+                  <input id="customerName" name="name" required>
+                </div>
+                <div class="field">
+                  <label for="customerEmail">Email</label>
+                  <input id="customerEmail" name="email" type="email">
+                </div>
+                <div class="field">
+                  <label for="customerPhone">Phone</label>
+                  <input id="customerPhone" name="phone">
+                </div>
+                <div class="field">
+                  <label for="customerAddress">Address</label>
+                  <input id="customerAddress" name="address">
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Save customer</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th></tr>
+                </thead>
+                <tbody id="customersTableBody">
+                  <tr><td colspan="4" class="muted">No customers loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- INVOICES -->
+        <section class="app-page hidden" id="page-invoices">
+          <div class="page-heading">
+            <div>
+              <h1>Invoices</h1>
+              <p>Record invoices and monitor their payment status.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Record invoice</h3>
+            <form id="invoiceForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="invoiceNumber">Invoice number</label>
+                  <input id="invoiceNumber" name="invoice_number" required>
+                </div>
+                <div class="field">
+                  <label for="invoiceCustomer">Customer</label>
+                  <input id="invoiceCustomer" name="customer_name" required>
+                </div>
+                <div class="field">
+                  <label for="invoiceAmount">Amount</label>
+                  <input id="invoiceAmount" name="amount" type="number"
+                         min="0" step="0.01" required>
+                </div>
+                <div class="field">
+                  <label for="invoiceCurrency">Currency</label>
+                  <select id="invoiceCurrency" name="currency">
+                    <option>USD</option>
+                    <option>ZAR</option>
+                    <option>EUR</option>
+                    <option>GBP</option>
+                    <option>ZWG</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="invoiceStatus">Payment status</label>
+                  <select id="invoiceStatus" name="status">
+                    <option>Unpaid</option>
+                    <option>Partially Paid</option>
+                    <option>Paid</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Save invoice</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Invoice</th><th>Customer</th><th>Amount</th>
+                    <th>Status</th><th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="invoicesTableBody">
+                  <tr><td colspan="5" class="muted">No invoices loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section class="app-page hidden" id="page-reports">
+          <div class="page-heading">
+            <div>
+              <h1>Reports</h1>
+              <p>A summary of records stored in BorderFlow.</p>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Shipments recorded</span>
+              <strong id="reportShipments">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Documents recorded</span>
+              <strong id="reportDocuments">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Customers recorded</span>
+              <strong id="reportCustomers">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Invoices recorded</span>
+              <strong id="reportInvoices">0</strong>
+            </div>
+          </div>
+          <div class="notice">
+            Reports are based on records available to your signed-in account.
+            They are not independently verified financial or customs reports.
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="app-page hidden" id="page-settings">
+          <div class="page-heading">
+            <div>
+              <h1>Settings</h1>
+              <p>Account and workspace information.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Account</h3>
+            <p class="muted">Signed-in email address:</p>
+            <strong id="settingsEmail">Not signed in</strong>
+          </div>
+          <div class="panel">
+            <h3>Platform connections</h3>
+            <p id="settingsSupabase" class="muted">Supabase connection not checked yet.</p>
+            <p id="settingsAI" class="muted">AI connection not checked yet.</p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </section>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+       "use strict";
+
+    // ==========================================
+    // BORDERFLOW APPLICATION CONFIGURATION
+    // ==========================================
+
+    const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
+
+    // Replace this placeholder with your Supabase
+    // Publishable key (or legacy anon key).
+    // NEVER put a service_role or secret key here.
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+
+    const BUCKET = "freight-documents";
+
+    let db = null;
+    let currentUser = null;
+    let currentProfile = null;
+    let signupMode = false;
+
+    const appData = {
+      shipments: [],
+      documents: [],
+      customers: [],
+      invoices: []
+    };
+
+    // ==========================================
+    // ELEMENT HELPERS
+    // ==========================================
+
+    const $ = id => document.getElementById(id);
+
+    function show(element) {
+      if (element) element.classList.remove("hidden");
+    }
+
+    function hide(element) {
+      if (element) element.classList.add("hidden");
+    }
+
+    function toast(message) {
+      const box = $("toast");
+      if (!box) return;
+
+      box.textContent = message;
+      show(box);
+
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => hide(box), 3500);
+    }
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) return "—";
+
+      return date.toLocaleDateString();
+    }
+
+    function setMessage(elementId, message, isError = true) {
+      const element = $(elementId);
+      if (!element) return;
+
+      element.textContent = message;
+      element.style.background = isError ? "#fff0f0" : "#eaf7f1";
+      element.style.color = isError ? "#a32f38" : "#147451";
+
+      show(element);
+    }
+
+    function clearMessage(elementId) {
+      hide($(elementId));
+    }
+
+    function getFormData(form) {
+      return Object.fromEntries(new FormData(form).entries());
+    }
+
+    // ==========================================
+    // SUPABASE INITIALISATION
+    // ==========================================
+
+    function isSupabaseConfigured() {
+      return (
+        SUPABASE_URL.startsWith("https://") &&
+        SUPABASE_ANON_KEY !==
+          "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"
+      );
+    }
+
+    async function initializeSupabase() {
+      if (!isSupabaseConfigured()) {
+        $("connectionStatus").textContent =
+          "Supabase key needs configuration";
+
+        $("settingsSupabase").textContent =
+          "Add your Supabase publishable or anon key to connect.";
+
+        return false;
+      }
+
+      if (!window.supabase?.createClient) {
+        $("connectionStatus").textContent =
+          "Supabase library unavailable";
+
+        return false;
+      }
+
+      try {
+        db = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_ANON_KEY,
+          {
+            auth: {
+              persistSession: true,
+              autoRefreshToken: true,
+              detectSessionInUrl: true
+            }
+          }
+        );
+
+        const { data, error } = await db.auth.getSession();
+
+        if (error) throw error;
+
+        currentUser = data.session?.user || null;
+
+        $("connectionStatus").innerHTML =
+          '<span class="status-dot"></span> Supabase connected';
+
+        $("settingsSupabase").textContent =
+          "Supabase client initialised successfully.";
+
+        db.auth.onAuthStateChange((_event, session) => {
+          currentUser = session?.user || null;
+
+          if (currentUser) {
+            openWorkspace();
+          } else {
+            showLogin();
+          }
+        });
+
+        return true;
+
+      } catch (error) {
+        console.error("Supabase initialisation:", error);
+
+        $("connectionStatus").textContent =
+          "Supabase connection error";
+
+        $("settingsSupabase").textContent =
+          error.message || "Connection failed.";
+
+        return false;
+      }
+    }
+
+    // ==========================================
+    // SCREEN NAVIGATION
+    // ==========================================
+
+    function showLanding() {
+      show($("landingView"));
+      hide($("loginView"));
+      hide($("appShell"));
+    }
+
+    function showLogin() {
+      hide($("landingView"));
+      show($("loginView"));
+      hide($("appShell"));
+
+      signupMode = false;
+      updateAuthScreen();
+    }
+
+    function showSignup() {
+      hide($("landingView"));
+      show($("loginView"));
+      hide($("appShell"));
+
+      signupMode = true;
+      updateAuthScreen();
+    }
+
+    function updateAuthScreen() {
+      $("authHeading").textContent = signupMode
+        ? "Create your account"
+        : "Welcome back";
+
+      $("authDescription").textContent = signupMode
+        ? "Create your BorderFlow workspace account."
+        : "Sign in to access your workspace.";
+
+      $("authSubmit").textContent = signupMode
+        ? "Create account"
+        : "Sign in";
+
+      $("authSwitchText").textContent = signupMode
+        ? "Already registered?"
+        : "New to BorderFlow?";
+
+      $("toggleAuth").textContent = signupMode
+        ? "Sign in"
+        : "Create an account";
+
+      $("fullNameField").classList.toggle("hidden", !signupMode);
+
+      $("authPassword").autocomplete = signupMode
+        ? "new-password"
+        : "current-password";
+
+      clearMessage("authMessage");
+    }
+
+    function showPage(pageName) {
+      const pages = document.querySelectorAll(".app-page");
+
+      pages.forEach(page => hide(page));
+
+      const selected = $("page-" + pageName);
+
+      if (!selected) {
+        console.warn("Unknown page:", pageName);
+        return;
+      }
+
+      show(selected);
+
+      document.querySelectorAll(".nav-link[data-page]")
+        .forEach(link => {
+          link.classList.toggle(
+            "active",
+            link.dataset.page === pageName
+          );
+        });
+
+      const activeLink = document.querySelector(
+        `.nav-link[data-page="${pageName}"]`
+      );
+
+      $("topbarTitle").textContent =
+        activeLink?.textContent.trim() || "BorderFlow";
+
+      hide($("sidebar"));
+    }
+
+    function openWorkspace() {
+      if (!currentUser) return;
+
+      hide($("landingView"));
+      hide($("loginView"));
+      show($("appShell"));
+
+      const email = currentUser.email || "BorderFlow user";
+
+      $("sidebarUser").textContent = email;
+      $("topbarUser").textContent = email;
+      $("settingsEmail").textContent = email;
+
+      showPage("overview");
+
+      loadWorkspaceData();
+    }
+
+    // ==========================================
+    // AUTHENTICATION
+    // ==========================================
+
+    async function handleAuthentication(event) {
+      event.preventDefault();
+
+      if (!db) {
+        setMessage(
+          "authMessage",
+          "Supabase is not configured. Add your publishable key first."
+        );
+        return;
+      }
+
+      const email = $("authEmail").value.trim();
+      const password = $("authPassword").value;
+      const fullName = $("fullName").value.trim();
+
+      const button = $("authSubmit");
+
+      button.disabled = true;
+      button.textContent = "Please wait...";
+
+      try {
+        if (signupMode) {
+          if (!fullName) {
+            throw new Error("Enter your full name.");
+          }
+
+          const { data, error } = await db.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName
+              }
+            }
+          });
+
+          if (error) throw error;
+
+          if (data.session) {
+            currentUser = data.user;
+            toast("Account created successfully.");
+            openWorkspace();
+          } else {
+            setMessage(
+              "authMessage",
+              "Account created. Check your email if confirmation is required, then sign in.",
+              false
+            );
+          }
+
+        } else {
+          const { data, error } = await db.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) throw error;
+
+          currentUser = data.user;
+
+          toast("Welcome back to BorderFlow.");
+          openWorkspace();
+        }
+
+      } catch (error) {
+        console.error("Authentication error:", error);
+
+        setMessage(
+          "authMessage",
+          error.message || "Authentication failed."
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = signupMode
+          ? "Create account"
+          : "Sign in";
+      }
+    }
+
+    async function logout() {
+      if (!db) {
+        currentUser = null;
+        showLanding();
+        return;
+      }
+
+      try {
+        const { error } = await db.auth.signOut();
+
+        if (error) throw error;
+
+        currentUser = null;
+        currentProfile = null;
+
+        Object.keys(appData).forEach(key => {
+          appData[key] = [];
+        });
+
+        showLanding();
+        toast("You have signed out.");
+
+      } catch (error) {
+        console.error("Logout error:", error);
+        toast("Could not sign out: " + error.message);
+      }
+    }
+
+    // ==========================================
+    // DATABASE HELPERS
+    // ==========================================
+
+    function requireUser() {
+      if (!currentUser) {
+        throw new Error("Please sign in first.");
+      }
+
+      if (!db) {
+        throw new Error("Supabase is not connected.");
+      }
+    }
+
+    async function fetchRows(table, orderColumn = "created_at") {
+      requireUser();
+
+      const { data, error } = await db
+        .from(table)
+        .select("*")
+        .order(orderColumn, { ascending: false });
+
+      if (error) throw error;
+
+      return data || [];
+    }
+
+    async function insertRow(table, record) {
+      requireUser();
+
+      const safeRecord = {
+        ...record,
+        user_id: currentUser.id
+      };
+
+      const { data, error } = await db
+        .from(table)
+        .insert(safeRecord)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    }
+
+    async function updateRow(table, id, changes) {
+      requireUser();
+
+      const { data, error } = await db
+        .from(table)
+        .update(changes)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    }
+
+    // ==========================================
+    // LOAD WORKSPACE RECORDS
+    // ==========================================
+
+    async function loadWorkspaceData() {
+      if (!currentUser || !db) return;
+
+      try {
+        const results = await Promise.allSettled([
+          fetchRows("bf_shipments"),
+          fetchRows("bf_documents"),
+          fetchRows("bf_customers"),
+          fetchRows("bf_invoices")
+        ]);
+
+        const names = [
+          "shipments",
+          "documents",
+          "customers",
+          "invoices"
+        ];
+
+        results.forEach((result, index) => {
+          if (result.status === "fulfilled") {
+            appData[names[index]] = result.value;
+          } else {
+            console.error(
+              "Could not load " + names[index],
+              result.reason
+            );
+
+            appData[names[index]] = [];
+          }
+        });
+
+        renderAll();
+
+      } catch (error) {
+        console.error("Workspace loading error:", error);
+        toast("Some workspace records could not be loaded.");
+      }
+    }
+
+    // ==========================================
+    // DASHBOARD RENDERING
+    // ==========================================
+
+    function renderAll() {
+      renderOverview();
+      renderShipments();
+      renderDocuments();
+      renderCustomers();
+      renderInvoices();
+      renderTracking();
+      renderCustoms();
+      renderReports();
+    }
+
+    function renderOverview() {
+      $("statShipments").textContent = appData.shipments.length;
+      $("statDocuments").textContent = appData.documents.length;
+      $("statCustomers").textContent = appData.customers.length;
+      $("statInvoices").textContent = appData.invoices.length;
+
+      const recentShipments = appData.shipments.slice(0, 5);
+      const recentDocuments = appData.documents.slice(0, 5);
+
+      $("overviewShipments").innerHTML = recentShipments.length
+        ? recentShipments.map(item => `
+            <div style="padding:12px 0;border-bottom:1px solid #e4eaf3;">
+              <strong>${esc(item.shipment_ref || "Shipment")}</strong>
+              <div class="muted" style="font-size:12px;margin-top:5px;">
+                ${esc(item.origin_city || "—")} →
+                ${esc(item.destination_city || "—")}
+              </div>
+            </div>
+          `).join("")
+        : '<div class="empty-state">No shipment records yet.</div>';
+
+      $("overviewDocuments").innerHTML = recentDocuments.length
+        ? recentDocuments.map(item => `
+            <div style="padding:12px 0;border-bottom:1px solid #e4eaf3;">
+              <strong>${esc(item.file_name || "Document")}</strong>
+              <div class="muted" style="font-size:12px;margin-top:5px;">
+                ${esc(item.document_type || "Other")} ·
+                ${esc(item.status || "Uploaded")}
+              </div>
+            </div>
+          `).join("")
+        : '<div class="empty-state">No documents uploaded yet.</div>';
+    }
+
+    function renderShipments() {
+      $("shipmentsTableBody").innerHTML =
+        appData.shipments.length
+          ? appData.shipments.map(item => `
+              <tr>
+                <td><strong>${esc(item.shipment_ref)}</strong></td>
+                <td>${esc(item.origin_city || "—")} →
+                    ${esc(item.destination_city || "—")}</td>
+                <td>${esc(item.border_post || "—")}</td>
+                <td><span class="status-pill">
+                    ${esc(item.status || "Created")}
+                </span></td>
+                <td>${formatDate(item.created_at)}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="5" class="muted">No shipments recorded yet.</td></tr>';
+    }
+
+    function renderDocuments() {
+      $("documentsTableBody").innerHTML =
+        appData.documents.length
+          ? appData.documents.map(item => `
+              <tr>
+                <td>${esc(item.file_name || "Document")}</td>
+                <td>${esc(item.shipment_ref || "—")}</td>
+                <td>${esc(item.document_type || "Other")}</td>
+                <td><span class="status-pill">
+                    ${esc(item.status || "Uploaded")}
+                </span></td>
+                <td>${formatDate(item.created_at)}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="5" class="muted">No documents uploaded yet.</td></tr>';
+    }
+
+    function renderCustomers() {
+      $("customersTableBody").innerHTML =
+        appData.customers.length
+          ? appData.customers.map(item => `
+              <tr>
+                <td>${esc(item.name || "—")}</td>
+                <td>${esc(item.email || "—")}</td>
+                <td>${esc(item.phone || "—")}</td>
+                <td>${esc(item.address || "—")}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="4" class="muted">No customers recorded yet.</td></tr>';
+    }
+
+    function renderInvoices() {
+      $("invoicesTableBody").innerHTML =
+        appData.invoices.length
+          ? appData.invoices.map(item => `
+              <tr>
+                <td>${esc(item.invoice_number || "—")}</td>
+                <td>${esc(item.customer_name || "—")}</td>
+                <td>${esc(item.currency || "USD")}
+                    ${esc(item.amount ?? "0")}</td>
+                <td>${esc(item.status || "Unpaid")}</td>
+                <td>${formatDate(item.created_at)}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="5" class="muted">No invoices recorded yet.</td></tr>';
+    }
+
+    function renderTracking() {
+      $("trackingTableBody").innerHTML =
+        appData.shipments.length
+          ? appData.shipments.map(item => `
+              <tr>
+                <td>${esc(item.shipment_ref || "—")}</td>
+                <td>${esc(item.origin_city || "—")} →
+                    ${esc(item.destination_city || "—")}</td>
+                <td>${esc(item.status || "Created")}</td>
+                <td>${formatDate(item.updated_at || item.created_at)}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="4" class="muted">No shipment records available.</td></tr>';
+    }
+
+    function renderCustoms() {
+      $("customsTableBody").innerHTML =
+        appData.shipments.length
+          ? appData.shipments.map(item => `
+              <tr>
+                <td>${esc(item.shipment_ref || "—")}</td>
+                <td>${esc(item.border_post || "—")}</td>
+                <td>${esc(item.status || "Created")}</td>
+                <td>${formatDate(item.updated_at || item.created_at)}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="4" class="muted">No customs records available.</td></tr>';
+    }
+
+    function renderReports() {
+      $("reportShipments").textContent = appData.shipments.length;
+      $("reportDocuments").textContent = appData.documents.length;
+      $("reportCustomers").textContent = appData.customers.length;
+      $("reportInvoices").textContent = appData.invoices.length;
+    }
+
+    // ==========================================
+    // NAVIGATION EVENT LISTENERS
+    // ==========================================
+
+    $("landingLogin").addEventListener("click", showLogin);
+    $("heroSignIn").addEventListener("click", showLogin);
+
+    $("landingSignup").addEventListener("click", showSignup);
+    $("heroGetStarted").addEventListener("click", showSignup);
+
+    $("backToLanding").addEventListener("click", event => {
+      event.preventDefault();
+      showLanding();
+    });
+
+    $("toggleAuth").addEventListener("click", event => {
+      event.preventDefault();
+      signupMode = !signupMode;
+      updateAuthScreen();
+    });
+
+    $("authForm").addEventListener("submit", handleAuthentication);
+
+    $("logoutButton").addEventListener("click", logout);
+
+    $("mainNavigation").addEventListener("click", event => {
+      const link = event.target.closest("[data-page]");
+
+      if (!link) return;
+
+      showPage(link.dataset.page);
+    });
+
+    document.addEventListener("click", event => {
+      const goto = event.target.closest("[data-goto]");
+
+      if (goto) {
+        showPage(goto.dataset.goto);
+      }
+    });
+
+    $("mobileMenu").addEventListener("click", () => {
+      $("sidebar").classList.toggle("open");
+    });
+
+    // ==========================================
+    // START APPLICATION
+    // ==========================================
+
+    async function startBorderFlow() {
+      showLanding();
+
+      await initializeSupabase();
+
+      if (currentUser) {
+        openWorkspace();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", startBorderFlow);
+   document.addEventListener("DOMContentLoaded", startBorderFlow);
+       // ==========================================
+    // SAVE SHIPMENTS
+    // ==========================================
+
+    async function handleShipmentSubmit(event) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const record = getFormData(form);
+
+      button.disabled = true;
+      button.textContent = "Saving...";
+
+      try {
+        if (!record.shipment_ref.trim()) {
+          throw new Error("Shipment reference is required.");
+        }
+
+        await insertRow("bf_shipments", {
+          shipment_ref: record.shipment_ref.trim(),
+          truck_registration: record.truck_registration.trim(),
+          driver_name: record.driver_name.trim(),
+          driver_phone: record.driver_phone.trim(),
+          origin_city: record.origin_city.trim(),
+          destination_city: record.destination_city.trim(),
+          border_post: record.border_post.trim(),
+          cargo_description: record.cargo_description.trim(),
+          status: record.status
+        });
+
+        form.reset();
+
+        await loadWorkspaceData();
+
+        toast("Shipment saved successfully.");
+
+      } catch (error) {
+        console.error("Shipment saving error:", error);
+        toast("Could not save shipment: " + error.message);
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "Save shipment";
+      }
+    }
+
+    $("shipmentForm").addEventListener(
+      "submit",
+      handleShipmentSubmit
+    );
+
+
+    // ==========================================
+    // SAVE CUSTOMERS
+    // ==========================================
+
+    async function handleCustomerSubmit(event) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const record = getFormData(form);
+
+      button.disabled = true;
+      button.textContent = "Saving...";
+
+      try {
+        if (!record.name.trim()) {
+          throw new Error("Customer name is required.");
+        }
+
+        await insertRow("bf_customers", {
+          name: record.name.trim(),
+          email: record.email.trim(),
+          phone: record.phone.trim(),
+          address: record.address.trim()
+        });
+
+        form.reset();
+
+        await loadWorkspaceData();
+
+        toast("Customer saved successfully.");
+
+      } catch (error) {
+        console.error("Customer saving error:", error);
+        toast("Could not save customer: " + error.message);
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "Save customer";
+      }
+    }
+
+    $("customerForm").addEventListener(
+      "submit",
+      handleCustomerSubmit
+    );
+
+
+    // ==========================================
+    // SAVE INVOICES
+    // ==========================================
+
+    async function handleInvoiceSubmit(event) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const record = getFormData(form);
+
+      button.disabled = true;
+      button.textContent = "Saving...";
+
+      try {
+        const amount = Number(record.amount);
+
+        if (!record.invoice_number.trim()) {
+          throw new Error("Invoice number is required.");
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+          throw new Error("Enter a valid invoice amount.");
+        }
+
+        await insertRow("bf_invoices", {
+          invoice_number: record.invoice_number.trim(),
+          customer_name: record.customer_name.trim(),
+          amount,
+          currency: record.currency,
+          status: record.status
+        });
+
+        form.reset();
+
+        await loadWorkspaceData();
+
+        toast("Invoice saved successfully.");
+
+      } catch (error) {
+        console.error("Invoice saving error:", error);
+        toast("Could not save invoice: " + error.message);
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "Save invoice";
+      }
+    }
+
+    $("invoiceForm").addEventListener(
+      "submit",
+      handleInvoiceSubmit
+    );
+
+
+    // ==========================================
+    // DOCUMENT FILE VALIDATION
+    // ==========================================
+
+    const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+
+    const ALLOWED_DOCUMENT_EXTENSIONS = [
+      "png",
+      "jpg",
+      "jpeg",
+      "webp",
+      "pdf"
+    ];
+
+    function validateDocument(file) {
+      if (!file) {
+        throw new Error("Please choose a document.");
+      }
+
+      if (file.size > MAX_DOCUMENT_SIZE) {
+        throw new Error("The document must be smaller than 10 MB.");
+      }
+
+      if (file.size === 0) {
+        throw new Error("The selected file is empty.");
+      }
+
+      const extension = file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+      if (!ALLOWED_DOCUMENT_EXTENSIONS.includes(extension)) {
+        throw new Error("This document format is not supported.");
+      }
+
+      return extension;
+    }
+
+
+    // ==========================================
+    // DOCUMENT UPLOAD
+    // ==========================================
+
+    async function uploadDocument(file) {
+      requireUser();
+
+      const extension = validateDocument(file);
+
+      const safeFileName = file.name
+        .replace(/[^a-zA-Z0-9._-]/g, "_")
+        .slice(-100);
+
+      const path =
+        `${currentUser.id}/${Date.now()}-${crypto.randomUUID()}-${safeFileName}`;
+
+      const { data, error } = await db.storage
+        .from(BUCKET)
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type || "application/octet-stream"
+        });
+
+      if (error) throw error;
+
+      return {
+        path: data.path,
+        extension
+      };
+    }
+
+
+    // ==========================================
+    // OCR IMAGE DOCUMENTS
+    // ==========================================
+
+    async function extractDocumentText(file) {
+      if (file.type.startsWith("image/")) {
+        if (!window.Tesseract) {
+          throw new Error(
+            "OCR library is unavailable. Please check the OCR setup."
+          );
+        }
+
+        const result = await window.Tesseract.recognize(
+          file,
+          "eng"
+        );
+
+        return result.data.text.trim();
+      }
+
+      if (file.type === "application/pdf" ||
+          file.name.toLowerCase().endsWith(".pdf")) {
+        return "";
+      }
+
+      throw new Error("Unsupported document format.");
+    }
+
+
+    // ==========================================
+    // GROQ DOCUMENT INTELLIGENCE
+    // ==========================================
+
+    async function analyseDocument(documentRecord, extractedText) {
+      requireUser();
+
+      if (!extractedText || !extractedText.trim()) {
+        throw new Error("There is no extracted text to analyse.");
+      }
+
+      const { data, error } = await db.functions.invoke(
+        "document-intelligence",
+        {
+          body: {
+            action: "check_document",
+            document_id: documentRecord.id,
+            shipment_ref: documentRecord.shipment_ref,
+            document_type: documentRecord.document_type,
+            extracted_text: extractedText
+          }
+        }
+      );
+
+      if (error) {
+        console.error("AI Edge Function error:", error);
+        throw new Error(
+          error.message || "The AI document analysis request failed."
+        );
+      }
+
+      if (!data) {
+        throw new Error("The AI service returned an empty response.");
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      return data.result || data;
+    }
+
+
+    // ==========================================
+    // DISPLAY AI ANALYSIS
+    // ==========================================
+
+    function displayAnalysis(analysis) {
+      const result = $("aiResult");
+
+      const heading = document.createElement("h3");
+      heading.textContent =
+        analysis.overall_status || "Analysis completed";
+
+      const summary = document.createElement("p");
+      summary.textContent =
+        analysis.summary || "The AI service returned an analysis.";
+
+      const details = document.createElement("pre");
+      details.style.whiteSpace = "pre-wrap";
+      details.style.overflowWrap = "anywhere";
+      details.textContent = JSON.stringify(analysis, null, 2);
+
+      result.replaceChildren(heading, summary, details);
+    }
+
+
+    // ==========================================
+    // COMPLETE DOCUMENT PROCESSING
+    // ==========================================
+
+    async function processDocument(event) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = $("checkDocumentButton");
+      const progress = $("documentProgress");
+      const result = $("aiResult");
+
+      const file = $("documentFile").files[0];
+      const shipmentRef = $("documentShipmentRef").value.trim();
+      const documentType = $("documentType").value;
+
+      button.disabled = true;
+      button.textContent = "Processing...";
+
+      show(progress);
+
+      progress.textContent = "Checking document...";
+
+      result.textContent =
+        "Your document is being processed.";
+
+      let uploadedPath = null;
+
+      try {
+        requireUser();
+
+        validateDocument(file);
+
+        if (!shipmentRef) {
+          throw new Error("Enter the shipment reference.");
+        }
+
+        if (!documentType) {
+          throw new Error("Choose a document type.");
+        }
+
+        // Step 1: Upload file to private storage.
+        progress.textContent = "Uploading document...";
+
+        const upload = await uploadDocument(file);
+
+        uploadedPath = upload.path;
+
+        // Step 2: Extract readable text.
+        progress.textContent = "Reading document...";
+
+        const extractedText = await extractDocumentText(file);
+
+        // Step 3: Save document information.
+        progress.textContent = "Saving document record...";
+
+        const documentRecord = await insertRow(
+          "bf_documents",
+          {
+            shipment_ref: shipmentRef,
+            document_type: documentType,
+            file_name: file.name,
+            storage_path: upload.path,
+            extracted_text: extractedText,
+            status: extractedText
+              ? "Uploaded"
+              : "Needs OCR"
+          }
+        );
+
+        // Step 4: Stop honestly if no text was extracted.
+        if (!extractedText) {
+          progress.textContent =
+            "Document uploaded successfully. PDF text extraction is not enabled yet.";
+
+          result.textContent =
+            "Your PDF has been stored successfully. AI analysis has not run because text extraction is not yet available for PDF files.";
+
+          toast("Document uploaded. PDF OCR is still needed.");
+
+          await loadWorkspaceData();
+
+          return;
+        }
+
+        // Step 5: Send text to the AI Edge Function.
+        progress.textContent =
+          "Sending extracted text to BorderFlow AI...";
+
+        const analysis = await analyseDocument(
+          documentRecord,
+          extractedText
+        );
+
+        // Step 6: Show actual AI response.
+        displayAnalysis(analysis);
+
+        progress.textContent =
+          "Document upload and AI analysis completed.";
+
+        toast("Document analysis completed.");
+
+        await loadWorkspaceData();
+
+      } catch (error) {
+        console.error("Document processing error:", error);
+
+        progress.textContent =
+          "Document processing could not be completed.";
+
+        result.textContent =
+          error.message || "An unexpected error occurred.";
+
+        toast("Document processing failed.");
+
+        // If storage upload worked but the database insert failed,
+        // the file may remain in storage. We do not delete it
+        // automatically because a failed cleanup could lose data.
+
+        if (uploadedPath) {
+          console.warn(
+            "Uploaded file may need database record recovery:",
+            uploadedPath
+          );
+        }
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "Upload and check document";
+      }
+    }
+
+    $("documentForm").addEventListener(
+      "submit",
+      processDocument
+    );
+
+
+    // ==========================================
+    // RESET DOCUMENT RESULTS
+    // ==========================================
+
+    $("documentForm").addEventListener("reset", () => {
+      $("aiResult").textContent =
+        "Your document analysis will appear here.";
+
+      hide($("documentProgress"));
+    });
+
+
+    // ==========================================
+    // REFRESH WORKSPACE
+    // ==========================================
+
+    async function refreshWorkspace() {
+      if (!currentUser) {
+        toast("Please sign in first.");
+        return;
+      }
+
+      try {
+        await loadWorkspaceData();
+        toast("Workspace refreshed.");
+
+      } catch (error) {
+        toast("Refresh failed: " + error.message);
+      }
+    }
+   
+// ==========================================
+// PART 4 — BROWSER LIBRARIES AND PDF READING
+// ==========================================
+
+function loadBorderFlowScript(src) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(
+      `script[data-borderflow-src="${src}"]`
+    );
+
+    if (existing) {
+      if (existing.dataset.loaded === "true") {
+        resolve();
+        return;
+      }
+
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.dataset.borderflowSrc = src;
+
+    script.onload = () => {
+      script.dataset.loaded = "true";
+      resolve();
+    };
+
+    script.onerror = () => {
+      reject(new Error("Could not load browser library: " + src));
+    };
+
+    document.head.appendChild(script);
+  });
 }
-function money(value){
- return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(value||0));
-}
-function setPage(page){
- currentPage=page;
- $("pageTitle").textContent=page.charAt(0).toUpperCase()+page.slice(1);
- document.querySelectorAll(".nav-btn[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
- $("sidebar").classList.remove("open");
- renderPage();
-}
-function shell(show){
- $("loginView").classList.toggle("hidden",show);
- $("appShell").classList.toggle("hidden",!show);
-}
-async function loadSession(){
- const {data,error}=await db.auth.getSession();
- if(error){toast(error.message);return}
- if(data.session){currentUser=data.session.user;await startApp()}
- else shell(false);
-}
-async function startApp(){
- if(!currentUser)return;
- $("userEmail").textContent=currentUser.email||"";
- shell(true);
- await setPage("overview");
-}
-$("authForm").addEventListener("submit",async e=>{
- e.preventDefault();
- $("authSubmit").disabled=true;
- $("authMessage").textContent="Connecting...";
- const email=$("email").value.trim();
- const password=$("password").value;
- try{
-  const result=signupMode
-   ?await db.auth.signUp({email,password})
-   :await db.auth.signInWithPassword({email,password});
-  if(result.error)throw result.error;
-  if(signupMode&&!result.data.session){
-   $("authMessage").textContent="Account created. Check your email to confirm your address.";
-  }else if(result.data.session){
-   currentUser=result.data.user;await startApp();
+
+async function loadBorderFlowLibraries() {
+  toast("Loading BorderFlow services...");
+
+  await loadBorderFlowScript(
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  );
+
+  await loadBorderFlowScript(
+    "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+  );
+
+  await loadBorderFlowScript(
+    "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"
+  );
+
+  if (window.pdfjsLib) {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
   }
- }catch(error){$("authMessage").textContent=error.message}
- finally{$("authSubmit").disabled=false}
-});
-$("toggleAuth").onclick=e=>{
- e.preventDefault();signupMode=!signupMode;
- $("authHeading").textContent=signupMode?"Create your account":"Welcome back";
- $("authSubmit").textContent=signupMode?"Create account":"Sign in";
- $("authToggle").innerHTML=signupMode
- ?"Already registered? <a href='#' id='toggleAuth'>Sign in</a>"
- :"New to BorderFlow? <a href='#' id='toggleAuth'>Create an account</a>";
- $("toggleAuth").onclick=arguments.callee;
+
+  console.log("BorderFlow browser libraries loaded.");
+}
+
+// Load the libraries before the original startup function runs.
+const borderFlowLibrariesReady = loadBorderFlowLibraries();
+
+// Preserve the existing startup process, but wait for the libraries.
+const borderFlowOriginalStart = startBorderFlow;
+
+startBorderFlow = async function () {
+  try {
+    await borderFlowLibrariesReady;
+    await borderFlowOriginalStart();
+  } catch (error) {
+    console.error("BorderFlow startup error:", error);
+    toast(
+      "Some services could not load. Check your internet connection and refresh."
+    );
+  }
 };
-$("logoutBtn").onclick=async()=>{await db.auth.signOut();currentUser=null;shell(false)};
-$("mobileMenu").onclick=()=>$("sidebar").classList.toggle("open");
-document.querySelectorAll(".nav-btn[data-page]").forEach(button=>{
- button.addEventListener("click",()=>setPage(button.dataset.page));
-});
-db.auth.onAuthStateChange((_event,session)=>{
- currentUser=session?.user||null;
- if(!session)shell(false);
-});
 
-async function rows(table,order="created_at"){
- const {data,error}=await db.from(table).select("*").order(order,{ascending:false}).limit(100);
- if(error)throw error;
- return data||[];
-}
-async function insertRow(table,record){
- const {data,error}=await db.from(table).insert(record).select().single();
- if(error)throw error;return data;
-}
-async function updateRow(table,id,record){
- const {data,error}=await db.from(table).update(record).eq("id",id).select().single();
- if(error)throw error;return data;
-}
-async function removeRow(table,id){
- const {error}=await db.from(table).delete().eq("id",id);
- if(error)throw error;
-}
-function heading(title,description,button=""){
- return `<div class="page-heading"><div><h1>${title}</h1><div class="muted">${description}</div></div>${button}</div>`;
-}
-function tableHTML(headers,body){
- return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}">No records yet.</td></tr>`}</tbody></table></div>`;
-}
-async function renderPage(){
- const root=$("pageContent");
- root.innerHTML='<div class="card">Loading your workspace...</div>';
- try{
-  const pages={
-   overview:renderOverview,documents:renderDocuments,library:renderLibrary,
-   shipments:renderShipments,tracking:renderTracking,customs:renderCustoms,
-   compliance:renderCompliance,customers:renderCustomers,invoices:renderInvoices,
-   finance:renderFinance,reports:renderReports,agents:renderAgents,settings:renderSettings
-  };
-  await pages[currentPage]();
- }catch(error){
-  root.innerHTML=`<div class="card"><h2>Unable to load this section</h2><p class="muted">${esc(error.message)}</p><button class="secondary" onclick="renderPage()">Retry</button></div>`;
- }
-}
-
-async function renderOverview(){
- const [shipments,documents,customers,invoices]=await Promise.all([
-  rows("bf_shipments"),rows("bf_documents"),rows("bf_customers"),rows("bf_invoices")
- ]);
- cachedShipments=shipments;cachedCustomers=customers;
- const active=shipments.filter(s=>!["Cleared","Cancelled"].includes(s.status)).length;
- const unpaid=invoices.filter(i=>i.status!=="Paid").reduce((n,i)=>n+Number(i.total||0),0);
- $("pageContent").innerHTML=heading("Overview","Your cross-border operations at a glance")+
- `<div class="grid">
-  <div class="card"><div class="metric-label">Total shipments</div><div class="metric">${shipments.length}</div><div class="muted">Saved shipment records</div></div>
-  <div class="card"><div class="metric-label">Active shipments</div><div class="metric">${active}</div><div class="muted">Not yet cleared or cancelled</div></div>
-  <div class="card"><div class="metric-label">Documents</div><div class="metric">${documents.length}</div><div class="muted">Stored document records</div></div>
-  <div class="card"><div class="metric-label">Outstanding invoices</div><div class="metric">${money(unpaid)}</div><div class="muted">${invoices.filter(i=>i.status!=="Paid").length} unpaid invoices</div></div>
- </div>
- <div class="two-col">
-  <div class="card"><h2>Recent shipments</h2>${tableHTML(["Reference","Destination","Status"],shipments.slice(0,6).map(s=>`<tr><td>${esc(s.shipment_ref)}</td><td>${esc(s.destination_city)}</td><td><span class="status">${esc(s.status)}</span></td></tr>`).join(""))}</div>
-  <div class="card"><h2>Business overview</h2><p>Registered customers: <strong>${customers.length}</strong></p><p>Documents stored: <strong>${documents.length}</strong></p><p>Invoices: <strong>${invoices.length}</strong></p><div class="notice">Statistics are calculated from saved records in your Supabase database.</div></div>
- </div>`;
-}
-
-async function renderShipments(){
- const data=await rows("bf_shipments");cachedShipments=data;
- $("pageContent").innerHTML=heading("Shipments","Create and manage freight movements",'<button class="primary" onclick="shipmentForm()">+ New shipment</button>')+
- `<div class="card" id="shipmentFormArea"></div><div class="card"><h2>Shipment records</h2>${tableHTML(["Reference","Truck","Driver","Origin","Destination","Border","Status","Actions"],data.map(s=>`<tr>
- <td>${esc(s.shipment_ref)}</td><td>${esc(s.truck_registration)}</td><td>${esc(s.driver_name)}</td>
- <td>${esc(s.origin_city)}</td><td>${esc(s.destination_city)}</td><td>${esc(s.border_post)}</td>
- <td><span class="status">${esc(s.status)}</span></td>
- <td><button class="secondary" onclick="changeShipmentStatus('${s.id}')">Update</button></td></tr>`).join(""))}</div>`;
-}
-function shipmentForm(){
- $("shipmentFormArea").innerHTML=`<h2>New shipment</h2><form id="newShipment" class="form-grid">
- ${field("Shipment reference","shipment_ref","BF-001")}
- ${field("Truck registration","truck_registration")}
- ${field("Driver name","driver_name")}
- ${field("Driver phone","driver_phone")}
- ${field("Origin city","origin_city")}
- ${field("Destination city","destination_city")}
- ${field("Border post","border_post")}
- <div class="field"><label>Cargo description</label><textarea name="cargo_description" required></textarea></div>
- <div class="field"><label>Status</label><select name="status"><option>Created</option><option>In Transit</option><option>Arrived at Border</option><option>Docs Checked</option><option>Duty Paid</option><option>Cleared</option></select></div>
- <button class="primary full">Save shipment</button></form>`;
- $("newShipment").onsubmit=async e=>{
-  e.preventDefault();const record=Object.fromEntries(new FormData(e.target));
-  try{await insertRow("bf_shipments",record);toast("Shipment saved");await renderShipments()}
-  catch(err){toast(err.message)}
- };
-}
-function field(label,name,placeholder="",type="text"){
- return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" placeholder="${esc(placeholder)}" ${name==="shipment_ref"?"required":""}></div>`;
-}
-async function changeShipmentStatus(id){
- const status=prompt("Enter new status: Created, In Transit, Arrived at Border, Docs Checked, Duty Paid, Cleared or Cancelled");
- if(!status)return;
- const allowed=["Created","In Transit","Arrived at Border","Docs Checked","Duty Paid","Cleared","Cancelled"];
- if(!allowed.includes(status)){toast("Invalid status");return}
- try{await updateRow("bf_shipments",id,{status});toast("Shipment updated");await renderPage()}
- catch(e){toast(e.message)}
-}
-
-async function renderCustomers(){
- const data=await rows("bf_customers");cachedCustomers=data;
- $("pageContent").innerHTML=heading("Customers","Manage your business customers",'<button class="primary" onclick="customerForm()">+ Add customer</button>')+
- `<div class="card" id="customerFormArea"></div><div class="card">${tableHTML(["Company","Contact","Email","Phone","Actions"],data.map(c=>`<tr><td>${esc(c.company_name)}</td><td>${esc(c.contact_name)}</td><td>${esc(c.email)}</td><td>${esc(c.phone)}</td><td><button class="danger" onclick="deleteRecord('bf_customers','${c.id}')">Delete</button></td></tr>`).join(""))}</div>`;
-}
-function customerForm(){
- $("customerFormArea").innerHTML=`<h2>Add customer</h2><form id="newCustomer" class="form-grid">
- ${field("Company name","company_name")}${field("Contact name","contact_name")}
- ${field("Email","email","","email")}${field("Phone","phone")}
- <div class="field full"><label>Address</label><textarea name="address"></textarea></div>
- <button class="primary full">Save customer</button></form>`;
- $("newCustomer").onsubmit=async e=>{
-  e.preventDefault();try{await insertRow("bf_customers",Object.fromEntries(new FormData(e.target)));toast("Customer saved");await renderCustomers()}
-  catch(err){toast(err.message)}
- };
-}
-async function deleteRecord(table,id){
- if(!confirm("Delete this record?"))return;
- try{await removeRow(table,id);toast("Record deleted");await renderPage()}
- catch(e){toast(e.message)}
-}
-
-async function renderInvoices(){
- const data=await rows("bf_invoices");
- $("pageContent").innerHTML=heading("Invoices & Payments","Create invoices and record payment status",'<button class="primary" onclick="invoiceForm()">+ New invoice</button>')+
- `<div class="card" id="invoiceFormArea"></div><div class="card">${tableHTML(["Invoice","Customer","Amount","Due date","Status","Actions"],data.map(i=>`<tr><td>${esc(i.invoice_number)}</td><td>${esc(i.customer_name)}</td><td>${money(i.total)}</td><td>${esc(i.due_date)}</td><td><span class="status">${esc(i.status)}</span></td><td><button class="secondary" onclick="markPaid('${i.id}')">Mark paid</button></td></tr>`).join(""))}</div>`;
-}
-function invoiceForm(){
- $("invoiceFormArea").innerHTML=`<h2>Create invoice</h2><form id="newInvoice" class="form-grid">
- ${field("Invoice number","invoice_number","INV-001")}
- ${field("Customer name","customer_name")}
- ${field("Amount USD","total","0","number")}
- ${field("Due date","due_date","","date")}
- <button class="primary full">Save invoice</button></form>`;
- $("newInvoice").onsubmit=async e=>{
-  e.preventDefault();const r=Object.fromEntries(new FormData(e.target));r.total=Number(r.total);
-  try{await insertRow("bf_invoices",r);toast("Invoice saved");await renderInvoices()}
-  catch(err){toast(err.message)}
- };
-}
-async function markPaid(id){
- try{await updateRow("bf_invoices",id,{status:"Paid"});toast("Invoice marked paid");await renderInvoices()}
- catch(e){toast(e.message)}
-}
-
-async function renderDocuments(){
- $("pageContent").innerHTML=heading("AI Document Checker","Upload a trade document, extract its text and ask BorderFlow AI to inspect it.")+
- `<div class="two-col">
- <div class="card"><h2>Upload and check</h2><form id="documentForm">
- <div class="field"><label>Shipment reference</label><input name="shipment_ref" required placeholder="BF-001"></div>
- <div class="field"><label>Document type</label><select name="document_type"><option>Commercial Invoice</option><option>Packing List</option><option>Bill of Lading</option><option>Certificate of Origin</option><option>Customs Declaration</option><option>Other</option></select></div>
- <div class="field"><label>Document file (max 10 MB)</label><input name="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" required></div>
- <button class="primary" style="margin-top:15px">Upload and analyse</button></form>
- <div id="documentProgress" class="notice hidden"></div></div>
- <div class="card"><h2>AI document results</h2><div id="aiResult" class="muted">Your analysis will appear here.</div></div>
- </div>`;
- $("documentForm").onsubmit=processDocument;
-}
-async function processDocument(e){
- e.preventDefault();
- const form=e.target,file=form.file.files[0];
- if(!file||file.size>10*1024*1024){toast("Choose a file smaller than 10 MB");return}
- const progress=$("documentProgress"),result=$("aiResult");
- progress.classList.remove("hidden");progress.textContent="Uploading document...";
- result.textContent="Waiting for analysis...";
- try{
-  const ext=file.name.split(".").pop().toLowerCase();
-  const path=`${currentUser.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
-  const upload=await db.storage.from(BUCKET).upload(path,file,{upsert:false});
-  if(upload.error)throw upload.error;
-  progress.textContent="Extracting text...";
-  let extractedText="";
-  if(file.type.startsWith("image/")){
-   const ocr=await Tesseract.recognize(file,"eng");
-   extractedText=ocr.data.text;
-  }else if(file.type==="application/pdf"){
-   extractedText="[PDF uploaded. OCR extraction for PDF files must be enabled in the backend.]";
-  }else{
-   extractedText="[Unsupported file type for browser OCR.]";
+// Read selectable text from PDF documents.
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) {
+    throw new Error("PDF reading library is not available.");
   }
-  const saved=await insertRow("bf_documents",{
-   shipment_ref:form.shipment_ref.value.trim(),
-   document_type:form.document_type.value,
-   file_name:file.name,storage_path:path,
-   extracted_text:extractedText,
-   status:"Uploaded"
-  });
-  progress.textContent="Calling BorderFlow AI...";
-  const {data,error}=await db.functions.invoke("document-intelligence",{
-   body:{action:"check_document",document_id:saved.id,shipment_ref:form.shipment_ref.value.trim(),document_type:form.document_type.value,extracted_text:extractedText}
-  });
-  if(error)throw error;
-  result.innerHTML=`<h3>${esc(data?.result?.overall_status||data?.overall_status||"Analysis complete")}</h3>
-   <p>${esc(data?.result?.summary||data?.summary||"Analysis returned.")}</p>
-   <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(data?.result||data,null,2))}</pre>`;
-  progress.textContent="Document uploaded and analysed.";
-  await renderPage();
- }catch(error){
-  progress.textContent="The operation did not finish.";
-  result.textContent=error.message;
-  toast("Document processing failed: "+error.message);
- }
+
+  const buffer = await file.arrayBuffer();
+
+  const pdf = await window.pdfjsLib.getDocument({
+    data: buffer
+  }).promise;
+
+  const pageTexts = [];
+
+  // Limit processing to 100 pages for browser performance.
+  const totalPages = Math.min(pdf.numPages, 100);
+
+  for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+
+    const pageText = content.items
+      .map(item => item.str || "")
+      .join(" ");
+
+    pageTexts.push(pageText);
+  }
+
+  return pageTexts.join("\n\n").trim();
 }
 
-async function renderLibrary(){
- const data=await rows("bf_documents");
- $("pageContent").innerHTML=heading("Document Library","Browse uploaded trade documents")+
- `<div class="card">${tableHTML(["File","Shipment","Type","Status","Uploaded"],data.map(d=>`<tr><td>${esc(d.file_name)}</td><td>${esc(d.shipment_ref)}</td><td>${esc(d.document_type)}</td><td>${esc(d.status)}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>`).join(""))}</div>`;
-}
-async function renderTracking(){
- const data=await rows("bf_shipments");
- $("pageContent").innerHTML=heading("Live Tracking","Track saved shipment progress")+
- `<div class="notice">Tracking currently displays updates saved by your team. Automatic GPS tracking requires driver-device integration.</div>
- <div class="card">${tableHTML(["Reference","Truck","Origin","Destination","Border","Latest status"],data.map(s=>`<tr><td>${esc(s.shipment_ref)}</td><td>${esc(s.truck_registration)}</td><td>${esc(s.origin_city)}</td><td>${esc(s.destination_city)}</td><td>${esc(s.border_post)}</td><td>${esc(s.status)}</td></tr>`).join(""))}</div>`;
-}
-async function renderCustoms(){
- const data=await rows("bf_customs");
- $("pageContent").innerHTML=heading("Customs Management","Maintain customs declaration and duty records",'<button class="primary" onclick="customsForm()">+ New record</button>')+
- `<div class="card" id="customsFormArea"></div><div class="card">${tableHTML(["Shipment","Declaration","Duty","Currency","Status"],data.map(x=>`<tr><td>${esc(x.shipment_ref)}</td><td>${esc(x.declaration_number)}</td><td>${esc(x.duty_amount)}</td><td>${esc(x.currency)}</td><td>${esc(x.status)}</td></tr>`).join(""))}</div>`;
-}
-function customsForm(){
- $("customsFormArea").innerHTML=`<h2>Customs record</h2><form id="customsForm" class="form-grid">
- ${field("Shipment reference","shipment_ref")}${field("Declaration number","declaration_number")}
- ${field("Duty amount","duty_amount","0","number")}
- <div class="field"><label>Currency</label><select name="currency"><option>USD</option><option>ZAR</option><option>EUR</option><option>GBP</option><option>ZWG</option></select></div>
- <div class="field"><label>Status</label><select name="status"><option>Pending</option><option>Submitted</option><option>Approved</option><option>Rejected</option></select></div>
- <button class="primary full">Save customs record</button></form>`;
- $("customsForm").onsubmit=async e=>{
-  e.preventDefault();const r=Object.fromEntries(new FormData(e.target));r.duty_amount=Number(r.duty_amount);
-  try{await insertRow("bf_customs",r);toast("Customs record saved");await renderCustoms()}
-  catch(err){toast(err.message)}
- };
-}
-async function renderCompliance(){
- const docs=await rows("bf_documents");
- const checks=await rows("bf_document_checks");
- $("pageContent").innerHTML=heading("Compliance","Review document checks and compliance findings")+
- `<div class="card"><h2>Documents requiring attention</h2>${tableHTML(["Document","Shipment","Type","Status"],docs.filter(d=>d.status!=="Approved").map(d=>`<tr><td>${esc(d.file_name)}</td><td>${esc(d.shipment_ref)}</td><td>${esc(d.document_type)}</td><td>${esc(d.status)}</td></tr>`).join(""))}</div>
- <div class="card"><h2>AI check history</h2>${tableHTML(["Document ID","Status","Date"],checks.map(c=>`<tr><td>${esc(c.document_id)}</td><td>${esc(c.overall_status)}</td><td>${new Date(c.created_at).toLocaleString()}</td></tr>`).join(""))}</div>`;
-}
-async function renderFinance(){
- const invoices=await rows("bf_invoices");
- const paid=invoices.filter(i=>i.status==="Paid").reduce((n,i)=>n+Number(i.total||0),0);
- const due=invoices.filter(i=>i.status!=="Paid").reduce((n,i)=>n+Number(i.total||0),0);
- $("pageContent").innerHTML=heading("Finance","Monitor recorded invoice income and outstanding balances")+
- `<div class="grid"><div class="card"><div class="metric-label">Paid invoices</div><div class="metric">${money(paid)}</div></div><div class="card"><div class="metric-label">Outstanding</div><div class="metric">${money(due)}</div></div><div class="card"><div class="metric-label">Invoice count</div><div class="metric">${invoices.length}</div></div><div class="card"><div class="metric-label">Paid count</div><div class="metric">${invoices.filter(i=>i.status==="Paid").length}</div></div></div>
- <div class="notice">These are recorded invoice totals, not bank balances or verified payments. Payment-provider integration is a separate deployment step.</div>`;
-}
-async function renderReports(){
- const [s,d,c,i]=await Promise.all([rows("bf_shipments"),rows("bf_documents"),rows("bf_customers"),rows("bf_invoices")]);
- $("pageContent").innerHTML=heading("Reports & Analytics","Operational summary based on your saved records")+
- `<div class="card"><h2>Current workspace report</h2>
- <p>Total shipments: <strong>${s.length}</strong></p><p>Cleared shipments: <strong>${s.filter(x=>x.status==="Cleared").length}</strong></p>
- <p>Documents uploaded: <strong>${d.length}</strong></p><p>Customers: <strong>${c.length}</strong></p><p>Invoices: <strong>${i.length}</strong></p>
- <button class="secondary" onclick="exportShipments()">Export shipments CSV</button></div>`;
-}
-async function exportShipments(){
- const data=await rows("bf_shipments");
- const cols=["shipment_ref","truck_registration","driver_name","origin_city","destination_city","border_post","status"];
- const csv=[cols.join(","),...data.map(r=>cols.map(k=>'"'+String(r[k]??"").replace(/"/g,'""')+'"').join(","))].join("\n");
- const url=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
- const a=document.createElement("a");a.href=url;a.download="borderflow-shipments.csv";a.click();URL.revokeObjectURL(url);
-}
-async function renderAgents(){
- $("pageContent").innerHTML=heading("BorderFlow AI Agents","AI tools powered by your Groq-backed Supabase Edge Function")+
- `<div class="grid">
- ${[
- ["Document Agent","Reads trade documents and identifies missing or inconsistent information."],
- ["Customs Agent","Assists with declaration review and customs information."],
- ["Compliance Agent","Flags document and data issues for human review."],
- ["Shipment Agent","Summarises shipment records and progress."],
- ["Finance Agent","Summarises invoices and outstanding balances."],
- ["Business Agent","Produces operational summaries from saved records."]
- ].map(a=>`<div class="agent-card"><strong>${a[0]}</strong><p class="muted">${a[1]}</p><span class="status">Backend integration required</span></div>`).join("")}
- </div><div class="notice">The Document Agent is connected through the document-intelligence function when Part 3 is deployed. Other agents must be connected to their supported data and actions before being treated as operational.</div>`;
-}
-async function renderSettings(){
- $("pageContent").innerHTML=heading("Settings & Admin","Workspace and account information")+
- `<div class="card"><h2>Account</h2><p>Email: ${esc(currentUser?.email)}</p><p>User ID: ${esc(currentUser?.id)}</p>
- <p class="muted">Company membership, invitations and role administration require the company-membership database and policies to be configured.</p>
- <button class="danger" onclick="db.auth.signOut()">Sign out</button></div>
- <div class="card"><h2>System configuration</h2><p>Storage bucket: <strong>${BUCKET}</strong></p><p>AI provider: <strong>Groq</strong></p><p>Database: <strong>Supabase</strong></p></div>`;
-}
-loadSession();
+// Extend Part 3's document reader to support PDFs.
+const borderFlowOriginalExtractDocumentText = extractDocumentText;
+
+extractDocumentText = async function (file) {
+  const isPdf =
+    file.type === "application/pdf" ||
+    file.name.toLowerCase().endsWith(".pdf");
+
+  if (isPdf) {
+    return await extractPdfText(file);
+  }
+
+  return await borderFlowOriginalExtractDocumentText(file);
+};
+
+console.log("BorderFlow Part 4 loaded.");
+
+// ==========================================
+// PART 5 — FINAL STARTUP CHECKS
+// ==========================================
+
+console.log("BorderFlow application code loaded.");
+
+window.addEventListener("error", function (event) {
+  console.error("BorderFlow browser error:", event.message);
+});
+
+window.addEventListener("unhandledrejection", function (event) {
+  console.error("BorderFlow background error:", event.reason);
+});
+
 </script>
 </body>
 </html>
