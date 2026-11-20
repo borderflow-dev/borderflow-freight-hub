@@ -1314,70 +1314,111 @@
       }
     });
 
-    document.getElementById("validateDocumentBtn").addEventListener("click", function () {
-      const extractedText = document.getElementById("ocrResult").textContent.trim();
-      const shipmentRef = document.getElementById("shipmentRef").value.trim();
-      const documentType = document.getElementById("documentType").value;
-      const result = document.getElementById("validationResult");
+    
+document.getElementById("validateDocumentBtn").addEventListener("click", async function () {
+  const extractedText = document.getElementById("ocrResult").textContent.trim();
+  const shipmentRef = document.getElementById("shipmentRef").value.trim();
+  const documentType = document.getElementById("documentType").value;
+  const result = document.getElementById("validationResult");
+  const button = document.getElementById("validateDocumentBtn");
 
-      const problems = [];
+  const problems = [];
 
-      if (!shipmentRef) {
-        problems.push("Enter a shipment reference.");
+  if (!shipmentRef) problems.push("Enter a shipment reference.");
+  if (!documentType) problems.push("Select a document type.");
+
+  if (!extractedText ||
+      extractedText === "Extracted text will appear here.") {
+    problems.push("Read a document first.");
+  }
+
+  if (problems.length > 0) {
+    result.textContent = "Document check needs attention:\n" + problems.join("\n");
+    result.style.color = "red";
+    return;
+  }
+
+  if (!supabaseClient) {
+    result.textContent = "Supabase is not connected. Please sign in again.";
+    result.style.color = "red";
+    return;
+  }
+
+  const { data: sessionData, error: sessionError } =
+    await supabaseClient.auth.getSession();
+
+  const session = sessionData?.session;
+
+  if (sessionError || !session?.access_token) {
+    result.textContent = "Your login session has expired. Please sign in again.";
+    result.style.color = "red";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "AI is checking...";
+
+  result.textContent = "BorderFlow AI is analysing your document...";
+  result.style.color = "#2864e8";
+
+  try {
+    const { data, error } = await supabaseClient.functions.invoke(
+
+  "document-intelligence",
+      {
+        body: {
+          agent: "document_intelligence",
+          input:
+            "Document type: " + documentType +
+            "\nShipment reference entered: " + shipmentRef +
+            "\nExtracted document text:\n" + extractedText,
+          context: "Analyse this freight document for missing information and possible inconsistencies."
+        }
       }
+    );
 
-      if (!documentType) {
-        problems.push("Select a document type.");
-      }
+    if (error) throw error;
 
-      if (!extractedText || extractedText === "Extracted text will appear here.") {
-        problems.push("Read a document first.");
-      }
+    if (!data?.success || !data?.analysis) {
+      throw new Error(data?.error || "AI analysis could not be completed.");
+    }
 
-      if (problems.length > 0) {
-        result.textContent = "Document check needs attention:\n" + problems.join("\n");
-        result.style.color = "red";
-        return;
-      }
+    const analysis = data.analysis;
 
-      const normalizeReference = (value) =>
-        value.toUpperCase()
-          .replace(/[^A-Z0-9]/g, "")
-          .replace(/O/g, "0")
-          .replace(/I/g, "1")
-          .replace(/L/g, "1");
+    result.textContent =
+      "BORDERFLOW AI DOCUMENT ANALYSIS\n\n" +
+      "Summary:\n" + (analysis.summary || "Not provided") +
+      "\n\nDocument findings:\n" +
+      (Array.isArray(analysis.findings)
+        ? analysis.findings.join("\n")
+        : "None reported") +
+      "\n\nMissing information:\n" +
+      (Array.isArray(analysis.missing_information)
+        ? analysis.missing_information.join("\n")
+        : "None reported") +
+      "\n\nRecommendations:\n" +
+      (Array.isArray(analysis.recommendations)
+        ? analysis.recommendations.join("\n")
+        : "None provided") +
+      "\n\nRisk level: " + (analysis.risk_level || "Unknown") +
+      "\n\nAI analysis completed by Groq. Human review required.";
 
-      const normalizedText = normalizeReference(extractedText);
-      const normalizedReference = normalizeReference(shipmentRef);
+    result.style.color = "#2864e8";
 
-      if (!normalizedText.includes(normalizedReference)) {
-        result.textContent =
-          "Check incomplete: shipment reference could not be matched. Please review the extracted text.";
-        result.style.color = "red";
-        return;
-      }
+  } catch (error) {
+    console.error("BorderFlow AI error:", error);
 
-      const requiredFields = [
-        { name: "Company name", pattern: /company\s*:\s*\S+/i },
-        { name: "Invoice number", pattern: /invoice\s*(number|no\.?)\s*[:#-]?\s*\S+/i },
-        { name: "Invoice amount", pattern: /amount\s*[:#-]?\s*(USD|ZWL|ZAR|\$)?\s*\d[\d,.]*/i }
-      ];
+    result.textContent =
+      "AI analysis failed: " +
+      (error.message || "Please try again.");
 
-      const missingFields = requiredFields
-        .filter(field => !field.pattern.test(extractedText))
-        .map(field => field.name);
+    result.style.color = "red";
 
-      if (missingFields.length > 0) {
-        result.textContent =
-          "Shipment reference found, but missing information:\n" +
-          missingFields.join("\n");
-        result.style.color = "orange";
-      } else {
-        result.textContent =
-          "Basic invoice check passed! Shipment reference, company name, invoice number and amount were found. Please review the original document manually.";
-        result.style.color = "green";
-      }
-    });
+  } finally {
+    button.disabled = false;
+    button.textContent = "Check Document";
+  }
+});
 
     // --- 3. DOCUMENT LIBRARY (CONNECTED TO SUPABASE) ---
     async function loadDocumentLibrary() {
