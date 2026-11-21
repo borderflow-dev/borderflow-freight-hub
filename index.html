@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="BorderFlow freight, customs and AI trade document intelligence platform.">
+<meta name="theme-color" content="#101d35">
 <title>BorderFlow | Freight & Customs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,13 +13,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
-:root {
+:root{
   --navy:#101d35;
   --navy2:#192b49;
   --blue:#2864e8;
   --blue2:#174fc5;
   --light:#f4f7fc;
-  --white:#ffffff;
+  --white:#fff;
   --text:#17243a;
   --muted:#718096;
   --border:#e4eaf3;
@@ -27,6 +28,7 @@
   --orange:#c47a18;
   --shadow:0 8px 28px rgba(16,29,53,.07);
 }
+
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--light);color:var(--text)}
 button,input,select,textarea{font:inherit}
@@ -34,72 +36,361 @@ button{cursor:pointer}
 .hidden{display:none!important}
 .muted{color:var(--muted)}
 .small{font-size:12px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:22px;color:var(--navy)}
-.brand-mark{height:40px;width:40px;border-radius:12px;background:var(--blue);color:white;display:grid;place-items:center;font-weight:900;font-size:25px;box-shadow:0 5px 14px #2864e844}
-.btn{border:0;border-radius:9px;padding:11px 17px;background:var(--blue);color:white;font-weight:700}
-.btn:hover{background:var(--blue2)}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:850;
+  font-size:23px;
+  letter-spacing:-.7px;
+  color:var(--white);
+  text-decoration:none;
+}
+.brand-name{display:flex;gap:0}
+.brand-border{color:#fff}
+.brand-flow{color:#3980ff}
+
+.brand-mark{
+  height:42px;
+  width:42px;
+  flex-shrink:0;
+  border-radius:11px;
+  background:var(--blue);
+  color:white;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:27px;
+  box-shadow:0 5px 18px #2864e855;
+}
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:12px 18px;
+  background:var(--blue);
+  color:white;
+  font-weight:750;
+  transition:.2s;
+}
+.btn:hover{background:var(--blue2);transform:translateY(-1px)}
 .btn.secondary{background:#eaf0ff;color:var(--blue)}
 .btn.dark{background:var(--navy)}
 .btn.danger{background:#fff0f0;color:var(--red)}
-.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
 .field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
 .field label{font-size:13px;font-weight:700;color:#394860}
 .field input,.field select,.field textarea{
-  width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;
-  background:white;color:var(--text);outline:none
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:white;
+  color:var(--text);
+  outline:none;
 }
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2864e81a}
-.card{background:white;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px #2864e81a;
+}
+
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
 .page-title{font-size:24px;font-weight:800;margin:0 0 6px}
 .page-subtitle{font-size:14px;color:var(--muted);margin:0 0 22px}
-.tag{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800;background:#edf2ff;color:var(--blue)}
+.tag{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  background:#edf2ff;
+  color:var(--blue);
+}
 .tag.green{background:#e8f7ef;color:var(--green)}
 .tag.orange{background:#fff4e4;color:var(--orange)}
 .tag.red{background:#fff0f0;color:var(--red)}
 hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 
-/* Landing */
-.landing{min-height:100vh;background:linear-gradient(135deg,#f8faff 0%,#edf3ff 100%)}
-.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 7%;background:#ffffffdf;border-bottom:1px solid var(--border)}
+/* LANDING PAGE */
+.landing{
+  min-height:100vh;
+  background:#081326;
+  color:white;
+}
+.topbar{
+  height:78px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 7%;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:5;
+  background:linear-gradient(180deg,rgba(5,13,27,.8),transparent);
+}
 .top-actions{display:flex;gap:10px;align-items:center}
-.hero{max-width:1160px;margin:auto;padding:95px 25px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:55px;align-items:center}
-.hero h1{font-size:clamp(38px,5vw,62px);line-height:1.08;letter-spacing:-2px;margin:16px 0}
-.hero h1 span{color:var(--blue)}
-.hero p{font-size:17px;line-height:1.7;color:#65738a;max-width:600px}
-.hero-panel{background:var(--navy);color:white;padding:28px;border-radius:22px;box-shadow:0 24px 55px #101d3533}
-.hero-panel .mini-row{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid #ffffff20}
-.hero-panel .mini-row:last-child{border:0}
-.hero-stat{font-size:26px;font-weight:800}
-.feature-strip{max-width:1100px;margin:0 auto 60px;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.feature{background:white;border:1px solid var(--border);border-radius:13px;padding:20px}
-.feature-icon{height:38px;width:38px;display:grid;place-items:center;border-radius:10px;background:#edf2ff;color:var(--blue);font-weight:900;font-size:18px;margin-bottom:12px}
 
-/* Authentication */
-.auth-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#f3f6fc,#e9f0ff)}
-.auth-card{width:min(430px,100%);background:white;border:1px solid var(--border);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+.hero{
+  position:relative;
+  min-height:720px;
+  height:min(850px,100vh);
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  padding:110px 8% 80px;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 75% 50%,#243b5d 0%,#101d35 45%,#071326 100%);
+}
+.hero-video{
+  position:absolute;
+  z-index:-3;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.72;
+}
+.hero-overlay{
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(5,13,27,.94) 0%,rgba(5,13,27,.76) 42%,rgba(5,13,27,.2) 100%),
+    linear-gradient(0deg,rgba(5,13,27,.65),transparent 45%);
+}
+.hero-content{
+  position:relative;
+  z-index:1;
+  max-width:780px;
+}
+.hero-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:#9dbdff;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.hero-kicker:before{
+  content:"";
+  width:27px;
+  height:2px;
+  background:#3980ff;
+}
+.hero h1{
+  font-size:clamp(44px,7vw,82px);
+  line-height:1.02;
+  letter-spacing:-3px;
+  margin:24px 0;
+  max-width:850px;
+  color:white;
+}
+.hero h1 .blue{color:#3980ff}
+.hero p{
+  color:#d0d9e8;
+  font-size:17px;
+  line-height:1.8;
+  max-width:620px;
+}
+.hero-buttons{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:30px;
+}
+.hero-buttons .btn{padding:14px 22px}
+.hero-buttons .btn.secondary{
+  background:rgba(255,255,255,.1);
+  color:white;
+  border:1px solid rgba(255,255,255,.3);
+}
+.hero-note{
+  margin-top:25px;
+  color:#aebbd0;
+  font-size:11px;
+  max-width:600px;
+  line-height:1.7;
+}
+.hero-bottom{
+  position:absolute;
+  bottom:27px;
+  left:8%;
+  right:8%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  color:#c0cde0;
+  font-size:11px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+.hero-bottom-line{
+  height:1px;
+  background:#ffffff50;
+  flex:1;
+  max-width:180px;
+}
+.feature-section{
+  background:#f4f7fc;
+  color:var(--text);
+  padding:65px 7%;
+}
+.feature-heading{
+  max-width:1100px;
+  margin:0 auto 25px;
+}
+.feature-heading h2{
+  font-size:30px;
+  letter-spacing:-1px;
+  margin:0 0 8px;
+}
+.feature-strip{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.feature{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:23px;
+}
+.feature-icon{
+  height:42px;
+  width:42px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:#edf2ff;
+  color:var(--blue);
+  font-weight:900;
+  font-size:17px;
+  margin-bottom:15px;
+}
+.feature p{line-height:1.7}
+.landing-footer{
+  background:#081326;
+  color:#aebbd0;
+  padding:25px 7%;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  font-size:12px;
+}
+
+/* AUTHENTICATION */
+.auth-screen{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:linear-gradient(135deg,#f3f6fc,#e9f0ff);
+}
+.auth-card{
+  width:min(430px,100%);
+  background:white;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:30px;
+  box-shadow:var(--shadow);
+}
 .auth-card .brand{justify-content:center;margin-bottom:24px}
+.auth-card .brand-border{color:var(--navy)}
 .auth-card h2{text-align:center;margin:0 0 7px}
 .auth-card .muted{text-align:center;margin:0 0 24px}
 .auth-switch{text-align:center;font-size:13px;margin-top:18px}
 .auth-switch a{color:var(--blue);font-weight:700;cursor:pointer}
 #authMessage{font-size:13px;margin:10px 0;color:var(--red)}
 
-/* Workspace */
+/* WORKSPACE */
 #appShell{min-height:100vh;display:flex}
-.sidebar{width:245px;background:var(--navy);color:white;position:fixed;left:0;top:0;bottom:0;padding:22px 14px;overflow:auto;z-index:10}
-.sidebar .brand{color:white;padding:0 9px 25px}
-.sidebar .brand-mark{background:var(--blue)}
-.nav-label{font-size:10px;letter-spacing:1.3px;color:#8ea0bb;padding:15px 12px 8px;font-weight:800}
-.nav-item{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;border:0;border-radius:8px;background:transparent;color:#c6d1e1;text-align:left;margin:2px 0;font-size:13px}
+.sidebar{
+  width:245px;
+  background:var(--navy);
+  color:white;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  padding:22px 14px;
+  overflow:auto;
+  z-index:10;
+}
+.sidebar .brand{padding:0 9px 25px}
+.nav-label{
+  font-size:10px;
+  letter-spacing:1.3px;
+  color:#8ea0bb;
+  padding:15px 12px 8px;
+  font-weight:800;
+}
+.nav-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#c6d1e1;
+  text-align:left;
+  margin:2px 0;
+  font-size:13px;
+}
 .nav-item:hover,.nav-item.active{background:#263b5e;color:white}
 .nav-icon{width:19px;text-align:center;font-size:16px}
 .sidebar-bottom{margin-top:25px;border-top:1px solid #ffffff20;padding-top:15px}
 .main-area{margin-left:245px;width:calc(100% - 245px);min-height:100vh}
-.top-header{height:70px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:5}
+.top-header{
+  height:70px;
+  background:white;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
 .user-chip{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
-.avatar{height:34px;width:34px;border-radius:50%;display:grid;place-items:center;background:#eaf0ff;color:var(--blue);font-weight:800}
+.avatar{
+  height:34px;
+  width:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#eaf0ff;
+  color:var(--blue);
+  font-weight:800;
+}
 .content{padding:28px;max-width:1500px;margin:auto}
-.mobile-menu{display:none}
+.mobile-menu{
+  display:none;
+  border:0;
+  background:#edf2ff;
+  color:var(--blue);
+  padding:9px 12px;
+  border-radius:8px;
+}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:13px;padding:18px}
 .stat-card .stat-label{font-size:12px;color:var(--muted);font-weight:700}
@@ -110,44 +401,89 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 .section-head h3{font-size:16px;margin:0}
 .table-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:12px;border-bottom:1px solid var(--border)}
+th{
+  text-align:left;
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
 td{padding:13px 12px;border-bottom:1px solid #edf0f5;vertical-align:middle}
 .empty{text-align:center;padding:35px 15px;color:var(--muted);font-size:13px}
 .page{display:none}
 .page.active{display:block}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}
-.upload-zone{border:2px dashed #cbd7eb;border-radius:13px;padding:28px;text-align:center;background:#f9fbff}
+.upload-zone{
+  border:2px dashed #cbd7eb;
+  border-radius:13px;
+  padding:28px;
+  text-align:center;
+  background:#f9fbff;
+}
 .upload-zone input{max-width:100%;margin-top:15px}
 .report-box{border:1px solid var(--border);border-radius:12px;padding:17px;margin-top:16px;background:#fbfcff}
-.finding{border-left:4px solid var(--orange);padding:12px 14px;background:#fffaf2;margin:10px 0;border-radius:0 8px 8px 0;font-size:13px}
+.finding{
+  border-left:4px solid var(--orange);
+  padding:12px 14px;
+  background:#fffaf2;
+  margin:10px 0;
+  border-radius:0 8px 8px 0;
+  font-size:13px;
+}
 .finding.High{border-color:var(--red);background:#fff6f6}
 .finding.Low{border-color:var(--blue);background:#f5f8ff}
 .report-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f3f5f9;padding:12px;border-radius:8px}
-.toast{position:fixed;right:22px;bottom:22px;z-index:100;background:var(--navy);color:white;padding:14px 18px;border-radius:10px;box-shadow:var(--shadow);max-width:360px;font-size:13px}
+pre{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-size:12px;
+  background:#f3f5f9;
+  padding:12px;
+  border-radius:8px;
+}
+.toast{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:100;
+  background:var(--navy);
+  color:white;
+  padding:14px 18px;
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  max-width:360px;
+  font-size:13px;
+}
 .loading{opacity:.65;pointer-events:none}
 .footer-note{font-size:11px;color:var(--muted);margin-top:15px;line-height:1.6}
 
 @media(max-width:1000px){
   .grid-4{grid-template-columns:repeat(2,1fr)}
-  .hero{grid-template-columns:1fr;padding-top:60px}
-  .hero-panel{max-width:600px}
+  .two-col{grid-template-columns:1fr}
 }
 @media(max-width:720px){
   .sidebar{transform:translateX(-100%);transition:.2s}
   .sidebar.open{transform:translateX(0)}
   .main-area{margin-left:0;width:100%}
-  .mobile-menu{display:inline-block;border:0;background:#edf2ff;color:var(--blue);padding:9px 12px;border-radius:8px}
+  .mobile-menu{display:inline-block}
   .top-header{padding:0 15px}
   .content{padding:18px}
   .grid-4{grid-template-columns:1fr 1fr;gap:10px}
-  .two-col{grid-template-columns:1fr}
   .feature-strip{grid-template-columns:1fr}
-  .topbar{padding:0 17px}
-  .topbar .brand{font-size:18px}
-  .hero{padding:55px 20px}
-  .hero h1{font-size:40px}
+  .topbar{padding:0 17px;height:70px}
+  .topbar .brand{font-size:19px}
+  .hero{min-height:680px;height:auto;padding:145px 22px 110px}
+  .hero h1{font-size:46px;letter-spacing:-2px}
+  .hero p{font-size:15px}
+  .hero-bottom{left:22px;right:22px;bottom:22px}
   .form-grid{grid-template-columns:1fr}
+  .landing-footer{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-video{display:none}
+  *{scroll-behavior:auto!important;transition:none!important}
 }
 </style>
 </head>
@@ -156,10 +492,13 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f3f5f
 
 <!-- LANDING PAGE -->
 <section id="landingView" class="landing">
+
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">B</div>
-      <span>BorderFlow</span>
+      <div class="brand-name">
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
+      </div>
     </div>
     <div class="top-actions">
       <button class="btn secondary" onclick="showAuth('login')">Log in</button>
@@ -168,42 +507,102 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f3f5f
   </header>
 
   <main class="hero">
-    <div>
-      <span class="tag">FREIGHT • CUSTOMS • DOCUMENT INTELLIGENCE</span>
-      <h1>Move trade forward with <span>BorderFlow.</span></h1>
+
+    <!-- Upload borderflow-hero.mp4 into the same GitHub folder as index.html -->
+    <video
+      class="hero-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster=""
+      aria-hidden="true">
+      <source src="borderflow-hero.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="hero-kicker">Freight · Customs · Document Intelligence</div>
+
+      <h1>
+        Moving trade forward.<br>
+        <span class="blue">Across every border.</span>
+      </h1>
+
       <p>
-        A digital workspace for freight operators and clearing agents.
+        One digital workspace for freight operators and clearing agents.
         Organise shipments, manage trade documents and use AI to identify
         potential document problems before they slow down your operations.
       </p>
-      <div class="top-actions" style="margin-top:25px">
+
+      <div class="hero-buttons">
         <button class="btn" onclick="showAuth('signup')">Create your account</button>
         <button class="btn secondary" onclick="showAuth('login')">Open dashboard</button>
       </div>
-      <p class="small">AI document review supports human decision-making. It does not replace customs authorities or professional review.</p>
+
+      <div class="hero-note">
+        BorderFlow AI supports document review and operational organisation.
+        It does not replace customs authorities, official declarations or
+        professional judgement.
+      </div>
     </div>
 
-    <div class="hero-panel">
-      <div style="font-size:12px;color:#a9bddb;font-weight:800;letter-spacing:1px">BORDERFLOW WORKSPACE</div>
-      <h2 style="font-size:25px;margin:12px 0 22px">One place for your trade operations.</h2>
-      <div class="mini-row"><span>AI document checking</span><strong>Available</strong></div>
-      <div class="mini-row"><span>Shipment records</span><strong>Organised</strong></div>
-      <div class="mini-row"><span>Secure document storage</span><strong>Supabase</strong></div>
-      <div class="mini-row"><span>AI analysis engine</span><strong>Groq</strong></div>
+    <div class="hero-bottom">
+      <span>Built for cross-border trade</span>
+      <span class="hero-bottom-line"></span>
+      <span>BorderFlow · Freight intelligence</span>
     </div>
   </main>
 
-  <div class="feature-strip">
-    <div class="feature"><div class="feature-icon">AI</div><strong>Document Intelligence</strong><p class="muted small">Extract text and identify missing information, calculation concerns and inconsistencies.</p></div>
-    <div class="feature"><div class="feature-icon">↗</div><strong>Shipment Management</strong><p class="muted small">Record trucks, drivers, cargo, border posts and shipment progress.</p></div>
-    <div class="feature"><div class="feature-icon">▣</div><strong>Document Library</strong><p class="muted small">Keep uploaded trade documents and review reports organised.</p></div>
-  </div>
+  <section class="feature-section">
+    <div class="feature-heading">
+      <span class="tag">THE BORDERFLOW WORKSPACE</span>
+      <h2>Trade operations, organised.</h2>
+      <p class="muted">Tools to help freight teams manage documents and shipments in one place.</p>
+    </div>
+
+    <div class="feature-strip">
+      <div class="feature">
+        <div class="feature-icon">AI</div>
+        <strong>Document Intelligence</strong>
+        <p class="muted small">Extract text and identify missing information, calculation concerns and inconsistencies.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">↗</div>
+        <strong>Shipment Management</strong>
+        <p class="muted small">Record trucks, drivers, cargo, border posts and shipment progress.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">▣</div>
+        <strong>Document Library</strong>
+        <p class="muted small">Keep uploaded trade documents and AI review reports organised.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="brand" style="font-size:18px">
+      <div class="brand-mark" style="height:32px;width:32px;font-size:20px">B</div>
+      <div class="brand-name"><span class="brand-border">Border</span><span class="brand-flow">Flow</span></div>
+    </div>
+    <span>© <span id="copyrightYear"></span> BorderFlow. Freight intelligence for connected trade.</span>
+  </footer>
 </section>
 
 <!-- LOGIN / SIGNUP -->
 <section id="authView" class="auth-screen hidden">
   <div class="auth-card">
-    <div class="brand"><div class="brand-mark">B</div><span>BorderFlow</span></div>
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div class="brand-name">
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
+      </div>
+    </div>
+
     <h2 id="authTitle">Welcome back</h2>
     <p class="muted" id="authSubtitle">Log in to your BorderFlow workspace.</p>
 
@@ -235,7 +634,12 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f3f5f
 <!-- MAIN APPLICATION -->
 <section id="appShell" class="hidden">
   <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="brand-mark">B</div><span>BorderFlow</span></div>
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div class="brand-name">
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
+      </div>
+    </div>
 
     <div class="nav-label">WORKSPACE</div>
     <button class="nav-item active" data-page="overview"><span class="nav-icon">⌂</span>Overview</button>
@@ -472,9 +876,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f3f5f
 <script>
 "use strict";
 
-/* -------------------------------------------------------
-   BORDERFLOW CONFIGURATION
-------------------------------------------------------- */
+/* BORDERFLOW CONFIGURATION */
 
 const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
@@ -492,16 +894,14 @@ let shipmentsCache = [];
 let documentsCache = [];
 let reportsCache = [];
 
-/* -------------------------------------------------------
-   GENERAL HELPERS
-------------------------------------------------------- */
+/* GENERAL HELPERS */
 
-function $(id) {
+function $(id){
   return document.getElementById(id);
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
@@ -510,141 +910,130 @@ function escapeHTML(value) {
   })[char]);
 }
 
-function toast(message, duration = 4000) {
-  const element = $("toast");
-  element.textContent = message;
+function toast(message,duration=4000){
+  const element=$("toast");
+  element.textContent=message;
   element.classList.remove("hidden");
   clearTimeout(window.borderFlowToastTimer);
-  window.borderFlowToastTimer = setTimeout(
-    () => element.classList.add("hidden"),
+  window.borderFlowToastTimer=setTimeout(
+    ()=>element.classList.add("hidden"),
     duration
   );
 }
 
-function setBusy(button, busy, busyText = "Please wait...") {
-  if (!button) return;
-  if (busy) {
-    button.dataset.originalText = button.textContent;
-    button.textContent = busyText;
-    button.disabled = true;
-  } else {
-    button.textContent = button.dataset.originalText || button.textContent;
-    button.disabled = false;
+function setBusy(button,busy,busyText="Please wait..."){
+  if(!button)return;
+  if(busy){
+    button.dataset.originalText=button.textContent;
+    button.textContent=busyText;
+    button.disabled=true;
+  }else{
+    button.textContent=button.dataset.originalText||button.textContent;
+    button.disabled=false;
   }
 }
 
-function formatDate(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
-    : date.toLocaleDateString();
+function formatDate(value){
+  if(!value)return "—";
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())?"—":date.toLocaleDateString();
 }
 
-function statusClass(status) {
-  const value = String(status || "").toLowerCase();
-  if (value.includes("passed") || value.includes("cleared")) return "green";
-  if (value.includes("failed")) return "red";
+function statusClass(status){
+  const value=String(status||"").toLowerCase();
+  if(value.includes("passed")||value.includes("cleared"))return "green";
+  if(value.includes("failed"))return "red";
   return "orange";
 }
 
-/* -------------------------------------------------------
-   LANDING AND AUTHENTICATION
-------------------------------------------------------- */
+/* LANDING AND AUTHENTICATION */
 
-function showAuth(mode = "login") {
-  authMode = mode;
+function showAuth(mode="login"){
+  authMode=mode;
   $("landingView").classList.add("hidden");
   $("appShell").classList.add("hidden");
   $("authView").classList.remove("hidden");
   updateAuthMode();
 }
 
-function backToLanding() {
+function backToLanding(){
   $("authView").classList.add("hidden");
   $("landingView").classList.remove("hidden");
 }
 
-function toggleAuthMode() {
-  authMode = authMode === "login" ? "signup" : "login";
+function toggleAuthMode(){
+  authMode=authMode==="login"?"signup":"login";
   updateAuthMode();
 }
 
-function updateAuthMode() {
-  const signup = authMode === "signup";
-  $("authTitle").textContent = signup ? "Create your account" : "Welcome back";
-  $("authSubtitle").textContent = signup
-    ? "Create your BorderFlow workspace."
-    : "Log in to your BorderFlow workspace.";
-  $("nameField").classList.toggle("hidden", !signup);
-  $("fullName").required = signup;
-  $("authSubmit").textContent = signup ? "Create account" : "Log in";
-  $("authSwitchText").textContent = signup
-    ? "Already have an account?"
-    : "Don't have an account?";
-  $("authSwitchLink").textContent = signup ? "Log in" : "Create one";
-  $("authMessage").textContent = "";
-  $("authPassword").autocomplete = signup ? "new-password" : "current-password";
+function updateAuthMode(){
+  const signup=authMode==="signup";
+  $("authTitle").textContent=signup?"Create your account":"Welcome back";
+  $("authSubtitle").textContent=signup
+    ?"Create your BorderFlow workspace."
+    :"Log in to your BorderFlow workspace.";
+  $("nameField").classList.toggle("hidden",!signup);
+  $("fullName").required=signup;
+  $("authSubmit").textContent=signup?"Create account":"Log in";
+  $("authSwitchText").textContent=signup
+    ?"Already have an account?"
+    :"Don't have an account?";
+  $("authSwitchLink").textContent=signup?"Log in":"Create one";
+  $("authMessage").textContent="";
+  $("authPassword").autocomplete=signup?"new-password":"current-password";
 }
 
-$("authForm").addEventListener("submit", async event => {
+$("authForm").addEventListener("submit",async event=>{
   event.preventDefault();
 
-  const email = $("authEmail").value.trim();
-  const password = $("authPassword").value;
-  const fullName = $("fullName").value.trim();
-  const button = $("authSubmit");
+  const email=$("authEmail").value.trim();
+  const password=$("authPassword").value;
+  const fullName=$("fullName").value.trim();
+  const button=$("authSubmit");
 
-  $("authMessage").textContent = "";
-  setBusy(button, true, "Connecting...");
+  $("authMessage").textContent="";
+  setBusy(button,true,"Connecting...");
 
-  try {
-    if (authMode === "signup") {
-      const { data, error } = await db.auth.signUp({
+  try{
+    if(authMode==="signup"){
+      const {data,error}=await db.auth.signUp({
         email,
         password,
-        options: {
-          data: { full_name: fullName }
-        }
+        options:{data:{full_name:fullName}}
       });
 
-      if (error) throw error;
+      if(error)throw error;
 
-      if (data.session) {
+      if(data.session){
         toast("Your BorderFlow account has been created.");
-      } else {
-        $("authMessage").style.color = "var(--green)";
-        $("authMessage").textContent =
+      }else{
+        $("authMessage").style.color="var(--green)";
+        $("authMessage").textContent=
           "Account created. Check your email if confirmation is required, then log in.";
       }
-    } else {
-      const { error } = await db.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (error) throw error;
+    }else{
+      const {error}=await db.auth.signInWithPassword({email,password});
+      if(error)throw error;
     }
-  } catch (error) {
-    $("authMessage").style.color = "var(--red)";
-    $("authMessage").textContent = error.message || "Authentication failed.";
-  } finally {
-    setBusy(button, false);
+  }catch(error){
+    $("authMessage").style.color="var(--red)";
+    $("authMessage").textContent=error.message||"Authentication failed.";
+  }finally{
+    setBusy(button,false);
   }
 });
 
-async function logout() {
-  const { error } = await db.auth.signOut();
-  if (error) toast(error.message);
+async function logout(){
+  const {error}=await db.auth.signOut();
+  if(error)toast(error.message);
 }
 
-$("logoutButton").addEventListener("click", logout);
-$("settingsLogout").addEventListener("click", logout);
+$("logoutButton").addEventListener("click",logout);
+$("settingsLogout").addEventListener("click",logout);
 
-/* -------------------------------------------------------
-   NAVIGATION
-------------------------------------------------------- */
+/* NAVIGATION */
 
-const pageTitles = {
+const pageTitles={
   overview:"Overview",
   checker:"AI Document Checker",
   library:"Document Library",
@@ -657,127 +1046,120 @@ const pageTitles = {
   settings:"Settings"
 };
 
-function navigate(page) {
-  if (!pageTitles[page]) return;
+function navigate(page){
+  if(!pageTitles[page])return;
 
-  document.querySelectorAll(".page").forEach(section => {
+  document.querySelectorAll(".page").forEach(section=>{
     section.classList.remove("active");
   });
 
-  const target = $("page-" + page);
-  if (target) target.classList.add("active");
+  const target=$("page-"+page);
+  if(target)target.classList.add("active");
 
-  document.querySelectorAll(".nav-item[data-page]").forEach(button => {
-    button.classList.toggle("active", button.dataset.page === page);
+  document.querySelectorAll(".nav-item[data-page]").forEach(button=>{
+    button.classList.toggle("active",button.dataset.page===page);
   });
 
-  $("headerTitle").textContent = pageTitles[page];
+  $("headerTitle").textContent=pageTitles[page];
   $("sidebar").classList.remove("open");
 
-  if (page === "overview") loadDashboard();
-  if (page === "shipments") loadShipments();
-  if (page === "tracking") loadTracking();
-  if (page === "library") {
+  if(page==="overview")loadDashboard();
+  if(page==="shipments")loadShipments();
+  if(page==="tracking")loadTracking();
+  if(page==="library"){
     loadDocuments();
     loadReports();
   }
 }
 
-document.querySelectorAll(".nav-item[data-page]").forEach(button => {
-  button.addEventListener("click", () => navigate(button.dataset.page));
+document.querySelectorAll(".nav-item[data-page]").forEach(button=>{
+  button.addEventListener("click",()=>navigate(button.dataset.page));
 });
 
-function toggleSidebar() {
+function toggleSidebar(){
   $("sidebar").classList.toggle("open");
 }
 
-/* -------------------------------------------------------
-   WORKSPACE SESSION
-------------------------------------------------------- */
+/* WORKSPACE SESSION */
 
-function openWorkspace(user) {
-  currentUser = user;
+function openWorkspace(user){
+  currentUser=user;
   $("landingView").classList.add("hidden");
   $("authView").classList.add("hidden");
   $("appShell").classList.remove("hidden");
 
-  const email = user.email || "BorderFlow user";
-  $("userEmail").textContent = email;
-  $("userAvatar").textContent = email.charAt(0).toUpperCase();
-  $("settingsEmail").value = email;
-  $("settingsUserId").value = user.id;
+  const email=user.email||"BorderFlow user";
+  $("userEmail").textContent=email;
+  $("userAvatar").textContent=email.charAt(0).toUpperCase();
+  $("settingsEmail").value=email;
+  $("settingsUserId").value=user.id;
 
   navigate("overview");
 }
 
-function showSignedOut() {
-  currentUser = null;
+function showSignedOut(){
+  currentUser=null;
   $("appShell").classList.add("hidden");
   $("authView").classList.add("hidden");
   $("landingView").classList.remove("hidden");
 }
 
-db.auth.onAuthStateChange((event, session) => {
-  if (session?.user) {
+db.auth.onAuthStateChange((event,session)=>{
+  if(session?.user){
     openWorkspace(session.user);
-  } else if (event === "SIGNED_OUT") {
+  }else if(event==="SIGNED_OUT"){
     showSignedOut();
   }
 });
 
-async function initialise() {
-  try {
-    const { data, error } = await db.auth.getSession();
-    if (error) throw error;
-
-    if (data.session?.user) {
-      openWorkspace(data.session.user);
-    }
-  } catch (error) {
-    console.error("Session initialisation:", error);
+async function initialise(){
+  try{
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
+    if(data.session?.user)openWorkspace(data.session.user);
+  }catch(error){
+    console.error("Session initialisation:",error);
     toast("Could not check your login session. Please log in again.");
   }
 }
 
-/* -------------------------------------------------------
-   SHIPMENT MANAGEMENT
-------------------------------------------------------- */
+/* SHIPMENT MANAGEMENT */
 
-async function loadShipments() {
-  if (!currentUser) return;
+async function loadShipments(){
+  if(!currentUser)return;
 
-  const tableBody = $("shipmentsTable");
-  tableBody.innerHTML = '<tr><td colspan="5" class="empty">Loading...</td></tr>';
+  const tableBody=$("shipmentsTable");
+  tableBody.innerHTML='<tr><td colspan="5" class="empty">Loading...</td></tr>';
 
-  const { data, error } = await db
+  const {data,error}=await db
     .from("shipments")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at",{ascending:false});
 
-  if (error) {
-    tableBody.innerHTML =
+  if(error){
+    tableBody.innerHTML=
       `<tr><td colspan="5" class="empty">${escapeHTML(error.message)}</td></tr>`;
     return;
   }
 
-  shipmentsCache = data || [];
+  shipmentsCache=data||[];
 
-  if (!shipmentsCache.length) {
-    tableBody.innerHTML =
+  if(!shipmentsCache.length){
+    tableBody.innerHTML=
       '<tr><td colspan="5" class="empty">No shipments saved yet. Create your first shipment above.</td></tr>';
-  } else {
-    tableBody.innerHTML = shipmentsCache.map(item => `
+  }else{
+    tableBody.innerHTML=shipmentsCache.map(item=>`
       <tr>
-        <td><strong>${escapeHTML(item.reference_no || "—")}</strong></td>
-        <td>${escapeHTML(item.truck_registration || "—")}</td>
-        <td>${escapeHTML(item.border_post || "—")}</td>
-        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status || "Created")}</span></td>
+        <td><strong>${escapeHTML(item.reference_no||"—")}</strong></td>
+        <td>${escapeHTML(item.truck_registration||"—")}</td>
+        <td>${escapeHTML(item.border_post||"—")}</td>
+        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span></td>
         <td>
           <select aria-label="Update shipment status"
             onchange="updateShipmentStatus('${escapeHTML(item.id)}',this.value)"
             style="padding:7px;border:1px solid var(--border);border-radius:7px">
-            ${["Created","Arrived at Border","Docs Checked","Duty Paid","Cleared to Go"].map(status =>
-              `<option ${item.status === status ? "selected" : ""}>${status}</option>`
+            ${["Created","Arrived at Border","Docs Checked","Duty Paid","Cleared to Go"].map(status=>
+              `<option ${item.status===status?"selected":""}>${status}</option>`
             ).join("")}
           </select>
         </td>
@@ -789,52 +1171,49 @@ async function loadShipments() {
   loadRecentShipments();
 }
 
-$("shipmentForm").addEventListener("submit", async event => {
+$("shipmentForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  if (!currentUser) return toast("Please log in first.");
+  if(!currentUser)return toast("Please log in first.");
 
-  const button = $("saveShipmentButton");
-  setBusy(button, true, "Saving shipment...");
+  const button=$("saveShipmentButton");
+  setBusy(button,true,"Saving shipment...");
 
-  const record = {
-    user_id: currentUser.id,
-    reference_no: $("shipmentRef").value.trim(),
-    truck_registration: $("truckRegistration").value.trim(),
-    driver_name: $("driverName").value.trim(),
-    driver_whatsapp: $("driverWhatsapp").value.trim(),
-    border_post: $("borderPost").value,
-    cargo_description: $("cargoDescription").value.trim(),
-    corridor: $("corridor").value.trim(),
-    status: "Arrived at Border",
-    updated_at: new Date().toISOString()
+  const record={
+    user_id:currentUser.id,
+    reference_no:$("shipmentRef").value.trim(),
+    truck_registration:$("truckRegistration").value.trim(),
+    driver_name:$("driverName").value.trim(),
+    driver_whatsapp:$("driverWhatsapp").value.trim(),
+    border_post:$("borderPost").value,
+    cargo_description:$("cargoDescription").value.trim(),
+    corridor:$("corridor").value.trim(),
+    status:"Arrived at Border",
+    updated_at:new Date().toISOString()
   };
 
-  try {
-    const { error } = await db.from("shipments").insert(record);
-    if (error) throw error;
+  try{
+    const {error}=await db.from("shipments").insert(record);
+    if(error)throw error;
 
     $("shipmentForm").reset();
     toast("Shipment saved successfully.");
     await loadShipments();
     await loadDashboard();
-  } catch (error) {
-    toast("Could not save shipment: " + error.message, 6000);
-  } finally {
-    setBusy(button, false);
+  }catch(error){
+    toast("Could not save shipment: "+error.message,6000);
+  }finally{
+    setBusy(button,false);
   }
 });
 
-async function updateShipmentStatus(id, status) {
-  const { error } = await db
+async function updateShipmentStatus(id,status){
+  const {error}=await db
     .from("shipments")
-    .update({
-      status,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
+    .update({status,updated_at:new Date().toISOString()})
+    .eq("id",id);
 
-  if (error) {
-    toast("Status update failed: " + error.message);
+  if(error){
+    toast("Status update failed: "+error.message);
     await loadShipments();
     return;
   }
@@ -844,53 +1223,47 @@ async function updateShipmentStatus(id, status) {
   await loadDashboard();
 }
 
-function updateShipmentStats() {
-  $("statShipments").textContent = shipmentsCache.length;
-  $("reportShipments").textContent = shipmentsCache.length;
+function updateShipmentStats(){
+  $("statShipments").textContent=shipmentsCache.length;
+  $("reportShipments").textContent=shipmentsCache.length;
 }
 
-function loadRecentShipments() {
-  const recent = shipmentsCache.slice(0, 5);
+function loadRecentShipments(){
+  const recent=shipmentsCache.slice(0,5);
 
-  $("recentShipments").innerHTML = recent.length
-    ? recent.map(item => `
+  $("recentShipments").innerHTML=recent.length
+    ?recent.map(item=>`
       <tr>
-        <td>${escapeHTML(item.reference_no || "—")}</td>
-        <td>${escapeHTML(item.border_post || "—")}</td>
-        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status || "Created")}</span></td>
+        <td>${escapeHTML(item.reference_no||"—")}</td>
+        <td>${escapeHTML(item.border_post||"—")}</td>
+        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span></td>
       </tr>
     `).join("")
-    : '<tr><td colspan="3" class="empty">No shipments yet.</td></tr>';
+    :'<tr><td colspan="3" class="empty">No shipments yet.</td></tr>';
 }
 
-/* -------------------------------------------------------
-   DOCUMENT TEXT EXTRACTION
-------------------------------------------------------- */
+/* DOCUMENT TEXT EXTRACTION */
 
-async function extractPdfText(file) {
-  if (!window.pdfjsLib) {
+async function extractPdfText(file){
+  if(!window.pdfjsLib){
     throw new Error("PDF reader did not load. Refresh the page and try again.");
   }
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
+  pdfjsLib.GlobalWorkerOptions.workerSrc=
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-  const buffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-  let text = "";
+  const buffer=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buffer}).promise;
+  let text="";
+  const pagesToRead=Math.min(pdf.numPages,30);
 
-  const pagesToRead = Math.min(pdf.numPages, 30);
-
-  for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber++) {
-    const page = await pdf.getPage(pageNumber);
-    const content = await page.getTextContent();
-
-    text += content.items
-      .map(item => item.str || "")
-      .join(" ") + "\n";
+  for(let pageNumber=1;pageNumber<=pagesToRead;pageNumber++){
+    const page=await pdf.getPage(pageNumber);
+    const content=await page.getTextContent();
+    text+=content.items.map(item=>item.str||"").join(" ")+"\n";
   }
 
-  if (!text.trim()) {
+  if(!text.trim()){
     throw new Error(
       "No selectable text was found in this PDF. This version needs an image upload for OCR of scanned pages."
     );
@@ -899,161 +1272,147 @@ async function extractPdfText(file) {
   return text.trim();
 }
 
-async function extractImageText(file) {
-  if (!window.Tesseract) {
+async function extractImageText(file){
+  if(!window.Tesseract){
     throw new Error("OCR service did not load. Refresh the page and try again.");
   }
 
-  const result = await Tesseract.recognize(
-    file,
-    "eng",
-    {
-      logger: message => {
-        if (message.status === "recognizing text") {
-          const percent = Math.round((message.progress || 0) * 100);
-          $("documentProgress").textContent = "Reading image: " + percent + "%";
-        }
+  const result=await Tesseract.recognize(file,"eng",{
+    logger:message=>{
+      if(message.status==="recognizing text"){
+        const percent=Math.round((message.progress||0)*100);
+        $("documentProgress").textContent="Reading image: "+percent+"%";
       }
     }
-  );
+  });
 
-  return String(result.data.text || "").trim();
+  return String(result.data.text||"").trim();
 }
 
-async function extractDocumentText(file) {
-  const isPdf = file.type === "application/pdf" ||
+async function extractDocumentText(file){
+  const isPdf=file.type==="application/pdf"||
     file.name.toLowerCase().endsWith(".pdf");
-
-  if (isPdf) return extractPdfText(file);
+  if(isPdf)return extractPdfText(file);
   return extractImageText(file);
 }
 
-/* -------------------------------------------------------
-   DOCUMENT UPLOAD AND GROQ AI CHECK
-------------------------------------------------------- */
+/* DOCUMENT UPLOAD AND GROQ AI CHECK */
 
-$("documentForm").addEventListener("submit", async event => {
+$("documentForm").addEventListener("submit",async event=>{
   event.preventDefault();
 
-  if (!currentUser) return toast("Please log in first.");
+  if(!currentUser)return toast("Please log in first.");
 
-  const file = $("documentFile").files[0];
-  const shipmentRef = $("docShipmentRef").value.trim();
-  const documentType = $("docType").value;
-  const button = $("checkDocumentButton");
+  const file=$("documentFile").files[0];
+  const shipmentRef=$("docShipmentRef").value.trim();
+  const documentType=$("docType").value;
+  const button=$("checkDocumentButton");
 
-  if (!file) return toast("Please select a document.");
-  if (!shipmentRef || !documentType) return toast("Complete all document details.");
-  if (file.size > 10 * 1024 * 1024) {
-    return toast("The file is larger than the 10 MB limit.");
-  }
+  if(!file)return toast("Please select a document.");
+  if(!shipmentRef||!documentType)return toast("Complete all document details.");
+  if(file.size>10*1024*1024)return toast("The file is larger than the 10 MB limit.");
 
-  const allowedTypes = [
+  const allowedTypes=[
     "application/pdf",
     "image/png",
     "image/jpeg",
     "image/webp"
   ];
 
-  const extensionAllowed = /\.(pdf|png|jpe?g|webp)$/i.test(file.name);
-
-  if (!allowedTypes.includes(file.type) && !extensionAllowed) {
+  const extensionAllowed=/\.(pdf|png|jpe?g|webp)$/i.test(file.name);
+  if(!allowedTypes.includes(file.type)&&!extensionAllowed){
     return toast("Unsupported file type.");
   }
 
-  setBusy(button, true, "Preparing document...");
-  $("documentProgress").textContent = "Starting document upload...";
+  setBusy(button,true,"Preparing document...");
+  $("documentProgress").textContent="Starting document upload...";
   $("analysisResult").classList.add("hidden");
 
-  let storagePath = null;
+  let storagePath=null;
 
-  try {
-    // Extract text before saving the document.
-    $("documentProgress").textContent = "Extracting document text...";
-    const extractedText = await extractDocumentText(file);
+  try{
+    $("documentProgress").textContent="Extracting document text...";
+    const extractedText=await extractDocumentText(file);
 
-    if (!extractedText || extractedText.length < 5) {
+    if(!extractedText||extractedText.length<5){
       throw new Error("Very little text was extracted. Please use a clearer document.");
     }
 
-    // Upload file to private storage.
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    storagePath =
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    storagePath=
       `${currentUser.id}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
 
-    $("documentProgress").textContent = "Uploading document to secure storage...";
+    $("documentProgress").textContent="Uploading document to secure storage...";
 
-    const { error: uploadError } = await db.storage
+    const {error:uploadError}=await db.storage
       .from(STORAGE_BUCKET)
-      .upload(storagePath, file, {
-        contentType: file.type || "application/octet-stream",
-        upsert: false
+      .upload(storagePath,file,{
+        contentType:file.type||"application/octet-stream",
+        upsert:false
       });
 
-    if (uploadError) throw uploadError;
+    if(uploadError)throw uploadError;
 
-    // Save the document record.
-    $("documentProgress").textContent = "Saving document record...";
+    $("documentProgress").textContent="Saving document record...";
 
-    const { data: savedDocument, error: insertError } = await db
+    const {data:savedDocument,error:insertError}=await db
       .from("bf_documents")
       .insert({
-        user_id: currentUser.id,
-        shipment_ref: shipmentRef,
-        document_type: documentType,
-        file_name: file.name,
-        storage_path: storagePath,
-        extracted_text: extractedText,
-        status: "Uploaded"
+        user_id:currentUser.id,
+        shipment_ref:shipmentRef,
+        document_type:documentType,
+        file_name:file.name,
+        storage_path:storagePath,
+        extracted_text:extractedText,
+        status:"Uploaded"
       })
       .select("id")
       .single();
 
-    if (insertError || !savedDocument) {
+    if(insertError||!savedDocument){
       throw new Error(
-        "The file reached storage, but its database record could not be saved: " +
-        (insertError?.message || "Unknown database error")
+        "The file reached storage, but its database record could not be saved: "+
+        (insertError?.message||"Unknown database error")
       );
     }
 
-    $("documentProgress").textContent =
+    $("documentProgress").textContent=
       "Document saved. Sending text to BorderFlow AI...";
 
-    // Ask the deployed Edge Function to analyse the document.
-    const { data: aiData, error: aiError } = await db.functions.invoke(
+    const {data:aiData,error:aiError}=await db.functions.invoke(
       AI_FUNCTION,
       {
-        body: {
-          action: "check_document",
-          document_id: savedDocument.id,
-          shipment_ref: shipmentRef,
-          document_type: documentType,
-          extracted_text: extractedText
+        body:{
+          action:"check_document",
+          document_id:savedDocument.id,
+          shipment_ref:shipmentRef,
+          document_type:documentType,
+          extracted_text:extractedText
         }
       }
     );
 
-    if (aiError) {
-      let message = aiError.message || "AI function request failed.";
-      if (aiError.context) {
-        try {
-          const details = await aiError.context.json();
-          if (details.error) message = details.error;
-        } catch {}
+    if(aiError){
+      let message=aiError.message||"AI function request failed.";
+      if(aiError.context){
+        try{
+          const details=await aiError.context.json();
+          if(details.error)message=details.error;
+        }catch{}
       }
       throw new Error(
-        "Your document was uploaded and saved, but AI checking failed: " + message
+        "Your document was uploaded and saved, but AI checking failed: "+message
       );
     }
 
-    if (!aiData?.success || !aiData.result) {
+    if(!aiData?.success||!aiData.result){
       throw new Error(
-        aiData?.error || "The AI service did not return a valid report."
+        aiData?.error||"The AI service did not return a valid report."
       );
     }
 
     displayAnalysis(aiData.result);
-    $("documentProgress").textContent =
+    $("documentProgress").textContent=
       "Upload and AI analysis completed successfully.";
 
     toast("Document uploaded and AI analysis completed.");
@@ -1063,219 +1422,206 @@ $("documentForm").addEventListener("submit", async event => {
     await loadReports();
     await loadDashboard();
 
-  } catch (error) {
-    console.error("Document workflow:", error);
-    $("documentProgress").textContent = error.message;
-
-    toast(error.message, 7000);
-  } finally {
-    setBusy(button, false);
+  }catch(error){
+    console.error("Document workflow:",error);
+    $("documentProgress").textContent=error.message;
+    toast(error.message,7000);
+  }finally{
+    setBusy(button,false);
   }
 });
 
-/* -------------------------------------------------------
-   DISPLAY AI REPORT
-------------------------------------------------------- */
+/* DISPLAY AI REPORT */
 
-function displayAnalysis(result) {
+function displayAnalysis(result){
   $("analysisResult").classList.remove("hidden");
 
-  const status = result.overall_status || "Needs Review";
-  $("analysisStatus").textContent = status;
-  $("analysisStatus").className = "tag " + statusClass(status);
-  $("analysisSummary").textContent =
-    result.summary || "Analysis completed. Please review the findings.";
+  const status=result.overall_status||"Needs Review";
+  $("analysisStatus").textContent=status;
+  $("analysisStatus").className="tag "+statusClass(status);
+  $("analysisSummary").textContent=
+    result.summary||"Analysis completed. Please review the findings.";
 
-  const findings = Array.isArray(result.findings) ? result.findings : [];
+  const findings=Array.isArray(result.findings)?result.findings:[];
 
-  $("analysisFindings").innerHTML = findings.length
-    ? `<h4>Findings</h4>` + findings.map(item => {
-        const severity = ["High","Medium","Low"].includes(item.severity)
-          ? item.severity
-          : "Medium";
+  $("analysisFindings").innerHTML=findings.length
+    ?"<h4>Findings</h4>"+findings.map(item=>{
+      const severity=["High","Medium","Low"].includes(item.severity)
+        ?item.severity:"Medium";
 
-        return `
-          <div class="finding ${severity}">
-            <strong>${escapeHTML(severity)} priority: ${escapeHTML(item.issue || "Issue identified")}</strong>
-            <p>${escapeHTML(item.recommendation || "Please review this item.")}</p>
-          </div>
-        `;
-      }).join("")
-    : "<h4>Findings</h4><p class='muted small'>No specific findings were returned. Human review is still required.</p>";
+      return `
+        <div class="finding ${severity}">
+          <strong>${escapeHTML(severity)} priority: ${escapeHTML(item.issue||"Issue identified")}</strong>
+          <p>${escapeHTML(item.recommendation||"Please review this item.")}</p>
+        </div>
+      `;
+    }).join("")
+    :"<h4>Findings</h4><p class='muted small'>No specific findings were returned. Human review is still required.</p>";
 
-  const missing = Array.isArray(result.missing_fields)
-    ? result.missing_fields
-    : [];
+  const missing=Array.isArray(result.missing_fields)
+    ?result.missing_fields:[];
 
-  $("analysisMissing").innerHTML = `
+  $("analysisMissing").innerHTML=`
     <h4>Missing fields</h4>
     ${missing.length
-      ? `<ul>${missing.map(item => `<li>${escapeHTML(typeof item === "string" ? item : JSON.stringify(item))}</li>`).join("")}</ul>`
-      : "<p class='muted small'>No missing fields were reported by the AI.</p>"}
+      ?`<ul>${missing.map(item=>`<li>${escapeHTML(typeof item==="string"?item:JSON.stringify(item))}</li>`).join("")}</ul>`
+      :"<p class='muted small'>No missing fields were reported by the AI.</p>"}
   `;
 
-  const checks = Array.isArray(result.consistency_checks)
-    ? result.consistency_checks
-    : [];
+  const checks=Array.isArray(result.consistency_checks)
+    ?result.consistency_checks:[];
 
-  $("analysisConsistency").innerHTML = `
+  $("analysisConsistency").innerHTML=`
     <h4>Consistency checks</h4>
     ${checks.length
-      ? `<ul>${checks.map(item => `<li>${escapeHTML(typeof item === "string" ? item : item.issue || JSON.stringify(item))}</li>`).join("")}</ul>`
-      : "<p class='muted small'>No additional consistency warnings.</p>"}
+      ?`<ul>${checks.map(item=>`<li>${escapeHTML(typeof item==="string"?item:item.issue||JSON.stringify(item))}</li>`).join("")}</ul>`
+      :"<p class='muted small'>No additional consistency warnings.</p>"}
   `;
 }
 
-/* -------------------------------------------------------
-   DOCUMENT LIBRARY
-------------------------------------------------------- */
+/* DOCUMENT LIBRARY */
 
-async function loadDocuments() {
-  if (!currentUser) return;
+async function loadDocuments(){
+  if(!currentUser)return;
 
-  const body = $("documentsTable");
-  body.innerHTML = '<tr><td colspan="5" class="empty">Loading...</td></tr>';
+  const body=$("documentsTable");
+  body.innerHTML='<tr><td colspan="5" class="empty">Loading...</td></tr>';
 
-  const { data, error } = await db
+  const {data,error}=await db
     .from("bf_documents")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at",{ascending:false});
 
-  if (error) {
-    body.innerHTML =
+  if(error){
+    body.innerHTML=
       `<tr><td colspan="5" class="empty">${escapeHTML(error.message)}</td></tr>`;
     return;
   }
 
-  documentsCache = data || [];
+  documentsCache=data||[];
 
-  body.innerHTML = documentsCache.length
-    ? documentsCache.map(doc => `
+  body.innerHTML=documentsCache.length
+    ?documentsCache.map(doc=>`
       <tr>
-        <td><strong>${escapeHTML(doc.file_name || "Document")}</strong></td>
-        <td>${escapeHTML(doc.shipment_ref || "—")}</td>
-        <td>${escapeHTML(doc.document_type || "—")}</td>
-        <td><span class="tag ${statusClass(doc.status)}">${escapeHTML(doc.status || "Uploaded")}</span></td>
+        <td><strong>${escapeHTML(doc.file_name||"Document")}</strong></td>
+        <td>${escapeHTML(doc.shipment_ref||"—")}</td>
+        <td>${escapeHTML(doc.document_type||"—")}</td>
+        <td><span class="tag ${statusClass(doc.status)}">${escapeHTML(doc.status||"Uploaded")}</span></td>
         <td>${formatDate(doc.created_at)}</td>
       </tr>
     `).join("")
-    : '<tr><td colspan="5" class="empty">No documents uploaded yet.</td></tr>';
+    :'<tr><td colspan="5" class="empty">No documents uploaded yet.</td></tr>';
 
-  $("statDocuments").textContent = documentsCache.length;
-  $("reportDocuments").textContent = documentsCache.length;
+  $("statDocuments").textContent=documentsCache.length;
+  $("reportDocuments").textContent=documentsCache.length;
 
-  $("recentDocuments").innerHTML = documentsCache.length
-    ? documentsCache.slice(0, 5).map(doc => `
-        <div style="padding:11px 0;border-bottom:1px solid var(--border)">
-          <strong style="font-size:13px">${escapeHTML(doc.file_name || "Document")}</strong>
-          <div class="small muted">${escapeHTML(doc.shipment_ref || "No reference")} · ${escapeHTML(doc.document_type || "Other")}</div>
-        </div>
-      `).join("")
-    : "No documents uploaded yet.";
+  $("recentDocuments").innerHTML=documentsCache.length
+    ?documentsCache.slice(0,5).map(doc=>`
+      <div style="padding:11px 0;border-bottom:1px solid var(--border)">
+        <strong style="font-size:13px">${escapeHTML(doc.file_name||"Document")}</strong>
+        <div class="small muted">${escapeHTML(doc.shipment_ref||"No reference")} · ${escapeHTML(doc.document_type||"Other")}</div>
+      </div>
+    `).join("")
+    :"No documents uploaded yet.";
 }
 
-/* -------------------------------------------------------
-   SAVED AI REPORTS
-------------------------------------------------------- */
+/* SAVED AI REPORTS */
 
-async function loadReports() {
-  if (!currentUser) return;
+async function loadReports(){
+  if(!currentUser)return;
 
-  const container = $("reportsList");
-  container.textContent = "Loading reports...";
+  const container=$("reportsList");
+  container.textContent="Loading reports...";
 
-  const { data, error } = await db
+  const {data,error}=await db
     .from("bf_document_checks")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at",{ascending:false});
 
-  if (error) {
-    container.textContent = "Could not load reports: " + error.message;
+  if(error){
+    container.textContent="Could not load reports: "+error.message;
     return;
   }
 
-  reportsCache = data || [];
+  reportsCache=data||[];
 
-  const reviewCount = reportsCache.filter(report =>
-    report.overall_status !== "Passed"
+  const reviewCount=reportsCache.filter(report=>
+    report.overall_status!=="Passed"
   ).length;
 
-  $("statChecks").textContent = reportsCache.length;
-  $("statReview").textContent = reviewCount;
-  $("reportChecks").textContent = reportsCache.length;
-  $("reportReview").textContent = reviewCount;
+  $("statChecks").textContent=reportsCache.length;
+  $("statReview").textContent=reviewCount;
+  $("reportChecks").textContent=reportsCache.length;
+  $("reportReview").textContent=reviewCount;
 
-  if (!reportsCache.length) {
-    container.innerHTML = '<div class="empty">No AI reports saved yet.</div>';
+  if(!reportsCache.length){
+    container.innerHTML='<div class="empty">No AI reports saved yet.</div>';
     return;
   }
 
-  container.innerHTML = reportsCache.map(report => `
+  container.innerHTML=reportsCache.map(report=>`
     <div class="report-box">
       <div class="report-heading">
         <strong>Document check</strong>
-        <span class="tag ${statusClass(report.overall_status)}">${escapeHTML(report.overall_status || "Needs Review")}</span>
+        <span class="tag ${statusClass(report.overall_status)}">${escapeHTML(report.overall_status||"Needs Review")}</span>
       </div>
       <p class="small muted">${formatDate(report.created_at)}</p>
-      <p>${escapeHTML(report.summary || "Analysis report saved.")}</p>
+      <p>${escapeHTML(report.summary||"Analysis report saved.")}</p>
       <button class="btn secondary" onclick="openSavedReport('${escapeHTML(report.id)}')">View report</button>
     </div>
   `).join("");
 }
 
-function openSavedReport(id) {
-  const report = reportsCache.find(item => String(item.id) === String(id));
-  if (!report) return toast("Report not found.");
+function openSavedReport(id){
+  const report=reportsCache.find(item=>String(item.id)===String(id));
+  if(!report)return toast("Report not found.");
 
-  const result = report.raw_result || {
-    overall_status: report.overall_status,
-    summary: report.summary,
-    findings: report.findings || [],
-    missing_fields: [],
-    consistency_checks: [],
-    human_review_required: true
+  const result=report.raw_result||{
+    overall_status:report.overall_status,
+    summary:report.summary,
+    findings:report.findings||[],
+    missing_fields:[],
+    consistency_checks:[],
+    human_review_required:true
   };
 
   navigate("checker");
   displayAnalysis(result);
 }
 
-/* -------------------------------------------------------
-   TRACKING AND DASHBOARD
-------------------------------------------------------- */
+/* TRACKING AND DASHBOARD */
 
-async function loadTracking() {
-  if (!currentUser) return;
+async function loadTracking(){
+  if(!currentUser)return;
 
-  const { data, error } = await db
+  const {data,error}=await db
     .from("shipments")
     .select("*")
-    .order("updated_at", { ascending: false });
+    .order("updated_at",{ascending:false});
 
-  if (error) {
-    $("trackingList").textContent = error.message;
+  if(error){
+    $("trackingList").textContent=error.message;
     return;
   }
 
-  const rows = data || [];
+  const rows=data||[];
 
-  $("trackingList").innerHTML = rows.length
-    ? rows.map(item => `
+  $("trackingList").innerHTML=rows.length
+    ?rows.map(item=>`
       <div style="padding:15px 0;border-bottom:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;gap:10px">
-          <strong>${escapeHTML(item.reference_no || "Shipment")}</strong>
-          <span class="tag ${statusClass(item.status)}">${escapeHTML(item.status || "Created")}</span>
+          <strong>${escapeHTML(item.reference_no||"Shipment")}</strong>
+          <span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span>
         </div>
-        <p class="small muted">${escapeHTML(item.border_post || "Border not set")} · ${escapeHTML(item.truck_registration || "Truck not set")}</p>
+        <p class="small muted">${escapeHTML(item.border_post||"Border not set")} · ${escapeHTML(item.truck_registration||"Truck not set")}</p>
         <p class="small muted">Last update: ${formatDate(item.updated_at)}</p>
       </div>
     `).join("")
-    : '<div class="empty">No shipment tracking records yet.</div>';
+    :'<div class="empty">No shipment tracking records yet.</div>';
 }
 
-async function loadDashboard() {
-  if (!currentUser) return;
-
+async function loadDashboard(){
+  if(!currentUser)return;
   await Promise.all([
     loadShipments(),
     loadDocuments(),
@@ -1283,9 +1629,9 @@ async function loadDashboard() {
   ]);
 }
 
-/* -------------------------------------------------------
-   START APPLICATION
-------------------------------------------------------- */
+/* PAGE STARTUP */
+
+$("copyrightYear").textContent=new Date().getFullYear();
 
 initialise();
 </script>
