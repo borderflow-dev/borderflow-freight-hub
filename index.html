@@ -30,6 +30,7 @@
 }
 
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--light);color:var(--text)}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
@@ -120,6 +121,7 @@ button{cursor:pointer}
 hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 
 /* LANDING PAGE */
+
 .landing{
   min-height:100vh;
   background:#081326;
@@ -149,8 +151,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
   overflow:hidden;
   padding:110px 8% 80px;
   isolation:isolate;
-  background:
-    radial-gradient(ellipse at 75% 50%,#243b5d 0%,#101d35 45%,#071326 100%);
+  background:#101d35;
 }
 .hero-video{
   position:absolute;
@@ -244,6 +245,9 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
   flex:1;
   max-width:180px;
 }
+
+/* FEATURES */
+
 .feature-section{
   background:#f4f7fc;
   color:var(--text);
@@ -284,6 +288,87 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
   margin-bottom:15px;
 }
 .feature p{line-height:1.7}
+
+/* FREIGHT PHOTO GALLERY */
+
+.photo-section{
+  background:#fff;
+  color:var(--text);
+  padding:75px 7%;
+}
+.photo-heading{
+  max-width:1100px;
+  margin:0 auto 30px;
+}
+.photo-heading h2{
+  font-size:clamp(27px,4vw,36px);
+  letter-spacing:-1px;
+  margin:13px 0 10px;
+}
+.photo-heading p{
+  max-width:700px;
+  line-height:1.8;
+}
+.photo-grid{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:20px;
+}
+.photo-card{
+  overflow:hidden;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  transition:transform .2s,box-shadow .2s;
+}
+.photo-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 32px rgba(16,29,53,.12);
+}
+.photo-card img{
+  display:block;
+  width:100%;
+  height:205px;
+  object-fit:cover;
+  background:#e8edf5;
+}
+.photo-card-content{padding:19px}
+.photo-card h3{
+  font-size:16px;
+  margin:0 0 9px;
+}
+.photo-card p{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.75;
+  margin:0;
+}
+.photo-number{
+  display:inline-block;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--blue);
+  background:#edf2ff;
+  padding:5px 8px;
+  border-radius:5px;
+  margin-bottom:12px;
+}
+.photo-card img.image-failed{
+  visibility:hidden;
+}
+.photo-image-wrap{
+  height:205px;
+  background:linear-gradient(135deg,#192b49,#2864e8);
+  overflow:hidden;
+}
+.photo-image-wrap img{
+  height:100%;
+}
+
 .landing-footer{
   background:#081326;
   color:#aebbd0;
@@ -296,6 +381,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 }
 
 /* AUTHENTICATION */
+
 .auth-screen{
   min-height:100vh;
   display:grid;
@@ -320,6 +406,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 #authMessage{font-size:13px;margin:10px 0;color:var(--red)}
 
 /* WORKSPACE */
+
 #appShell{min-height:100vh;display:flex}
 .sidebar{
   width:245px;
@@ -462,6 +549,7 @@ pre{
 @media(max-width:1000px){
   .grid-4{grid-template-columns:repeat(2,1fr)}
   .two-col{grid-template-columns:1fr}
+  .photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:720px){
   .sidebar{transform:translateX(-100%);transition:.2s}
@@ -480,9 +568,10 @@ pre{
   .hero-bottom{left:22px;right:22px;bottom:22px}
   .form-grid{grid-template-columns:1fr}
   .landing-footer{padding:22px}
+  .photo-section{padding:55px 20px}
+  .photo-grid{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){
-  .hero-video{display:none}
   *{scroll-behavior:auto!important;transition:none!important}
 }
 </style>
@@ -491,6 +580,7 @@ pre{
 <body>
 
 <!-- LANDING PAGE -->
+
 <section id="landingView" class="landing">
 
   <header class="topbar">
@@ -508,18 +598,13 @@ pre{
 
   <main class="hero">
 
-    <!-- Upload borderflow-hero.mp4 into the same GitHub folder as index.html -->
-    <video
+    <!-- LANDING PAGE BACKGROUND IMAGE -->
+    <img
       class="hero-video"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      poster=""
-      aria-hidden="true">
-      <source src="borderflow-hero.mp4" type="video/mp4">
-    </video>
+      src="trucks-at-Beitbridge-border.webp"
+      alt=""
+      aria-hidden="true"
+      fetchpriority="high">
 
     <div class="hero-overlay"></div>
 
@@ -556,6 +641,8 @@ pre{
     </div>
   </main>
 
+  <!-- FEATURES -->
+
   <section class="feature-section">
     <div class="feature-heading">
       <span class="tag">THE BORDERFLOW WORKSPACE</span>
@@ -584,16 +671,209 @@ pre{
     </div>
   </section>
 
+  <!-- ALL TEN BORDERFLOW PICTURES -->
+
+  <section class="photo-section">
+    <div class="photo-heading">
+      <span class="tag">THE REAL BORDER CHALLENGE</span>
+      <h2>Understanding the movement of African freight.</h2>
+      <p class="muted">
+        BorderFlow brings shipment records, document checks and border
+        operations into one organised digital workspace. These photographs
+        illustrate the freight and transport environment the platform is
+        designed to support.
+      </p>
+    </div>
+
+    <div class="photo-grid">
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="trucks-at-Beitbridge-border.webp"
+               alt="Trucks at Beitbridge border"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">01 · BORDER OPERATIONS</span>
+          <h3>Border congestion</h3>
+          <p>
+            Long truck queues can create pressure for clearing agents.
+            BorderFlow helps teams organise shipment references, document
+            checks and recorded progress in one workspace.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="Machipanda-camioes.jpg"
+               alt="Machipanda freight operations"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">02 · BORDER NETWORK</span>
+          <h3>Multiple border posts</h3>
+          <p>
+            Freight teams can record shipments at different border posts
+            and keep their operational information organised instead of
+            relying on scattered records.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="bernd-dittrich-Xk1IfNnEhRA-unsplash.jpg"
+               alt="Freight transport"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">03 · SHIPMENT MANAGEMENT</span>
+          <h3>Shipment management</h3>
+          <p>
+            Record truck registrations, driver information, cargo
+            descriptions and shipment references so teams can find
+            important shipment details more easily.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="haris-illahi-9VmKFc_c748-unsplash.jpg"
+               alt="Freight transport operations"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">04 · FREIGHT COORDINATION</span>
+          <h3>Freight coordination</h3>
+          <p>
+            A central shipment workspace helps clearing agents and
+            freight operators review recorded information and
+            coordinate their daily work.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="haris-illahi-Beg5nxwR9tA-unsplash.jpg"
+               alt="Cargo and freight operations"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">05 · CARGO OPERATIONS</span>
+          <h3>Cargo visibility</h3>
+          <p>
+            Record cargo descriptions and connect cargo information
+            to the correct shipment, helping teams keep their
+            operational records organised.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="img-6192822f03176.jpg"
+               alt="Transport and logistics"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">06 · TRANSPORT RECORDS</span>
+          <h3>Transport records</h3>
+          <p>
+            Keep shipment progress visible through recorded statuses
+            such as Arrived at Border, Docs Checked and Cleared to Go.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="JADBVW43RBK5XFTCVSG3Q7IEXQ.jpg"
+               alt="Logistics and cargo network"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">07 · LOGISTICS NETWORK</span>
+          <h3>Connected logistics</h3>
+          <p>
+            Cross-border freight involves many people and transport
+            locations. BorderFlow is designed to bring important
+            shipment information together.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="portcalls-asia-SNiJS7qENVw-unsplash.jpg"
+               alt="Shipping port operations"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">08 · PORT OPERATIONS</span>
+          <h3>Port and cargo operations</h3>
+          <p>
+            Border crossings form part of a larger international
+            freight journey. BorderFlow provides a place to organise
+            the shipment information associated with that journey.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="solomen-EoS4ZFRJCJ4-unsplash.jpg"
+               alt="Freight and cargo transport"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">09 · FREIGHT NETWORK</span>
+          <h3>Freight network</h3>
+          <p>
+            Keep freight details, document records and shipment
+            references organised as cargo moves between locations.
+          </p>
+        </div>
+      </article>
+
+      <article class="photo-card">
+        <div class="photo-image-wrap">
+          <img src="wolfgang-weiser-ke0YHcgZ5aQ-unsplash.jpg"
+               alt="Freight transport operations"
+               loading="lazy">
+        </div>
+        <div class="photo-card-content">
+          <span class="photo-number">10 · MOVING TRADE FORWARD</span>
+          <h3>Moving trade forward</h3>
+          <p>
+            BorderFlow aims to help freight operators manage
+            cross-border work through organised records, document
+            review and shipment progress information.
+          </p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+
   <footer class="landing-footer">
     <div class="brand" style="font-size:18px">
       <div class="brand-mark" style="height:32px;width:32px;font-size:20px">B</div>
-      <div class="brand-name"><span class="brand-border">Border</span><span class="brand-flow">Flow</span></div>
+      <div class="brand-name">
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
+      </div>
     </div>
     <span>© <span id="copyrightYear"></span> BorderFlow. Freight intelligence for connected trade.</span>
   </footer>
+
 </section>
 
 <!-- LOGIN / SIGNUP -->
+
 <section id="authView" class="auth-screen hidden">
   <div class="auth-card">
     <div class="brand">
@@ -632,6 +912,7 @@ pre{
 </section>
 
 <!-- MAIN APPLICATION -->
+
 <section id="appShell" class="hidden">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
@@ -680,6 +961,7 @@ pre{
     <main class="content">
 
       <!-- OVERVIEW -->
+
       <section class="page active" id="page-overview">
         <h1 class="page-title">Overview</h1>
         <p class="page-subtitle">Your freight and document operations at a glance.</p>
@@ -704,6 +986,7 @@ pre{
       </section>
 
       <!-- DOCUMENT CHECKER -->
+
       <section class="page" id="page-checker">
         <h1 class="page-title">AI Document Checker</h1>
         <p class="page-subtitle">Upload a trade document, extract its text and request an AI review.</p>
@@ -752,6 +1035,7 @@ pre{
       </section>
 
       <!-- DOCUMENT LIBRARY -->
+
       <section class="page" id="page-library">
         <h1 class="page-title">Document Library</h1>
         <p class="page-subtitle">Your uploaded trade documents and their review status.</p>
@@ -766,6 +1050,7 @@ pre{
       </section>
 
       <!-- SHIPMENTS -->
+
       <section class="page" id="page-shipments">
         <h1 class="page-title">Shipments</h1>
         <p class="page-subtitle">Create and manage your freight shipment records.</p>
@@ -793,6 +1078,7 @@ pre{
       </section>
 
       <!-- TRACKING -->
+
       <section class="page" id="page-tracking">
         <h1 class="page-title">Shipment Tracking</h1>
         <p class="page-subtitle">Review the latest recorded shipment statuses.</p>
@@ -804,6 +1090,7 @@ pre{
       </section>
 
       <!-- CUSTOMS -->
+
       <section class="page" id="page-customs">
         <h1 class="page-title">Customs Management</h1>
         <p class="page-subtitle">Organise document checks and customs-related operational work.</p>
@@ -818,6 +1105,7 @@ pre{
       </section>
 
       <!-- CUSTOMERS -->
+
       <section class="page" id="page-customers">
         <h1 class="page-title">Customers</h1>
         <p class="page-subtitle">Customer management workspace.</p>
@@ -828,6 +1116,7 @@ pre{
       </section>
 
       <!-- INVOICES -->
+
       <section class="page" id="page-invoices">
         <h1 class="page-title">Invoices & Payments</h1>
         <p class="page-subtitle">Financial operations workspace.</p>
@@ -838,6 +1127,7 @@ pre{
       </section>
 
       <!-- REPORTS -->
+
       <section class="page" id="page-reports">
         <h1 class="page-title">Reports & Analytics</h1>
         <p class="page-subtitle">A summary of your saved BorderFlow activity.</p>
@@ -851,6 +1141,7 @@ pre{
       </section>
 
       <!-- SETTINGS -->
+
       <section class="page" id="page-settings">
         <h1 class="page-title">Settings</h1>
         <p class="page-subtitle">Your BorderFlow account information.</p>
@@ -1632,6 +1923,15 @@ async function loadDashboard(){
 /* PAGE STARTUP */
 
 $("copyrightYear").textContent=new Date().getFullYear();
+
+/* SHOW A CLEAR MESSAGE IF AN UPLOADED PICTURE CANNOT LOAD */
+
+document.querySelectorAll(".photo-card img").forEach(img=>{
+  img.addEventListener("error",()=>{
+    img.classList.add("image-failed");
+    img.alt="Picture could not be loaded. Check the filename in GitHub.";
+  });
+});
 
 initialise();
 </script>
