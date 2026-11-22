@@ -1699,13 +1699,15 @@ $("documentForm").addEventListener("submit",async event=>{
       );
     }
 
-    if(!aiData?.success||!aiData.result){
-      throw new Error(
-        aiData?.error||"The AI service did not return a valid report."
-      );
-    }
+  const aiResult = aiData?.result ?? aiData?.report;
 
-    displayAnalysis(aiData.result);
+if(!aiData?.success || !aiResult){
+  throw new Error(
+    aiData?.error || "The AI service did not return a valid report."
+  );
+}
+
+displayAnalysis(aiResult);
     $("documentProgress").textContent=
       "Upload and AI analysis completed successfully.";
 
