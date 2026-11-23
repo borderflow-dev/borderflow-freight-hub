@@ -1412,6 +1412,7 @@ $("settingsLogout").addEventListener("click",logout);
 const pageTitles={
   overview:"Overview",
   checker:"AI Document Checker",
+  agents:"AI Agents",
   library:"Document Library",
   shipments:"Shipments",
   tracking:"Tracking",
@@ -1446,7 +1447,11 @@ function navigate(page){
     loadDocuments();
     loadReports();
   }
-}
+    if(page==="agents"){
+    loadAgents();
+    loadAgentTasks();
+      }
+  }
 
 document.querySelectorAll(".nav-item[data-page]").forEach(button=>{
   button.addEventListener("click",()=>navigate(button.dataset.page));
@@ -2024,4 +2029,5 @@ initialise();
 </script>
 </body>
 </html>
+
 
