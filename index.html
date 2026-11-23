@@ -2003,6 +2003,7 @@ async function loadTracking(){
     :'<div class="empty">No shipment tracking records yet.</div>';
 }
 
+
 async function loadDashboard(){
   if(!currentUser)return;
   await Promise.all([
@@ -2010,6 +2011,84 @@ async function loadDashboard(){
     loadDocuments(),
     loadReports()
   ]);
+}
+
+/* AI AGENTS - LOAD REGISTERED AGENTS */
+
+async function loadAgents(){
+  const table=$("agentsTable");
+
+  try{
+    const {data,error}=await db
+      .from("agent_registry")
+      .select("id,name,category,status")
+      .order("name");
+
+    if(error)throw error;
+
+    const agents=data||[];
+
+    $("agentTotal").textContent=agents.length;
+    $("agentConfigured").textContent=
+      agents.filter(a=>a.status==="configured").length;
+    $("agentPlanned").textContent=
+      agents.filter(a=>a.status==="planned").length;
+
+    if(!agents.length){
+      table.innerHTML='<tr><td colspan="3">No agents found.</td></tr>';
+      return;
+    }
+
+    table.innerHTML=agents.map(agent=>`
+      <tr>
+        <td>${agent.name||agent.id}</td>
+        <td>${agent.category||"General"}</td>
+        <td>${agent.status||"Unknown"}</td>
+      </tr>
+    `).join("");
+
+  }catch(error){
+    console.error("Agent loading error:",error);
+    table.innerHTML=
+      '<tr><td colspan="3">Could not load agents. Check Supabase connection.</td></tr>';
+  }
+}
+
+/* AI AGENTS - LOAD TASK HISTORY */
+
+async function loadAgentTasks(){
+  const list=$("agentTasksList");
+
+  try{
+    const {data,error}=await db
+      .from("agent_tasks")
+      .select("id,task_title,task_description,status,created_at")
+      .order("created_at",{ascending:false})
+      .limit(10);
+
+    if(error)throw error;
+
+    const tasks=data||[];
+
+    $("agentTaskTotal").textContent=tasks.length;
+
+    if(!tasks.length){
+      list.textContent="No AI tasks submitted yet.";
+      return;
+    }
+
+    list.innerHTML=tasks.map(task=>`
+      <div class="card" style="margin-bottom:10px">
+        <strong>${task.task_title||"Untitled task"}</strong>
+        <p>${task.task_description||""}</p>
+        <small>Status: ${task.status||"Unknown"}</small>
+      </div>
+    `).join("");
+
+  }catch(error){
+    console.error("AI task history error:",error);
+    list.textContent="Could not load AI task history.";
+  }
 }
 
 /* PAGE STARTUP */
@@ -2029,5 +2108,6 @@ initialise();
 </script>
 </body>
 </html>
+
 
 
