@@ -3,235 +3,1069 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101d35">
-<title>BorderFlow | African Freight Intelligence</title>
+<meta name="description" content="BorderFlow - African cross-border freight, customs and AI trade intelligence.">
+<title>BorderFlow | African Trade Operating System</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <style>
-:root{--navy:#101d35;--navy2:#192b49;--blue:#2864e8;--light:#f4f7fc;--white:#fff;--text:#17243a;--muted:#718096;--border:#e4eaf3;--green:#16865b;--red:#d94b4b;--orange:#c47a18;--shadow:0 8px 28px rgba(16,29,53,.07)}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--light);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}
-.btn{border:0;border-radius:9px;padding:11px 16px;background:var(--blue);color:white;font-weight:700}.btn.secondary{background:#eaf0ff;color:var(--blue)}.btn.dark{background:var(--navy)}.btn:disabled{opacity:.5}
-.brand{display:flex;align-items:center;gap:10px;color:white;font-size:22px;font-weight:850}.brand-mark{width:40px;height:40px;background:var(--blue);border-radius:10px;display:grid;place-items:center;font-size:25px;color:white}.flow{color:#3980ff}
-.card{background:white;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
-.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}.field label{font-size:13px;font-weight:700}.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px}
-.page-title{font-size:25px;margin:0 0 7px}.page-subtitle{color:var(--muted);font-size:14px;margin:0 0 22px}.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#edf2ff;color:var(--blue);font-size:11px;font-weight:800}.green{background:#e8f7ef;color:var(--green)}.orange{background:#fff4e4;color:var(--orange)}.red{background:#fff0f0;color:var(--red)}
-.landing{min-height:100vh;background:#081326;color:white}.topbar{height:75px;padding:0 7%;display:flex;align-items:center;justify-content:space-between}.hero{padding:100px 8%;min-height:580px;background:linear-gradient(90deg,#081326,#142d50);display:flex;align-items:center}.hero-content{max-width:760px}.hero h1{font-size:clamp(42px,7vw,76px);line-height:1.04;margin:20px 0}.hero h1 span{color:#3980ff}.hero p{color:#d0d9e8;line-height:1.8;max-width:620px}.hero-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.feature-section{padding:55px 7%;background:#f4f7fc;color:var(--text)}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:1100px;margin:auto}.feature{background:white;border:1px solid var(--border);border-radius:12px;padding:22px}.landing-footer{padding:25px 7%;background:#081326;color:#aebbd0}
-.auth-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:#edf2fa}.auth-card{width:min(430px,100%);background:white;padding:30px;border-radius:16px;box-shadow:var(--shadow)}.auth-card .brand{justify-content:center;color:var(--navy);margin-bottom:25px}.auth-card h2{text-align:center}.auth-card>p{text-align:center}.auth-switch{text-align:center;margin-top:15px;font-size:13px}.auth-switch a{color:var(--blue);cursor:pointer;font-weight:bold}#authMessage{font-size:13px;color:var(--red);margin:10px 0}
-#appShell{min-height:100vh;display:flex}.sidebar{width:245px;background:var(--navy);position:fixed;inset:0 auto 0 0;padding:20px 13px;overflow:auto;z-index:10}.sidebar .brand{padding:0 8px 25px}.nav-label{font-size:10px;letter-spacing:1px;color:#8ea0bb;padding:14px 12px 7px;font-weight:bold}.nav-item{width:100%;display:flex;gap:11px;padding:11px 12px;border:0;border-radius:8px;background:transparent;color:#c6d1e1;text-align:left;margin:2px 0;font-size:13px}.nav-item:hover,.nav-item.active{background:#263b5e;color:white}.nav-icon{width:18px}.main-area{margin-left:245px;width:calc(100% - 245px)}.top-header{height:68px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 25px;position:sticky;top:0;z-index:5}.user-chip{display:flex;align-items:center;gap:10px;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eaf0ff;color:var(--blue);font-weight:bold}.content{padding:25px;max-width:1450px;margin:auto}.page{display:none}.page.active{display:block}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:17px}.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:27px;font-weight:bold;margin:9px 0}.two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.section-head h3{margin:0;font-size:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border)}th{font-size:10px;color:var(--muted);text-transform:uppercase}.empty{text-align:center;padding:25px;color:var(--muted);font-size:13px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.upload-zone{border:2px dashed #cbd7eb;border-radius:12px;padding:25px;text-align:center;background:#f9fbff}.report-box{border:1px solid var(--border);border-radius:10px;padding:15px;margin:12px 0}.finding{border-left:4px solid var(--orange);padding:12px;background:#fffaf2;margin:10px 0;font-size:13px}.finding.High{border-color:var(--red);background:#fff6f6}.finding.Low{border-color:var(--blue);background:#f5f8ff}.toast{position:fixed;right:20px;bottom:20px;background:var(--navy);color:white;padding:14px 18px;border-radius:10px;z-index:99;max-width:360px}.footer-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:15px}
-@media(max-width:950px){.grid-4{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
-@media(max-width:720px){.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main-area{margin-left:0;width:100%}.mobile-menu{display:block!important}.content{padding:15px}.feature-grid{grid-template-columns:1fr}.hero{padding:70px 22px}.hero h1{font-size:44px}.form-grid{grid-template-columns:1fr}.top-header{padding:0 12px}}
+:root{
+ --navy:#101d35;
+ --navy2:#172945;
+ --blue:#2864e8;
+ --light:#f4f7fc;
+ --white:#fff;
+ --muted:#8290a5;
+ --border:#e5eaf2;
+ --green:#15966a;
+ --red:#dc5454;
+ --orange:#e69b36;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Inter,Arial,sans-serif;
+ background:var(--light);
+ color:#19263b;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.primary{
+ background:var(--blue);color:white;border:0;
+ padding:11px 17px;border-radius:9px;font-weight:700;
+}
+.secondary{
+ background:white;color:var(--navy);border:1px solid var(--border);
+ padding:10px 15px;border-radius:9px;font-weight:600;
+}
+.danger{background:#fff0f0;color:var(--red)}
+input,select,textarea{
+ width:100%;padding:12px;border:1px solid var(--border);
+ border-radius:8px;background:white;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+label{display:block;font-size:13px;font-weight:650;margin:12px 0 6px}
+h1,h2,h3{color:var(--navy)}
+#landingView{
+ min-height:100vh;background:var(--navy);color:white;
+}
+.landing-nav{
+ display:flex;align-items:center;justify-content:space-between;
+ padding:25px 7%;border-bottom:1px solid #ffffff20;
+}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px}
+.logo span{color:#5b91ff}
+.landing-content{
+ max-width:1200px;margin:auto;padding:85px 7%;
+ display:grid;grid-template-columns:1.1fr .9fr;gap:50px;
+ align-items:center;
+}
+.landing-content h1{
+ color:white;font-size:clamp(38px,6vw,68px);
+ line-height:1.08;margin:0 0 22px;
+}
+.landing-content p{color:#b8c7df;font-size:18px;line-height:1.7}
+.hero-panel{
+ background:#ffffff0c;border:1px solid #ffffff25;
+ border-radius:20px;padding:28px;
+}
+.hero-stat{padding:18px 0;border-bottom:1px solid #ffffff20}
+.hero-stat:last-child{border:0}
+.hero-stat strong{font-size:27px;color:white}
+#authModal{
+ position:fixed;inset:0;background:#071326dd;
+ display:flex;align-items:center;justify-content:center;
+ z-index:20;padding:20px;
+}
+.auth-card{
+ width:100%;max-width:420px;background:white;
+ border-radius:16px;padding:30px;
+}
+.auth-card h2{margin-top:0}
+#appShell{min-height:100vh;display:flex}
+.sidebar{
+ width:255px;background:var(--navy);color:white;
+ padding:22px 14px;position:fixed;inset:0 auto 0 0;
+ overflow-y:auto;z-index:5;
+}
+.sidebar .logo{padding:10px 12px 25px}
+.nav-label{
+ color:#8293ad;font-size:10px;font-weight:800;
+ letter-spacing:1.3px;padding:18px 12px 8px;
+}
+.nav-item{
+ padding:11px 12px;margin:3px 0;border-radius:8px;
+ color:#c1cee0;cursor:pointer;font-size:13px;
+ display:flex;justify-content:space-between;gap:8px;
+}
+.nav-item:hover,.nav-item.active{
+ background:#2864e8;color:white;
+}
+.main{margin-left:255px;width:calc(100% - 255px)}
+.topbar{
+ height:72px;background:white;border-bottom:1px solid var(--border);
+ display:flex;align-items:center;justify-content:space-between;
+ padding:0 30px;position:sticky;top:0;z-index:4;
+}
+.page{padding:30px;max-width:1500px;margin:auto}
+.page-header{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:25px;
+}
+.page-header h1{margin:0;font-size:26px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{
+ background:white;border:1px solid var(--border);
+ border-radius:13px;padding:20px;min-width:0;
+}
+.stat-label{font-size:13px;color:var(--muted)}
+.stat-number{font-size:29px;font-weight:800;margin-top:10px;color:var(--navy)}
+.section-title{font-size:17px;margin:0 0 16px}
+.table-wrap{overflow-x:auto;background:white;border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:600px}
+th,td{
+ text-align:left;padding:14px;border-bottom:1px solid var(--border);
+ font-size:13px;
+}
+th{color:var(--muted);font-weight:700;background:#fafbfd}
+.status{
+ display:inline-block;padding:5px 9px;border-radius:20px;
+ background:#edf2ff;color:var(--blue);font-size:11px;font-weight:700;
+}
+.status.success{background:#e7f7ef;color:var(--green)}
+.status.warning{background:#fff5e6;color:#b67b20}
+.status.error{background:#fff0f0;color:var(--red)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.agent-card{display:flex;flex-direction:column;gap:10px}
+.agent-top{display:flex;justify-content:space-between;gap:10px}
+.agent-icon{font-size:23px}
+.agent-card h3{font-size:14px;margin:0}
+.agent-card p{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
+.agent-actions{display:flex;gap:8px;align-items:center;margin-top:auto}
+.agent-actions button{font-size:11px;padding:8px 10px}
+#toast{
+ position:fixed;bottom:20px;right:20px;background:var(--navy);
+ color:white;padding:14px 20px;border-radius:9px;
+ z-index:50;max-width:350px;display:none;
+}
+#mobileMenu{display:none}
+pre.output{
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ background:#101d35;color:#d9e7ff;padding:16px;
+ border-radius:9px;font-size:12px;line-height:1.6;
+}
+@media(max-width:1050px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .sidebar{display:none;width:255px}
+ .sidebar.open{display:block}
+ .main{margin-left:0;width:100%}
+ #mobileMenu{display:inline-block}
+ .page{padding:18px}
+ .topbar{padding:0 15px}
+ .grid,.grid.two,.grid.three{grid-template-columns:1fr}
+ .landing-content{grid-template-columns:1fr;padding:55px 7%}
+ .form-grid{grid-template-columns:1fr}
+ .form-grid .full{grid-column:auto}
+}
 </style>
 </head>
+
 <body>
 
-<section id="landingView" class="landing">
-<header class="topbar">
-<div class="brand"><div class="brand-mark">B</div><span>Border<span class="flow">Flow</span></span></div>
-<div><button class="btn secondary" onclick="showAuth('login')">Log in</button> <button class="btn" onclick="showAuth('signup')">Get started</button></div>
-</header>
-<main class="hero"><div class="hero-content">
-<span class="tag">FREIGHT · CUSTOMS · AI INTELLIGENCE</span>
-<h1>Moving trade forward.<br><span>Across every border.</span></h1>
-<p>One digital workspace for African freight operators and clearing agents. Organise shipments, manage trade documents and use AI to identify potential document problems.</p>
-<div class="hero-buttons"><button class="btn" onclick="showAuth('signup')">Create your account</button><button class="btn secondary" onclick="showAuth('login')">Open dashboard</button></div>
-<p class="small">AI reviews assist human decisions. They do not replace customs authorities or official clearance.</p>
-</div></main>
-<section class="feature-section"><h2>One connected freight workspace</h2><div class="feature-grid">
-<div class="feature"><h3>✦ Document Intelligence</h3><p class="muted">Extract text and identify potential missing information and inconsistencies.</p></div>
-<div class="feature"><h3>▤ Shipment Management</h3><p class="muted">Organise truck, driver, cargo and border-post records.</p></div>
-<div class="feature"><h3>◎ AI Agent Team</h3><p class="muted">Coordinate specialist workflows through the BorderFlow CEO Agent.</p></div>
-</div></section>
-<footer class="landing-footer">© <span id="copyrightYear"></span> BorderFlow · Freight intelligence for connected African trade.</footer>
+<!-- LANDING PAGE -->
+<section id="landingView">
+ <nav class="landing-nav">
+  <div class="logo">BORDER<span>FLOW</span></div>
+  <button class="primary" onclick="showAuth()">Open Platform</button>
+ </nav>
+
+ <div class="landing-content">
+  <div>
+   <p style="color:#76a2ff;font-weight:800">AFRICAN TRADE TECHNOLOGY</p>
+   <h1>The operating system for cross-border trade.</h1>
+   <p>
+    Freight, customs, document intelligence and border operations
+    connected through one intelligent platform.
+   </p>
+   <button class="primary" onclick="showAuth()">Enter BorderFlow →</button>
+  </div>
+  <div class="hero-panel">
+   <div class="hero-stat"><strong>32</strong><br>Specialist AI agents</div>
+   <div class="hero-stat"><strong>1</strong><br>Connected trade platform</div>
+   <div class="hero-stat"><strong>Africa</strong><br>Built for cross-border operations</div>
+  </div>
+ </div>
 </section>
 
-<section id="authView" class="auth-screen hidden">
-<div class="auth-card">
-<div class="brand"><div class="brand-mark">B</div><span>Border<span class="flow">Flow</span></span></div>
-<h2 id="authTitle">Welcome back</h2><p class="muted" id="authSubtitle">Log in to your workspace.</p>
-<form id="authForm">
-<div class="field hidden" id="nameField"><label>Full name</label><input id="fullName" autocomplete="name"></div>
-<div class="field"><label>Email</label><input id="authEmail" type="email" required autocomplete="email"></div>
-<div class="field"><label>Password</label><input id="authPassword" type="password" required minlength="6"></div>
-<div id="authMessage"></div><button id="authSubmit" class="btn" style="width:100%">Log in</button>
-</form>
-<div class="auth-switch"><span id="authSwitchText">Don't have an account?</span> <a id="authSwitchLink" onclick="toggleAuthMode()">Create one</a></div>
-<div class="auth-switch"><a onclick="backToLanding()">Back to home</a></div>
-</div></section>
+<!-- AUTHENTICATION -->
+<div id="authModal" class="hidden">
+ <div class="auth-card">
+  <h2>Welcome to BorderFlow</h2>
+  <p class="muted">Sign in to your workspace.</p>
+  <form onsubmit="login(event)">
+   <label>Email</label>
+   <input id="email" type="email" required>
+   <label>Password</label>
+   <input id="password" type="password" required>
+   <button class="primary" style="width:100%;margin-top:20px">Sign in</button>
+  </form>
+  <button class="secondary" style="width:100%;margin-top:10px" onclick="signup()">
+   Create account
+  </button>
+  <button class="secondary" style="width:100%;margin-top:10px" onclick="hideAuth()">
+   Back
+  </button>
+  <p id="authMessage" class="small muted"></p>
+ </div>
+</div>
 
-<section id="appShell" class="hidden">
+<!-- APPLICATION -->
+<div id="appShell" class="hidden">
+
 <aside class="sidebar" id="sidebar">
-<div class="brand"><div class="brand-mark">B</div><span>Border<span class="flow">Flow</span></span></div>
-<div class="nav-label">WORKSPACE</div>
-<button class="nav-item active" data-page="overview">⌂ Overview</button>
-<button class="nav-item" data-page="checker">✦ AI Document Checker</button>
-<button class="nav-item" data-page="library">▣ Document Library</button>
-<button class="nav-item" data-page="shipments">▤ Shipments</button>
-<button class="nav-item" data-page="tracking">⌖ Tracking</button>
-<div class="nav-label">AI TEAM</div>
-<button class="nav-item" data-page="ceo-agent">✦ CEO Agent</button>
-<button class="nav-item" data-page="agent-team">◎ Agent Registry</button>
-<div class="nav-label">OPERATIONS</div>
-<button class="nav-item" data-page="customs">◇ Customs Management</button>
-<button class="nav-item" data-page="customers">♙ Customers</button>
-<button class="nav-item" data-page="invoices">▧ Invoices & Payments</button>
-<button class="nav-item" data-page="reports">▥ Reports & Analytics</button>
-<div class="nav-label">ACCOUNT</div>
-<button class="nav-item" data-page="settings">⚙ Settings</button>
-<div style="margin-top:20px;border-top:1px solid #ffffff20;padding-top:12px"><button class="nav-item" id="logoutButton">⇥ Log out</button></div>
+ <div class="logo">BORDER<span>FLOW</span></div>
+
+ <div class="nav-label">WORKSPACE</div>
+ <div class="nav-item active" onclick="navigate('overview',this)">▦ Overview</div>
+ <div class="nav-item" onclick="navigate('agents',this)">✦ AI Agent Command Centre</div>
+ <div class="nav-item" onclick="navigate('checker',this)">▤ Document Checker</div>
+ <div class="nav-item" onclick="navigate('library',this)">▧ Document Library</div>
+
+ <div class="nav-label">OPERATIONS</div>
+ <div class="nav-item" onclick="navigate('shipments',this)">🚛 Shipments</div>
+ <div class="nav-item" onclick="navigate('tracking',this)">⌖ Live Tracking</div>
+ <div class="nav-item" onclick="navigate('customs',this)">⚖ Customs Management</div>
+ <div class="nav-item" onclick="navigate('compliance',this)">✓ Compliance</div>
+ <div class="nav-item" onclick="navigate('customers',this)">♙ Customers</div>
+
+ <div class="nav-label">BUSINESS</div>
+ <div class="nav-item" onclick="navigate('invoices',this)">▤ Invoices & Payments</div>
+ <div class="nav-item" onclick="navigate('finance',this)">◇ Finance</div>
+ <div class="nav-item" onclick="navigate('reports',this)">▥ Reports & Analytics</div>
+
+ <div class="nav-label">SYSTEM</div>
+ <div class="nav-item" onclick="navigate('integrations',this)">⌘ Integrations</div>
+ <div class="nav-item" onclick="navigate('settings',this)">⚙ Settings & Admin</div>
+ <div class="nav-item" onclick="logout()">↪ Sign out</div>
 </aside>
-<div class="main-area">
-<header class="top-header">
-<div style="display:flex;align-items:center;gap:12px"><button class="btn secondary mobile-menu" style="display:none" onclick="toggleSidebar()">☰</button><div><strong id="headerTitle">Overview</strong><div class="small muted">BorderFlow workspace</div></div></div>
-<div class="user-chip"><div class="avatar" id="userAvatar">B</div><span id="userEmail">Account</span></div>
-</header>
-<main class="content">
 
-<section class="page active" id="page-overview">
-<h1 class="page-title">Overview</h1><p class="page-subtitle">Your freight and document operations at a glance.</p>
-<div class="grid-4">
-<div class="stat-card"><div class="stat-label">Shipments</div><div class="stat-value" id="statShipments">0</div></div>
-<div class="stat-card"><div class="stat-label">Documents</div><div class="stat-value" id="statDocuments">0</div></div>
-<div class="stat-card"><div class="stat-label">AI checks</div><div class="stat-value" id="statChecks">0</div></div>
-<div class="stat-card"><div class="stat-label">Needs review</div><div class="stat-value" id="statReview">0</div></div>
+<main class="main">
+ <header class="topbar">
+  <div>
+   <button id="mobileMenu" class="secondary" onclick="toggleMenu()">☰</button>
+   <strong id="pageTitle">Overview</strong>
+  </div>
+  <div class="small muted" id="userEmail">Loading...</div>
+ </header>
+ <div class="page" id="pageContent"></div>
+</main>
 </div>
-<div class="two-col">
-<div class="card"><div class="section-head"><h3>Recent shipments</h3><button class="btn secondary" onclick="navigate('shipments')">View all</button></div><div class="table-wrap"><table><thead><tr><th>Reference</th><th>Border</th><th>Status</th></tr></thead><tbody id="recentShipments"><tr><td colspan="3" class="empty">Loading...</td></tr></tbody></table></div></div>
-<div class="card"><div class="section-head"><h3>Recent documents</h3><button class="btn secondary" onclick="navigate('library')">View all</button></div><div id="recentDocuments" class="empty">Loading...</div></div>
-</div></section>
 
-<section class="page" id="page-checker">
-<h1 class="page-title">AI Document Checker</h1><p class="page-subtitle">Upload a trade document and request an AI review.</p>
-<div class="card"><form id="documentForm">
-<div class="form-grid">
-<div class="field"><label>Shipment reference</label><input id="docShipmentRef" required placeholder="BF001"></div>
-<div class="field"><label>Document type</label><select id="docType" required><option value="">Select type</option><option>Commercial Invoice</option><option>Packing List</option><option>Bill of Lading</option><option>Certificate of Origin</option><option>Customs Declaration</option><option>Other</option></select></div>
-</div>
-<div class="upload-zone"><strong>Select trade document</strong><p class="small muted">PDF, PNG, JPG, WEBP · Maximum 10 MB</p><input id="documentFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" required></div>
-<p id="documentProgress" class="small muted"></p><button class="btn" id="checkDocumentButton">Upload and check document</button>
-</form></div>
-<div id="analysisResult" class="card hidden"><div class="section-head"><h3>AI analysis report</h3><span id="analysisStatus" class="tag orange">Needs Review</span></div><p id="analysisSummary"></p><div id="analysisFindings"></div><div id="analysisMissing"></div><div id="analysisConsistency"></div><p class="footer-note">A qualified person must verify findings before customs or financial decisions.</p></div>
-</section>
-
-<section class="page" id="page-library">
-<h1 class="page-title">Document Library</h1><p class="page-subtitle">Your uploaded trade documents and AI reports.</p>
-<div class="card"><div class="section-head"><h3>Saved documents</h3><button class="btn secondary" onclick="loadDocuments()">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Shipment</th><th>Type</th><th>Status</th><th>Date</th></tr></thead><tbody id="documentsTable"></tbody></table></div></div>
-<div class="card"><div class="section-head"><h3>Saved AI reports</h3><button class="btn secondary" onclick="loadReports()">Refresh</button></div><div id="reportsList"></div></div>
-</section>
-
-<section class="page" id="page-shipments">
-<h1 class="page-title">Shipments</h1><p class="page-subtitle">Create and manage freight shipment records.</p>
-<div class="card"><h3>Create shipment</h3><form id="shipmentForm"><div class="form-grid">
-<div class="field"><label>Shipment reference</label><input id="shipmentRef" required placeholder="BF001"></div>
-<div class="field"><label>Truck registration</label><input id="truckRegistration" required></div>
-<div class="field"><label>Driver name</label><input id="driverName" required></div>
-<div class="field"><label>Driver WhatsApp</label><input id="driverWhatsapp" placeholder="+263..."></div>
-<div class="field"><label>Border post</label><input id="borderPost" required placeholder="Beitbridge"></div>
-<div class="field"><label>Corridor / route</label><input id="corridor" placeholder="Harare - Johannesburg"></div>
-</div><div class="field"><label>Cargo description</label><textarea id="cargoDescription" rows="3" required></textarea></div><button class="btn" id="saveShipmentButton">Save shipment</button></form></div>
-<div class="card"><div class="section-head"><h3>Shipment records</h3><button class="btn secondary" onclick="loadShipments()">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Reference</th><th>Truck</th><th>Border</th><th>Status</th><th>Update</th></tr></thead><tbody id="shipmentsTable"></tbody></table></div></div>
-</section>
-
-<section class="page" id="page-tracking"><h1 class="page-title">Shipment Tracking</h1><p class="page-subtitle">Review recorded shipment progress.</p><div class="card"><div class="section-head"><h3>Shipment progress</h3><button class="btn secondary" onclick="loadTracking()">Refresh</button></div><div id="trackingList"></div><p class="footer-note">This version records manually updated statuses. Live GPS requires a separate driver-location integration.</p></div></section>
-
-<section class="page" id="page-ceo-agent">
-<h1 class="page-title">BorderFlow CEO Agent</h1><p class="page-subtitle">Give the coordinator a task. It will select relevant registered specialists and prepare a report.</p>
-<div class="card"><form id="ceoTaskForm">
-<div class="field"><label>Task title</label><input id="ceoTaskTitle" required placeholder="Review a shipment document workflow"></div>
-<div class="field"><label>What should the CEO Agent do?</label><textarea id="ceoTaskDescription" rows="5" required placeholder="Describe the task, expected result and any relevant context. Do not include passwords, API keys or private customer data."></textarea></div>
-<button class="btn" id="ceoSubmitButton">Send task to CEO Agent</button>
-</form><p id="ceoTaskMessage" class="small muted"></p></div>
-<div class="card"><div class="section-head"><h3>CEO Agent report</h3><span class="tag" id="ceoStatus">Waiting for task</span></div><div id="ceoResult" class="muted small">Your task report will appear here.</div></div>
-<div class="card"><div class="section-head"><h3>Previous CEO tasks</h3><button class="btn secondary" onclick="loadAgentTasks()">Refresh</button></div><div id="agentTasksList" class="empty">No tasks loaded.</div></div>
-<p class="footer-note">The CEO Agent uses a shared Groq orchestration call. Registry entries are not proof that each specialist is independently executing. Important customs, legal and financial decisions require human review.</p>
-</section>
-
-<section class="page" id="page-agent-team">
-<h1 class="page-title">Agent Registry</h1><p class="page-subtitle">Registered BorderFlow specialist roles and their configured status.</p>
-<div class="card"><div class="section-head"><h3>Registered AI roles</h3><button class="btn secondary" onclick="loadAgentRegistry()">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Agent</th><th>Category</th><th>Role</th><th>Status</th></tr></thead><tbody id="agentRegistryTable"></tbody></table></div></div>
-</section>
-
-<section class="page" id="page-customs"><h1 class="page-title">Customs Management</h1><p class="page-subtitle">Organise customs-related operational work.</p><div class="card"><h3>Document preparation</h3><p class="muted">Use the AI Document Checker to review trade documents. Country-specific customs requirements must be verified against official authority sources.</p><button class="btn" onclick="navigate('checker')">Open Document Checker</button><hr><p class="small muted">Direct ASYCUDA or government customs submission is not connected in this version.</p></div></section>
-<section class="page" id="page-customers"><h1 class="page-title">Customers</h1><p class="page-subtitle">Customer management workspace.</p><div class="card"><p class="muted">Customer records will be connected after the existing customer-table structure is confirmed.</p></div></section>
-<section class="page" id="page-invoices"><h1 class="page-title">Invoices & Payments</h1><p class="page-subtitle">Financial operations workspace.</p><div class="card"><p class="muted">Payment collection is not enabled in this version. Connect a verified payment provider before accepting payments.</p></div></section>
-<section class="page" id="page-reports"><h1 class="page-title">Reports & Analytics</h1><p class="page-subtitle">A summary of your saved activity.</p><div class="grid-4"><div class="stat-card"><div class="stat-label">Shipments</div><div class="stat-value" id="reportShipments">0</div></div><div class="stat-card"><div class="stat-label">Documents</div><div class="stat-value" id="reportDocuments">0</div></div><div class="stat-card"><div class="stat-label">AI checks</div><div class="stat-value" id="reportChecks">0</div></div><div class="stat-card"><div class="stat-label">Needs review</div><div class="stat-value" id="reportReview">0</div></div></div></section>
-<section class="page" id="page-settings"><h1 class="page-title">Settings</h1><p class="page-subtitle">Your account and platform services.</p><div class="card"><div class="field"><label>Email</label><input id="settingsEmail" readonly></div><div class="field"><label>User ID</label><input id="settingsUserId" readonly></div><p class="small muted">Authentication and database: Supabase</p><p class="small muted">Document intelligence: Groq through Supabase Edge Functions</p><p class="small muted">Storage: private Supabase Storage</p><button class="btn" id="settingsLogout">Log out</button></div></section>
-
-</main></div></section>
-<div id="toast" class="toast hidden"></div>
+<div id="toast"></div>
 
 <script>
-"use strict";
+// ======================================================
+// 1. CONFIGURATION
+// ======================================================
 
-/* CONFIGURATION */
-const SUPABASE_URL="https://ngkmbpbdaachqymnfffe.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
-const STORAGE_BUCKET="freight-documents";
-const AI_FUNCTION="document-intelligence";
-const CEO_FUNCTION="agent-orchestrator";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
 
-let currentUser=null,authMode="login",shipmentsCache=[],documentsCache=[],reportsCache=[],agentTasksCache=[];
+// IMPORTANT: Paste your existing Supabase anon/public key here.
+// Never paste your service_role key or Groq secret into this file.
+const SUPABASE_ANON_KEY = "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY";
 
-const $=id=>document.getElementById(id);
-function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-function toast(message,duration=4500){const el=$("toast");el.textContent=message;el.classList.remove("hidden");clearTimeout(window.bfToastTimer);window.bfToastTimer=setTimeout(()=>el.classList.add("hidden"),duration);}
-function setBusy(button,busy,text="Please wait..."){if(!button)return;if(busy){button.dataset.oldText=button.textContent;button.textContent=text;button.disabled=true;}else{button.textContent=button.dataset.oldText||button.textContent;button.disabled=false;}}
-function formatDate(value){if(!value)return "—";const d=new Date(value);return isNaN(d)? "—":d.toLocaleString();}
-function statusClass(status){const s=String(status||"").toLowerCase();return s.includes("passed")||s.includes("cleared")||s==="completed"?"green":s.includes("failed")||s==="escalated"?"red":"orange";}
+const STORAGE_BUCKET = "freight-documents";
+const DOCUMENT_FUNCTION = "document-intelligence";
+const AGENT_FUNCTION = "agent-orchestrator";
 
-/* AUTH */
-function showAuth(mode="login"){$("landingView").classList.add("hidden");$("appShell").classList.add("hidden");$("authView").classList.remove("hidden");authMode=mode;updateAuthMode();}
-function backToLanding(){$("authView").classList.add("hidden");$("landingView").classList.remove("hidden");}
-function toggleAuthMode(){authMode=authMode==="login"?"signup":"login";updateAuthMode();}
-function updateAuthMode(){const signup=authMode==="signup";$("authTitle").textContent=signup?"Create your account":"Welcome back";$("authSubtitle").textContent=signup?"Create your BorderFlow workspace.":"Log in to your workspace."; $("nameField").classList.toggle("hidden",!signup);$("fullName").required=signup;$("authSubmit").textContent=signup?"Create account":"Log in";$("authSwitchText").textContent=signup?"Already have an account?":"Don't have an account?";$("authSwitchLink").textContent=signup?"Log in":"Create one";$("authMessage").textContent="";}
-$("authForm").addEventListener("submit",async e=>{e.preventDefault();const button=$("authSubmit");setBusy(button,true,"Connecting...");$("authMessage").textContent="";try{const email=$("authEmail").value.trim(),password=$("authPassword").value;if(authMode==="signup"){const {data,error}=await db.auth.signUp({email,password,options:{data:{full_name:$("fullName").value.trim()}}});if(error)throw error;if(!data.session){$("authMessage").style.color="var(--green)";$("authMessage").textContent="Account created. Check your email if confirmation is required, then log in.";}}else{const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;}}catch(err){$("authMessage").style.color="var(--red)";$("authMessage").textContent=err.message||"Authentication failed";}finally{setBusy(button,false);}});
-async function logout(){const {error}=await db.auth.signOut();if(error)toast(error.message);}
-$("logoutButton").addEventListener("click",logout);$("settingsLogout").addEventListener("click",logout);
+let db = null;
+let currentUser = null;
+let currentCompany = null;
+let currentPage = "overview";
+let selectedFile = null;
+let extractedText = "";
+let lastDocument = null;
 
-/* NAVIGATION */
-const pageTitles={overview:"Overview",checker:"AI Document Checker",library:"Document Library",shipments:"Shipments",tracking:"Tracking","ceo-agent":"CEO Agent","agent-team":"Agent Registry",customs:"Customs Management",customers:"Customers",invoices:"Invoices & Payments",reports:"Reports & Analytics",settings:"Settings"};
-function navigate(page){if(!pageTitles[page])return;document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("page-"+page).classList.add("active");document.querySelectorAll(".nav-item[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));$("headerTitle").textContent=pageTitles[page];$("sidebar").classList.remove("open");if(page==="overview")loadDashboard();if(page==="shipments")loadShipments();if(page==="tracking")loadTracking();if(page==="library"){loadDocuments();loadReports();}if(page==="ceo-agent")loadAgentTasks();if(page==="agent-team")loadAgentRegistry();}
-document.querySelectorAll(".nav-item[data-page]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
-function toggleSidebar(){$("sidebar").classList.toggle("open");}
+if(window.supabase && SUPABASE_ANON_KEY !== "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY"){
+ db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+}
 
-/* SESSION */
-function openWorkspace(user){currentUser=user;$("landingView").classList.add("hidden");$("authView").classList.add("hidden");$("appShell").classList.remove("hidden");const email=user.email||"BorderFlow user";$("userEmail").textContent=email;$("userAvatar").textContent=email[0].toUpperCase();$("settingsEmail").value=email;$("settingsUserId").value=user.id;navigate("overview");}
-function showSignedOut(){currentUser=null;$("appShell").classList.add("hidden");$("authView").classList.add("hidden");$("landingView").classList.remove("hidden");}
-db.auth.onAuthStateChange((event,session)=>{if(session?.user)openWorkspace(session.user);else if(event==="SIGNED_OUT")showSignedOut();});
-async function initialise(){try{const {data,error}=await db.auth.getSession();if(error)throw error;if(data.session?.user)openWorkspace(data.session.user);}catch(e){console.error(e);toast("Could not check login session. Please log in again.");}}
+// ======================================================
+// 2. THE 32 BORDERFLOW AI AGENTS
+// ======================================================
 
-/* SHIPMENTS */
-async function loadShipments(){if(!currentUser)return;const body=$("shipmentsTable");body.innerHTML='<tr><td colspan="5" class="empty">Loading...</td></tr>';const {data,error}=await db.from("shipments").select("*").order("created_at",{ascending:false});if(error){body.innerHTML=`<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;return;}shipmentsCache=data||[];body.innerHTML=shipmentsCache.length?shipmentsCache.map(item=>`<tr><td>${escapeHTML(item.reference_no||"—")}</td><td>${escapeHTML(item.truck_registration||"—")}</td><td>${escapeHTML(item.border_post||"—")}</td><td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span></td><td><select onchange="updateShipmentStatus('${escapeHTML(item.id)}',this.value)">${["Created","Arrived at Border","Docs Checked","Duty Paid","Cleared to Go"].map(s=>`<option ${item.status===s?"selected":""}>${s}</option>`).join("")}</select></td></tr>`).join(""):'<tr><td colspan="5" class="empty">No shipments saved yet.</td></tr>';$("statShipments").textContent=shipmentsCache.length;$("reportShipments").textContent=shipmentsCache.length;$("recentShipments").innerHTML=shipmentsCache.slice(0,5).map(i=>`<tr><td>${escapeHTML(i.reference_no)}</td><td>${escapeHTML(i.border_post)}</td><td>${escapeHTML(i.status)}</td></tr>`).join("")||'<tr><td colspan="3" class="empty">No shipments yet.</td></tr>';}
-$("shipmentForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return toast("Please log in.");const b=$("saveShipmentButton");setBusy(b,true,"Saving...");try{const record={user_id:currentUser.id,reference_no:$("shipmentRef").value.trim(),truck_registration:$("truckRegistration").value.trim(),driver_name:$("driverName").value.trim(),driver_whatsapp:$("driverWhatsapp").value.trim(),border_post:$("borderPost").value.trim(),cargo_description:$("cargoDescription").value.trim(),corridor:$("corridor").value.trim(),status:"Arrived at Border",updated_at:new Date().toISOString()};const {error}=await db.from("shipments").insert(record);if(error)throw error;$("shipmentForm").reset();toast("Shipment saved.");await loadShipments();}catch(err){toast("Could not save shipment: "+err.message,6500);}finally{setBusy(b,false);}});
-async function updateShipmentStatus(id,status){const {error}=await db.from("shipments").update({status,updated_at:new Date().toISOString()}).eq("id",id);if(error){toast(error.message);return;}toast("Shipment status updated.");loadShipments();}
-async function loadTracking(){if(!currentUser)return;const {data,error}=await db.from("shipments").select("*").order("updated_at",{ascending:false});if(error){$("trackingList").textContent=error.message;return;}const rows=data||[];$("trackingList").innerHTML=rows.map(i=>`<div class="report-box"><strong>${escapeHTML(i.reference_no||"Shipment")}</strong> <span class="tag ${statusClass(i.status)}">${escapeHTML(i.status)}</span><p class="small muted">${escapeHTML(i.border_post||"")} · ${escapeHTML(i.truck_registration||"")} · ${formatDate(i.updated_at)}</p></div>`).join("")||'<div class="empty">No tracking records.</div>';}
+const AGENTS = [
+ {name:"CEO Agent",group:"Leadership",icon:"👑",desc:"Master Brain. Delegates work, coordinates specialists, reviews results and escalates important decisions."},
+ {name:"Document Intelligence Agent",group:"Documents",icon:"🧠",desc:"Understands trade documents and coordinates document analysis."},
+ {name:"OCR Agent",group:"Documents",icon:"🔎",desc:"Extracts text and important information from uploaded documents."},
+ {name:"Invoice Audit Agent",group:"Documents",icon:"🧾",desc:"Checks commercial invoices, totals, currency and missing fields."},
+ {name:"Packing List Agent",group:"Documents",icon:"📦",desc:"Reviews packing lists, quantities, packages and weights."},
+ {name:"Bill of Lading Agent",group:"Documents",icon:"🚢",desc:"Reviews transport document details and shipping information."},
+ {name:"Certificate of Origin Agent",group:"Documents",icon:"🌍",desc:"Reviews country-of-origin information and certificate consistency."},
+ {name:"Document Consistency Agent",group:"Documents",icon:"🔗",desc:"Compares information across multiple trade documents."},
+ {name:"Customs Intelligence Agent",group:"Customs",icon:"⚖",desc:"Coordinates customs-related analysis and requirements."},
+ {name:"HS Code Agent",group:"Customs",icon:"🏷",desc:"Assists with product classification using supplied product details."},
+ {name:"Duty & Tax Agent",group:"Customs",icon:"💰",desc:"Assists with duty and tax calculations using verified tariff information."},
+ {name:"Trade Compliance Agent",group:"Customs",icon:"✓",desc:"Checks trade requirements and identifies possible compliance gaps."},
+ {name:"Country of Origin Agent",group:"Customs",icon:"🗺",desc:"Reviews origin claims and country-specific origin requirements."},
+ {name:"Risk Intelligence Agent",group:"Customs",icon:"🛡",desc:"Identifies inconsistencies, missing information and operational risks."},
+ {name:"Shipment Agent",group:"Operations",icon:"🚛",desc:"Coordinates shipment records and shipment status workflows."},
+ {name:"Border Intelligence Agent",group:"Operations",icon:"🚧",desc:"Organises border-post information and border processing intelligence."},
+ {name:"Truck Management Agent",group:"Operations",icon:"🚚",desc:"Supports truck records, registration and transport assignments."},
+ {name:"Driver Management Agent",group:"Operations",icon:"👨‍✈️",desc:"Supports driver records and shipment-driver assignments."},
+ {name:"Route Intelligence Agent",group:"Operations",icon:"🛣",desc:"Assists with route planning and route information."},
+ {name:"Workflow Automation Agent",group:"Operations",icon:"⚙",desc:"Coordinates repeatable business workflows and task handoffs."},
+ {name:"Finance Agent",group:"Business",icon:"📊",desc:"Coordinates finance records and financial reporting."},
+ {name:"Payment Intelligence Agent",group:"Business",icon:"💳",desc:"Supports payment records and payment-status workflows."},
+ {name:"Customer Intelligence Agent",group:"Business",icon:"👥",desc:"Organises customer information and customer service insights."},
+ {name:"Market Intelligence Agent",group:"Business",icon:"📈",desc:"Researches trade-market information supplied to the platform."},
+ {name:"Reporting Agent",group:"Business",icon:"📑",desc:"Produces operational summaries and management reports."},
+ {name:"Notification Agent",group:"Business",icon:"🔔",desc:"Coordinates system notifications and important alerts."},
+ {name:"Integration Intelligence Agent",group:"Technology",icon:"🔌",desc:"Coordinates connections to external services and systems."},
+ {name:"Security Agent",group:"Technology",icon:"🔐",desc:"Reviews security practices and access-control concerns."},
+ {name:"Quality Assurance Agent",group:"Technology",icon:"🧪",desc:"Checks agent outputs, workflows and potential errors."},
+ {name:"Database Intelligence Agent",group:"Technology",icon:"🗄",desc:"Supports database structure, records and data consistency."},
+ {name:"API Intelligence Agent",group:"Technology",icon:"🔗",desc:"Coordinates API communication and integration diagnostics."},
+ {name:"Performance Intelligence Agent",group:"Technology",icon:"⚡",desc:"Reviews application performance and operational efficiency."}
+];
 
-/* DOCUMENT EXTRACTION */
-async function extractDocumentText(file){if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){if(!window.pdfjsLib)throw Error("PDF reader did not load.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;let text="";for(let n=1;n<=Math.min(pdf.numPages,30);n++){const page=await pdf.getPage(n),content=await page.getTextContent();text+=content.items.map(x=>x.str||"").join(" ")+"\n";}if(!text.trim())throw Error("This PDF has no selectable text. Please upload a clear image for OCR.");return text.trim();}
-if(!window.Tesseract)throw Error("OCR library did not load.");const result=await Tesseract.recognize(file,"eng",{logger:m=>{if(m.status==="recognizing text")$("documentProgress").textContent="Reading image: "+Math.round((m.progress||0)*100)+"%";}});return String(result.data.text||"").trim();}
+const AGENT_WORKFLOW = [
+ "OCR Agent",
+ "Document Intelligence Agent",
+ "Invoice Audit Agent",
+ "Document Consistency Agent",
+ "HS Code Agent",
+ "Customs Intelligence Agent",
+ "Risk Intelligence Agent",
+ "Reporting Agent",
+ "Quality Assurance Agent",
+ "CEO Agent"
+];
 
-/* DOCUMENT CHECKER */
-$("documentForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return toast("Please log in.");const file=$("documentFile").files[0],ref=$("docShipmentRef").value.trim(),type=$("docType").value,b=$("checkDocumentButton");if(!file)return toast("Choose a document.");if(file.size>10*1024*1024)return toast("Maximum file size is 10 MB.");if(!/\.(pdf|png|jpe?g|webp)$/i.test(file.name))return toast("Unsupported file type.");setBusy(b,true,"Processing document...");$("analysisResult").classList.add("hidden");let path=null;try{$("documentProgress").textContent="Extracting text...";const extracted=await extractDocumentText(file);if(extracted.length<5)throw Error("Not enough text extracted.");const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");path=`${currentUser.id}/${Date.now()}-${crypto.randomUUID()}-${safe}`;$("documentProgress").textContent="Uploading securely...";const {error:uploadError}=await db.storage.from(STORAGE_BUCKET).upload(path,file,{contentType:file.type||"application/octet-stream"});if(uploadError)throw uploadError;const {data:doc,error:insertError}=await db.from("bf_documents").insert({user_id:currentUser.id,shipment_ref:ref,document_type:type,file_name:file.name,storage_path:path,extracted_text:extracted,status:"Uploaded"}).select("id").single();if(insertError)throw insertError;$("documentProgress").textContent="Sending to BorderFlow AI...";const {data,error}=await db.functions.invoke(AI_FUNCTION,{body:{action:"check_document",document_id:doc.id,shipment_ref:ref,document_type:type,extracted_text:extracted}});if(error)throw Error("Document saved, but AI checking failed: "+error.message);const result=data?.result??data?.report;if(!data?.success||!result)throw Error(data?.error||"AI returned no report.");displayAnalysis(result);$("documentProgress").textContent="Document upload and AI review completed.";toast("Document checked.");$("documentForm").reset();await loadDocuments();await loadReports();await loadDashboard();}catch(err){console.error(err);$("documentProgress").textContent=err.message;toast(err.message,7000);}finally{setBusy(b,false);}});
-function displayAnalysis(r){$("analysisResult").classList.remove("hidden");$("analysisStatus").textContent=r.overall_status||"Needs Review";$("analysisStatus").className="tag "+statusClass(r.overall_status);$("analysisSummary").textContent=r.summary||"Review the findings below.";const findings=Array.isArray(r.findings)?r.findings:[];$("analysisFindings").innerHTML="<h4>Findings</h4>"+(findings.map(f=>{const sev=["High","Medium","Low"].includes(f.severity)?f.severity:"Medium";return `<div class="finding ${sev}"><strong>${escapeHTML(sev)}: ${escapeHTML(f.issue||"Finding")}</strong><p>${escapeHTML(f.recommendation||"Please review.")}</p></div>`;}).join("")||"<p class='muted small'>No specific findings returned.</p>");const missing=Array.isArray(r.missing_fields)?r.missing_fields:[];$("analysisMissing").innerHTML="<h4>Missing fields</h4>"+(missing.length?`<ul>${missing.map(x=>`<li>${escapeHTML(typeof x==="string"?x:JSON.stringify(x))}</li>`).join("")}</ul>`:"<p class='muted small'>No missing fields reported.</p>");const checks=Array.isArray(r.consistency_checks)?r.consistency_checks:[];$("analysisConsistency").innerHTML="<h4>Consistency checks</h4>"+(checks.length?`<ul>${checks.map(x=>`<li>${escapeHTML(typeof x==="string"?x:x.issue||JSON.stringify(x))}</li>`).join("")}</ul>`:"<p class='muted small'>No additional warnings returned.</p>");}
+// ======================================================
+// 3. GENERAL UTILITIES
+// ======================================================
 
-/* DOCUMENT LIBRARY AND REPORTS */
-async function loadDocuments(){if(!currentUser)return;const body=$("documentsTable");body.innerHTML='<tr><td colspan="5">Loading...</td></tr>';const {data,error}=await db.from("bf_documents").select("*").order("created_at",{ascending:false});if(error){body.innerHTML=`<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;return;}documentsCache=data||[];$("statDocuments").textContent=documentsCache.length;$("reportDocuments").textContent=documentsCache.length;body.innerHTML=documentsCache.map(d=>`<tr><td>${escapeHTML(d.file_name)}</td><td>${escapeHTML(d.shipment_ref)}</td><td>${escapeHTML(d.document_type)}</td><td><span class="tag ${statusClass(d.status)}">${escapeHTML(d.status)}</span></td><td>${formatDate(d.created_at)}</td></tr>`).join("")||'<tr><td colspan="5" class="empty">No documents uploaded.</td></tr>';$("recentDocuments").innerHTML=documentsCache.slice(0,5).map(d=>`<div class="report-box"><strong>${escapeHTML(d.file_name)}</strong><div class="small muted">${escapeHTML(d.shipment_ref)} · ${escapeHTML(d.document_type)}</div></div>`).join("")||"No documents uploaded.";}
-async function loadReports(){if(!currentUser)return;const {data,error}=await db.from("bf_document_checks").select("*").order("created_at",{ascending:false});if(error){$("reportsList").textContent=error.message;return;}reportsCache=data||[];const count=reportsCache.filter(r=>r.overall_status!=="Passed").length;$("statChecks").textContent=reportsCache.length;$("statReview").textContent=count;$("reportChecks").textContent=reportsCache.length;$("reportReview").textContent=count;$("reportsList").innerHTML=reportsCache.map(r=>`<div class="report-box"><div class="section-head"><strong>Document check</strong><span class="tag ${statusClass(r.overall_status)}">${escapeHTML(r.overall_status||"Needs Review")}</span></div><p class="small muted">${formatDate(r.created_at)}</p><p>${escapeHTML(r.summary||"Saved AI report")}</p><button class="btn secondary" onclick="openSavedReport('${escapeHTML(r.id)}')">View report</button></div>`).join("")||'<div class="empty">No reports saved.</div>';}
-function openSavedReport(id){const r=reportsCache.find(x=>String(x.id)===String(id));if(!r)return toast("Report not found.");displayAnalysis(r.raw_result||{overall_status:r.overall_status,summary:r.summary,findings:r.findings||[]});navigate("checker");displayAnalysis(r.raw_result||{overall_status:r.overall_status,summary:r.summary,findings:r.findings||[]});}
-async function loadDashboard(){if(!currentUser)return;await Promise.all([loadShipments(),loadDocuments(),loadReports()]);}
+function toast(message){
+ const el=document.getElementById("toast");
+ el.textContent=message;
+ el.style.display="block";
+ setTimeout(()=>el.style.display="none",3500);
+}
 
-/* CEO AGENT ORCHESTRATOR */
-$("ceoTaskForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return toast("Please log in.");const title=$("ceoTaskTitle").value.trim(),description=$("ceoTaskDescription").value.trim(),b=$("ceoSubmitButton");if(!title||!description)return toast("Enter a task title and description.");setBusy(b,true,"CEO Agent is working...");$("ceoTaskMessage").textContent="Sending your task securely to the CEO coordinator...";$("ceoStatus").textContent="In progress";$("ceoResult").textContent="Waiting for the orchestration result...";try{const {data,error}=await db.functions.invoke(CEO_FUNCTION,{body:{task_title:title,task_description:description}});if(error){let msg=error.message||"Function request failed";if(error.context){try{const details=await error.context.json();if(details.error)msg=details.error;}catch{}}throw Error(msg);}if(!data?.success)throw Error(data?.error||"The CEO Agent did not return success.");const result=data.result||data.report||data;$("ceoStatus").textContent=data.status||"Under review";$("ceoStatus").className="tag "+statusClass(data.status);$("ceoTaskMessage").textContent="Task submitted. Task ID: "+(data.task_id||data.id||"Saved by server");renderCEOResult(result);$("ceoTaskForm").reset();await loadAgentTasks();toast("CEO Agent completed its orchestration request.");}catch(err){console.error(err);$("ceoStatus").textContent="Request failed";$("ceoStatus").className="tag red";$("ceoTaskMessage").textContent=err.message;$("ceoResult").textContent="The task could not be completed. Check the agent-orchestrator function logs and configuration.";toast(err.message,7000);}finally{setBusy(b,false);}});
-function renderCEOResult(r){const agents=Array.isArray(r.selected_agents)?r.selected_agents:Array.isArray(r.agents)?r.agents:[];const findings=Array.isArray(r.findings)?r.findings:[];const next=Array.isArray(r.next_steps)?r.next_steps:[];const missing=Array.isArray(r.missing_information)?r.missing_information:[];const summary=r.summary||r.executive_summary||"The coordinator returned a result.";const escList=a=>a.length?`<ul>${a.map(x=>`<li>${escapeHTML(typeof x==="string"?x:JSON.stringify(x))}</li>`).join("")}</ul>`:"<p class='muted small'>None provided.</p>";$("ceoResult").innerHTML=`<h3>Coordinator summary</h3><p>${escapeHTML(summary)}</p><h4>Selected specialists</h4>${escList(agents)}<h4>Findings</h4>${escList(findings)}<h4>Missing information</h4>${escList(missing)}<h4>Next steps</h4>${escList(next)}<p class="small muted">Human review required: ${r.human_review_required===false?"Not flagged by model":"Yes / verify before consequential action"}</p><details><summary>Full structured result</summary><pre>${escapeHTML(JSON.stringify(r,null,2))}</pre></details>`;}
-async function loadAgentTasks(){if(!currentUser)return;const el=$("agentTasksList");el.textContent="Loading tasks...";const {data,error}=await db.from("agent_tasks").select("*").order("created_at",{ascending:false}).limit(20);if(error){el.textContent="Could not load tasks: "+error.message;return;}agentTasksCache=data||[];el.innerHTML=agentTasksCache.map(t=>`<div class="report-box"><div class="section-head"><strong>${escapeHTML(t.task_title)}</strong><span class="tag ${statusClass(t.status)}">${escapeHTML(t.status)}</span></div><p class="small muted">${formatDate(t.created_at)}</p><p>${escapeHTML(t.task_description||"")}</p><button class="btn secondary" onclick="viewAgentTask('${escapeHTML(t.id)}')">View result</button></div>`).join("")||'<div class="empty">No CEO tasks yet.</div>';}
-function viewAgentTask(id){const task=agentTasksCache.find(t=>String(t.id)===String(id));if(!task)return; $("ceoStatus").textContent=task.status;$("ceoStatus").className="tag "+statusClass(task.status);renderCEOResult(task.result_data||{summary:task.error_message||"No result saved."});}
-async function loadAgentRegistry(){if(!currentUser)return;const body=$("agentRegistryTable");body.innerHTML='<tr><td colspan="4">Loading...</td></tr>';const {data,error}=await db.from("agent_registry").select("*").order("category").order("name");if(error){body.innerHTML=`<tr><td colspan="4">${escapeHTML(error.message)}</td></tr>`;return;}body.innerHTML=(data||[]).map(a=>`<tr><td><strong>${escapeHTML(a.name)}</strong><div class="small muted">${escapeHTML(a.id)}</div></td><td>${escapeHTML(a.category||"—")}</td><td>${escapeHTML(a.role)}</td><td><span class="tag ${a.status==="active"?"green":"orange"}">${escapeHTML(a.status)}</span></td></tr>`).join("")||'<tr><td colspan="4" class="empty">No registered agents found.</td></tr>';}
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
 
-/* START */
-$("copyrightYear").textContent=new Date().getFullYear();
-initialise();
+function showAuth(){
+ document.getElementById("authModal").classList.remove("hidden");
+}
+function hideAuth(){
+ document.getElementById("authModal").classList.add("hidden");
+}
+function toggleMenu(){
+ document.getElementById("sidebar").classList.toggle("open");
+}
+
+function requireDB(){
+ if(!db)throw new Error("Supabase is not configured. Add your existing anon/public key in the configuration section.");
+ if(!currentUser)throw new Error("Please sign in first.");
+}
+
+async function getCompany(){
+ if(!db||!currentUser)return null;
+ const {data,error}=await db.from("company_members")
+  .select("company_id,role,company:companies(name)")
+  .eq("user_id",currentUser.id)
+  .limit(1);
+ if(error)throw error;
+ currentCompany=data?.[0]||null;
+ return currentCompany;
+}
+
+function navigate(page,element){
+ currentPage=page;
+ document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+ if(element)element.classList.add("active");
+ document.getElementById("pageTitle").textContent=({
+ overview:"Overview",
+ agents:"AI Agent Command Centre",
+ checker:"Document Checker",
+ library:"Document Library",
+ shipments:"Shipments",
+ tracking:"Live Tracking",
+ customs:"Customs Management",
+ compliance:"Compliance",
+ customers:"Customers",
+ invoices:"Invoices & Payments",
+ finance:"Finance",
+ reports:"Reports & Analytics",
+ integrations:"Integrations",
+ settings:"Settings & Admin"
+ })[page]||page;
+ document.getElementById("sidebar").classList.remove("open");
+ renderPage();
+}
+
+function companyId(){
+ return currentCompany?.company_id||null;
+}
+
+// ======================================================
+// 4. AUTHENTICATION
+// ======================================================
+
+async function login(event){
+ event.preventDefault();
+ try{
+  requireDB();
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  if(error)throw error;
+  currentUser=data.user;
+  await startApplication();
+ }catch(e){
+  document.getElementById("authMessage").textContent=e.message;
+ }
+}
+
+async function signup(){
+ try{
+  requireDB();
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  if(!email||!password)throw new Error("Enter your email and password.");
+  const {data,error}=await db.auth.signUp({email,password});
+  if(error)throw error;
+  document.getElementById("authMessage").textContent=
+   "Account request submitted. Check your email if confirmation is required.";
+ }catch(e){
+  document.getElementById("authMessage").textContent=e.message;
+ }
+}
+
+async function logout(){
+ if(db)await db.auth.signOut();
+ currentUser=null;
+ currentCompany=null;
+ document.getElementById("appShell").classList.add("hidden");
+ document.getElementById("landingView").classList.remove("hidden");
+}
+
+async function startApplication(){
+ try{
+  await getCompany();
+  document.getElementById("landingView").classList.add("hidden");
+  document.getElementById("authModal").classList.add("hidden");
+  document.getElementById("appShell").classList.remove("hidden");
+  document.getElementById("userEmail").textContent=currentUser.email;
+  navigate("overview");
+ }catch(e){
+  toast("Workspace loading issue: "+e.message);
+ }
+}
+
+// ======================================================
+// 5. DASHBOARD
+// ======================================================
+
+async function renderPage(){
+ const root=document.getElementById("pageContent");
+ root.innerHTML='<div class="card">Loading workspace...</div>';
+ try{
+  switch(currentPage){
+   case "overview":await renderOverview(root);break;
+   case "agents":renderAgents(root);break;
+   case "checker":renderChecker(root);break;
+   case "library":await renderLibrary(root);break;
+   case "shipments":await renderShipments(root);break;
+   case "tracking":renderTracking(root);break;
+   case "customs":renderCustoms(root);break;
+   case "compliance":renderCompliance(root);break;
+   case "customers":await renderCustomers(root);break;
+   case "invoices":await renderInvoices(root);break;
+   case "finance":renderFinance(root);break;
+   case "reports":await renderReports(root);break;
+   case "integrations":renderIntegrations(root);break;
+   case "settings":renderSettings(root);break;
+  }
+ }catch(e){
+  root.innerHTML=`<div class="card"><h3>Unable to load this section</h3><p>${escapeHTML(e.message)}</p></div>`;
+ }
+}
+
+async function countRows(table){
+ if(!db)return 0;
+ let q=db.from(table).select("*",{count:"exact",head:true});
+ if(companyId())q=q.eq("company_id",companyId());
+ const {count,error}=await q;
+ if(error)throw error;
+ return count||0;
+}
+
+async function renderOverview(root){
+ let docs=0,shipments=0,customers=0,invoices=0;
+ try{
+  if(db){
+   [docs,shipments,customers,invoices]=await Promise.all([
+    countRows("documents"),countRows("shipments"),
+    countRows("customers"),countRows("invoices")
+   ]);
+  }
+ }catch(e){console.warn(e)}
+ root.innerHTML=`
+ <div class="page-header"><div><h1>Overview</h1><p class="muted">Your BorderFlow operating workspace.</p></div>
+ <button class="primary" onclick="navigate('checker')">Check a document</button></div>
+ <div class="grid">
+  ${stat("Documents",docs)}
+  ${stat("Shipments",shipments)}
+  ${stat("Customers",customers)}
+  ${stat("Invoices",invoices)}
+ </div>
+ <br>
+ <div class="grid two">
+  <div class="card">
+   <h3 class="section-title">AI Command Centre</h3>
+   <p class="muted">32 specialist agents coordinated by the CEO Agent.</p>
+   <button class="primary" onclick="navigate('agents')">Open AI Command Centre</button>
+  </div>
+  <div class="card">
+   <h3 class="section-title">Document Intelligence</h3>
+   <p class="muted">Upload, extract and check trade documents.</p>
+   <button class="primary" onclick="navigate('checker')">Open Document Checker</button>
+  </div>
+ </div><br>
+ <div class="card">
+  <h3 class="section-title">Operational workflow</h3>
+  <p>Document received → OCR → AI review → Human verification → Shipment processing.</p>
+  <span class="status success">Workspace active</span>
+ </div>`;
+}
+
+function stat(name,value){
+ return `<div class="card"><div class="stat-label">${name}</div><div class="stat-number">${value}</div></div>`;
+}
+
+// ======================================================
+// 6. AI AGENT COMMAND CENTRE
+// ======================================================
+
+function renderAgents(root){
+ root.innerHTML=`
+ <div class="page-header">
+  <div><h1>AI Agent Command Centre</h1>
+  <p class="muted">32 specialist roles coordinated by the BorderFlow CEO Agent.</p></div>
+  <span class="status success">32 agents configured</span>
+ </div>
+ <div class="card">
+  <h3 class="section-title">CEO Agent — Master Brain</h3>
+  <p class="muted">Describe a task. The orchestration function must delegate it to the appropriate specialist agents.</p>
+  <label>What should BorderFlow work on?</label>
+  <textarea id="agentTask" rows="4" placeholder="Example: Review this shipment's documents and identify missing information..."></textarea>
+  <button class="primary" style="margin-top:12px" onclick="runCEOAgent()">Run CEO Agent</button>
+  <div id="agentResult" style="margin-top:18px"></div>
+ </div>
+ <br>
+ <div class="card">
+  <h3 class="section-title">Standard document workflow</h3>
+  <p>${AGENT_WORKFLOW.map((a,i)=>`${i+1}. ${a}`).join(" → ")}</p>
+  <p class="small muted">A proposed workflow. Execution depends on the deployed orchestrator and available integrations.</p>
+ </div><br>
+ <div class="page-header"><h2>All 32 specialist agents</h2></div>
+ <div class="grid three">
+ ${AGENTS.map((a,i)=>`
+  <div class="card agent-card">
+   <div class="agent-top"><span class="agent-icon">${a.icon}</span><span class="status">${a.group}</span></div>
+   <h3>${i+1}. ${escapeHTML(a.name)}</h3>
+   <p>${escapeHTML(a.desc)}</p>
+   <div class="agent-actions">
+    <button class="secondary" onclick="assignAgent('${escapeHTML(a.name)}')">Assign task</button>
+   </div>
+  </div>`).join("")}
+ </div>`;
+}
+
+function assignAgent(name){
+ document.getElementById("agentTask").value=
+ `CEO Agent: delegate a task to ${name}. Explain the evidence required, perform only supported checks and report anything requiring human verification.`;
+ document.getElementById("agentTask").scrollIntoView({behavior:"smooth"});
+}
+
+async function runCEOAgent(){
+ const task=document.getElementById("agentTask").value.trim();
+ const output=document.getElementById("agentResult");
+ if(!task){toast("Enter a task first.");return}
+ output.innerHTML='<span class="status warning">Submitting task...</span>';
+ try{
+  requireDB();
+  const {data,error}=await db.functions.invoke(AGENT_FUNCTION,{
+   body:{
+    task,
+    company_id:companyId(),
+    user_id:currentUser.id,
+    coordinator:"CEO Agent",
+    agents:AGENTS,
+    workflow:AGENT_WORKFLOW,
+    rules:{
+     never_invent:true,
+     verify_evidence:true,
+     protect_customer_data:true,
+     human_review_required_for_customs_decisions:true,
+     report_missing_information:true
+    }
+   }
+  });
+  if(error)throw error;
+  output.innerHTML=`
+   <h3>Agent response</h3>
+   <span class="status success">Orchestrator responded</span>
+   <pre class="output">${escapeHTML(JSON.stringify(data,null,2))}</pre>`;
+ }catch(e){
+  output.innerHTML=`
+   <span class="status warning">Agent execution not confirmed</span>
+   <p>${escapeHTML(e.message)}</p>
+   <p class="small muted">Deploy the agent-orchestrator Supabase Edge Function and configure its Groq secret before using this feature.</p>`;
+ }
+}
+
+// ======================================================
+// 7. DOCUMENT CHECKER
+// ======================================================
+
+function renderChecker(root){
+ root.innerHTML=`
+ <div class="page-header"><div><h1>AI Document Checker</h1>
+ <p class="muted">OCR, document validation and AI-assisted trade document review.</p></div></div>
+ <div class="grid two">
+  <div class="card">
+   <h3 class="section-title">Upload document</h3>
+   <label>Shipment Reference</label>
+   <input id="shipmentRef" placeholder="Example: BF001">
+   <label>Document Type</label>
+   <select id="documentType">
+    <option>Commercial Invoice</option>
+    <option>Bill of Lading</option>
+    <option>Packing List</option>
+    <option>Customs Declaration</option>
+    <option>Certificate of Origin</option>
+    <option>Other</option>
+   </select>
+   <label>Select file (maximum 10 MB)</label>
+   <input type="file" id="documentFile" accept=".png,.jpg,.jpeg,.webp,.pdf">
+   <button class="secondary" style="width:100%;margin-top:12px" onclick="readDocument()">Read Document (OCR)</button>
+   <button class="primary" style="width:100%;margin-top:9px" onclick="checkDocument()">Check Document with AI</button>
+   <button class="secondary" style="width:100%;margin-top:9px" onclick="uploadDocument()">Upload Document</button>
+   <p id="documentStatus" class="small muted"></p>
+  </div>
+  <div class="card">
+   <h3 class="section-title">Extracted text</h3>
+   <textarea id="ocrText" rows="17" placeholder="Extracted document text will appear here..."></textarea>
+  </div>
+ </div>
+ <br>
+ <div class="card">
+  <h3 class="section-title">AI validation result</h3>
+  <div id="validationResult" class="muted">No document checked yet.</div>
+ </div>`;
+}
+
+function setDocStatus(msg){document.getElementById("documentStatus").textContent=msg}
+
+async function readDocument(){
+ const file=document.getElementById("documentFile").files[0];
+ if(!file){toast("Choose a document first.");return}
+ if(file.size>10*1024*1024){toast("File exceeds 10 MB.");return}
+ selectedFile=file;
+ setDocStatus("Reading document...");
+ try{
+  let text="";
+  if(file.type==="application/pdf"){
+   const pdfjs=window["pdfjs-dist/build/pdf"];
+   if(!pdfjs)throw new Error("PDF reader unavailable.");
+   pdfjs.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+   const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
+   for(let p=1;p<=Math.min(pdf.numPages,10);p++){
+    const page=await pdf.getPage(p);
+    const content=await page.getTextContent();
+    text+=content.items.map(x=>x.str).join(" ")+"\n";
+   }
+  }else{
+   if(!window.Tesseract)throw new Error("OCR library unavailable.");
+   const result=await Tesseract.recognize(file,"eng");
+   text=result.data.text;
+  }
+  extractedText=text;
+  document.getElementById("ocrText").value=text;
+  setDocStatus("OCR completed.");
+  toast("Document text extracted.");
+ }catch(e){setDocStatus("OCR error: "+e.message)}
+}
+
+async function checkDocument(){
+ const text=document.getElementById("ocrText").value.trim();
+ if(!text){toast("Read a document first.");return}
+ const result=document.getElementById("validationResult");
+ result.textContent="Sending document to AI...";
+ try{
+  requireDB();
+  const {data,error}=await db.functions.invoke(DOCUMENT_FUNCTION,{
+   body:{
+    action:"check_document",
+    document_type:document.getElementById("documentType").value,
+    shipment_reference:document.getElementById("shipmentRef").value,
+    extracted_text:text,
+    company_id:companyId()
+   }
+  });
+  if(error)throw error;
+  lastDocument=data;
+  result.innerHTML=`
+   <span class="status success">AI response received</span>
+   <pre class="output">${escapeHTML(JSON.stringify(data,null,2))}</pre>`;
+  await saveDocumentCheck(data);
+ }catch(e){
+  result.innerHTML=`<span class="status warning">AI check not completed</span><p>${escapeHTML(e.message)}</p>`;
+ }
+}
+
+async function saveDocumentCheck(result){
+ try{
+  const row={
+   user_id:currentUser.id,
+   company_id:companyId(),
+   shipment_reference:document.getElementById("shipmentRef").value||null,
+   document_type:document.getElementById("documentType").value,
+   extracted_text:document.getElementById("ocrText").value,
+   result:result,
+   status:result?.passed===true?"passed":"needs_attention"
+  };
+  const {error}=await db.from("document_checks").insert(row);
+  if(error)console.warn("Document check history not saved:",error.message);
+ }catch(e){console.warn(e)}
+}
+
+async function uploadDocument(){
+ try{
+  requireDB();
+  const file=document.getElementById("documentFile").files[0];
+  if(!file)throw new Error("Choose a document first.");
+  if(file.size>10*1024*1024)throw new Error("File exceeds 10 MB.");
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path=`${currentUser.id}/${Date.now()}-${safeName}`;
+  setDocStatus("Uploading...");
+  const {error:storageError}=await db.storage.from(STORAGE_BUCKET).upload(path,file,{
+   contentType:file.type,
+   upsert:false
+  });
+  if(storageError)throw storageError;
+  const {error:rowError}=await db.from("documents").insert({
+   user_id:currentUser.id,
+   company_id:companyId(),
+   file_name:file.name,
+   file_path:path,
+   document_type:document.getElementById("documentType").value,
+   shipment_reference:document.getElementById("shipmentRef").value||null
+  });
+  if(rowError)throw rowError;
+  setDocStatus("Document uploaded and saved.");
+  toast("Document uploaded successfully.");
+ }catch(e){
+  setDocStatus("Upload error: "+e.message);
+ }
+}
+
+// ======================================================
+// 8. DOCUMENT LIBRARY
+// ======================================================
+
+async function renderLibrary(root){
+ requireDB();
+ let q=db.from("documents").select("*").order("created_at",{ascending:false}).limit(100);
+ if(companyId())q=q.eq("company_id",companyId());
+ const {data,error}=await q;
+ if(error)throw error;
+ root.innerHTML=`
+ <div class="page-header"><h1>Document Library</h1>
+ <button class="primary" onclick="navigate('checker')">Upload document</button></div>
+ <div class="table-wrap"><table><thead><tr>
+ <th>File</th><th>Type</th><th>Shipment</th><th>Date</th><th>Action</th>
+ </tr></thead><tbody>
+ ${(data||[]).map(d=>`<tr>
+ <td>${escapeHTML(d.file_name||"Document")}</td>
+ <td>${escapeHTML(d.document_type||"Other")}</td>
+ <td>${escapeHTML(d.shipment_reference||"-")}</td>
+ <td>${d.created_at?new Date(d.created_at).toLocaleDateString():"-"}</td>
+ <td><button class="secondary" onclick="openDocument('${escapeHTML(d.file_path||"")}')">View</button></td>
+ </tr>`).join("")||'<tr><td colspan="5">No documents found.</td></tr>'}
+ </tbody></table></div>`;
+}
+
+async function openDocument(path){
+ try{
+  const {data,error}=await db.storage.from(STORAGE_BUCKET).createSignedUrl(path,300);
+  if(error)throw error;
+  window.open(data.signedUrl,"_blank","noopener");
+ }catch(e){toast(e.message)}
+}
+
+// ======================================================
+// 9. SHIPMENTS
+// ======================================================
+
+async function renderShipments(root){
+ requireDB();
+ let q=db.from("shipments").select("*").order("created_at",{ascending:false}).limit(100);
+ if(companyId())q=q.eq("company_id",companyId());
+ const {data,error}=await q;
+ if(error)throw error;
+ root.innerHTML=`
+ <div class="page-header"><h1>Shipments</h1>
+ <button class="primary" onclick="showShipmentForm()">+ New Shipment</button></div>
+ <div id="shipmentForm"></div>
+ <div class="table-wrap"><table><thead><tr>
+ <th>Reference</th><th>Origin</th><th>Destination</th><th>Container</th><th>Status</th>
+ </tr></thead><tbody>
+ ${(data||[]).map(s=>`<tr>
+ <td>${escapeHTML(s.shipment_ref||"-")}</td>
+ <td>${escapeHTML(s.origin_city||"-")}</td>
+ <td>${escapeHTML(s.destination_city||"-")}</td>
+ <td>${escapeHTML(s.container_no||"-")}</td>
+ <td><span class="status">${escapeHTML(s.status||"Created")}</span></td>
+ </tr>`).join("")||'<tr><td colspan="5">No shipments found.</td></tr>'}
+ </tbody></table></div>`;
+}
+
+function showShipmentForm(){
+ document.getElementById("shipmentForm").innerHTML=`
+ <div class="card" style="margin-bottom:18px">
+ <h3>New shipment</h3>
+ <form onsubmit="createShipment(event)">
+ <div class="form-grid">
+  <div><label>Shipment Reference</label><input id="sRef" required></div>
+  <div><label>Truck Registration</label><input id="sTruck"></div>
+  <div><label>Driver Name</label><input id="sDriver"></div>
+  <div><label>Driver Phone</label><input id="sPhone"></div>
+  <div><label>Origin City</label><input id="sOrigin" required></div>
+  <div><label>Destination City</label><input id="sDestination" required></div>
+  <div><label>Container Number</label><input id="sContainer"></div>
+  <div><label>Border Post</label><input id="sBorder"></div>
+  <div class="full"><label>Cargo Description</label><textarea id="sCargo"></textarea></div>
+ </div>
+ <button class="primary" style="margin-top:15px">Save shipment</button>
+ </form></div>`;
+}
+
+async function createShipment(event){
+ event.preventDefault();
+ try{
+  requireDB();
+  const row={
+   company_id:companyId(),
+   shipment_ref:document.getElementById("sRef").value,
+   truck_registration:document.getElementById("sTruck").value,
+   driver_name:document.getElementById("sDriver").value,
+   driver_phone:document.getElementById("sPhone").value,
+   origin_city:document.getElementById("sOrigin").value,
+   destination_city:document.getElementById("sDestination").value,
+   container_no:document.getElementById("sContainer").value,
+   border_post:document.getElementById("sBorder").value,
+   cargo_description:document.getElementById("sCargo").value,
+   status:"Created"
+  };
+  const {error}=await db.from("shipments").insert(row);
+  if(error)throw error;
+  toast("Shipment saved.");
+  renderPage();
+ }catch(e){toast(e.message)}
+}
+
+// ======================================================
+// 10. OTHER BUSINESS SECTIONS
+// ======================================================
+
+function renderTracking(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Live Tracking</h1></div>
+ <div class="card">
+ <h3>Shipment tracking</h3>
+ <p class="muted">Track shipment records and update operational statuses.</p>
+ <label>Shipment Reference</label><input id="trackRef" placeholder="BF001">
+ <label>New status</label>
+ <select id="trackStatus">
+  <option>Created</option><option>Arrived at Border</option>
+  <option>Docs Checked</option><option>Duty Paid</option>
+  <option>Cleared to Go</option><option>In Transit</option>
+  <option>Delivered</option>
+ </select>
+ <button class="primary" style="margin-top:12px" onclick="updateShipmentStatus()">Update status</button>
+ <p class="small muted">GPS tracking requires a separate connected GPS or carrier data source. This page does not invent live truck positions.</p>
+ </div>`;
+}
+
+async function updateShipmentStatus(){
+ try{
+  requireDB();
+  const ref=document.getElementById("trackRef").value.trim();
+  if(!ref)throw new Error("Enter a shipment reference.");
+  let q=db.from("shipments").update({status:document.getElementById("trackStatus").value})
+   .eq("shipment_ref",ref);
+  if(companyId())q=q.eq("company_id",companyId());
+  const {error}=await q;
+  if(error)throw error;
+  toast("Shipment status updated.");
+ }catch(e){toast(e.message)}
+}
+
+function renderCustoms(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Customs Management</h1></div>
+ <div class="grid two">
+ <div class="card"><h3>Customs workflow</h3>
+ <p>Document review → Classification → Duty assessment → Declaration → Human approval.</p>
+ <span class="status warning">Human verification required</span></div>
+ <div class="card"><h3>AI assistance</h3>
+ <p>Use the Customs Intelligence and HS Code agents to organise research and identify missing evidence.</p>
+ <button class="primary" onclick="navigate('agents')">Open AI agents</button></div>
+ </div>
+ <p class="muted small">Tariff rates and legal customs requirements must be checked against current official national sources. AI output is not an official customs ruling.</p>`;
+}
+
+function renderCompliance(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Trade Compliance</h1></div>
+ <div class="grid two">
+ <div class="card"><h3>Compliance review</h3><p>Review documents, origin information, product descriptions and missing evidence.</p></div>
+ <div class="card"><h3>Country-specific requirements</h3><p>Country rules must be verified separately for each trade corridor and destination.</p></div>
+ </div>`;
+}
+
+async function renderCustomers(root){
+ requireDB();
+ let q=db.from("customers").select("*").limit(100);
+ if(companyId())q=q.eq("company_id",companyId());
+ const {data,error}=await q;
+ if(error)throw error;
+ root.innerHTML=`
+ <div class="page-header"><h1>Customers</h1></div>
+ <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th></tr></thead><tbody>
+ ${(data||[]).map(c=>`<tr><td>${escapeHTML(c.name||c.full_name||"-")}</td><td>${escapeHTML(c.email||"-")}</td><td>${escapeHTML(c.phone||"-")}</td></tr>`).join("")||'<tr><td colspan="3">No customers found.</td></tr>'}
+ </tbody></table></div>`;
+}
+
+async function renderInvoices(root){
+ requireDB();
+ let q=db.from("invoices").select("*").limit(100);
+ if(companyId())q=q.eq("company_id",companyId());
+ const {data,error}=await q;
+ if(error)throw error;
+ root.innerHTML=`
+ <div class="page-header"><h1>Invoices & Payments</h1></div>
+ <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+ ${(data||[]).map(i=>`<tr><td>${escapeHTML(i.invoice_number||i.id||"-")}</td><td>${escapeHTML(i.amount??"-")} ${escapeHTML(i.currency||"")}</td><td>${escapeHTML(i.status||"Pending")}</td></tr>`).join("")||'<tr><td colspan="3">No invoices found.</td></tr>'}
+ </tbody></table></div>`;
+}
+
+function renderFinance(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Finance</h1></div>
+ <div class="grid two">
+ <div class="card"><h3>Financial operations</h3><p>Manage invoice records, payment records and business financial reporting.</p></div>
+ <div class="card"><h3>Border Wallet</h3><p>Payment provider integration is not yet configured.</p><span class="status warning">Integration pending</span></div>
+ </div>`;
+}
+
+async function renderReports(root){
+ let d=0,s=0,c=0,i=0;
+ try{[d,s,c,i]=await Promise.all([
+  countRows("documents"),countRows("shipments"),
+  countRows("customers"),countRows("invoices")
+ ])}catch(e){}
+ root.innerHTML=`
+ <div class="page-header"><h1>Reports & Analytics</h1></div>
+ <div class="grid">
+ ${stat("Documents",d)}${stat("Shipments",s)}
+ ${stat("Customers",c)}${stat("Invoices",i)}
+ </div>
+ <br><div class="card"><h3>Reporting Agent</h3>
+ <p>Use the AI Command Centre to request an operational report.</p>
+ <button class="primary" onclick="navigate('agents')">Request report</button></div>`;
+}
+
+function renderIntegrations(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Integrations</h1></div>
+ <div class="grid two">
+ <div class="card"><h3>Supabase</h3><span class="status success">Configured in application</span><p class="small muted">${SUPABASE_URL}</p></div>
+ <div class="card"><h3>Groq AI</h3><span class="status warning">Server configuration required</span><p class="small muted">Groq API key must be stored as a Supabase Edge Function secret.</p></div>
+ <div class="card"><h3>Document Intelligence</h3><span class="status">document-intelligence</span></div>
+ <div class="card"><h3>Agent Orchestrator</h3><span class="status warning">agent-orchestrator deployment required</span></div>
+ <div class="card"><h3>GPS / Carrier APIs</h3><span class="status warning">Not connected</span></div>
+ <div class="card"><h3>Government Customs APIs</h3><span class="status warning">Official access required</span></div>
+ </div>`;
+}
+
+function renderSettings(root){
+ root.innerHTML=`
+ <div class="page-header"><h1>Settings & Administration</h1></div>
+ <div class="card">
+ <h3>Account</h3>
+ <p>${escapeHTML(currentUser?.email||"")}</p>
+ <p class="small muted">Workspace: ${escapeHTML(currentCompany?.company?.name||"Not assigned")}</p>
+ <button class="secondary" onclick="logout()">Sign out</button>
+ </div><br>
+ <div class="card">
+ <h3>Security</h3>
+ <p>Customer data must remain protected through Supabase authentication, Row Level Security and private document storage.</p>
+ <span class="status warning">Review database policies before production use</span>
+ </div>`;
+}
+
+// ======================================================
+// 11. APPLICATION STARTUP
+// ======================================================
+
+async function init(){
+ if(!db){
+  showAuth();
+  document.getElementById("authMessage").textContent=
+   "Add your existing Supabase anon/public key in the configuration section to connect your workspace.";
+  return;
+ }
+ const {data:{session}}=await db.auth.getSession();
+ if(session){
+  currentUser=session.user;
+  await startApplication();
+ }
+ db.auth.onAuthStateChange(async(event,session)=>{
+  if(event==="SIGNED_IN"&&session){
+   currentUser=session.user;
+   await startApplication();
+  }
+  if(event==="SIGNED_OUT"){
+   currentUser=null;
+   document.getElementById("appShell").classList.add("hidden");
+   document.getElementById("landingView").classList.remove("hidden");
+  }
+ });
+}
+
+init();
 </script>
 </body>
 </html>
