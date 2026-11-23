@@ -931,6 +931,9 @@ pre{
     <button class="nav-item" data-page="library"><span class="nav-icon">▣</span>Document Library</button>
     <button class="nav-item" data-page="shipments"><span class="nav-icon">▤</span>Shipments</button>
     <button class="nav-item" data-page="tracking"><span class="nav-icon">⌖</span>Tracking</button>
+    <button class="nav-item" data-page="agents">
+  <span class="nav-icon">🤖</span>AI Agents
+</button>
 
     <div class="nav-label">OPERATIONS</div>
     <button class="nav-item" data-page="customs"><span class="nav-icon">◇</span>Customs Management</button>
@@ -1092,6 +1095,85 @@ pre{
         </div>
       </section>
 
+     
+<!-- AI AGENTS PAGE -->
+
+<section class="page" id="page-agents">
+  <h1 class="page-title">BorderFlow AI Agents</h1>
+  <p class="page-subtitle">View your registered agents and submit work for AI coordination.</p>
+
+  <div class="grid-4">
+    <div class="stat-card">
+      <div class="stat-label">Registered agents</div>
+      <div class="stat-value" id="agentTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Configured agents</div>
+      <div class="stat-value" id="agentConfigured">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Planned agents</div>
+      <div class="stat-value" id="agentPlanned">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AI tasks</div>
+      <div class="stat-value" id="agentTaskTotal">0</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3>Give BorderFlow AI a task</h3>
+    <p class="small muted">Describe the work you want the coordinator to review.</p>
+
+    <form id="agentTaskForm">
+      <div class="field">
+        <label>Task title</label>
+        <input id="agentTaskTitle" required maxlength="150"
+          placeholder="Example: Review shipment documents">
+      </div>
+      <div class="field">
+        <label>Task description</label>
+        <textarea id="agentTaskDescription" required rows="4"
+          placeholder="Describe what BorderFlow should review..."></textarea>
+      </div>
+      <button class="btn" id="agentTaskButton" type="submit">
+        Submit AI task
+      </button>
+    </form>
+    <p id="agentTaskMessage" class="small muted"></p>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="section-head">
+      <h3>Registered agents</h3>
+      <button class="btn secondary" onclick="loadAgents()">Refresh</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Agent</th><th>Category</th><th>Status</th></tr>
+        </thead>
+        <tbody id="agentsTable">
+          <tr><td colspan="3" class="empty">Loading agents...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-head">
+      <h3>AI task history</h3>
+      <button class="btn secondary" onclick="loadAgentTasks()">Refresh</button>
+    </div>
+    <div id="agentTasksList" class="empty">Loading tasks...</div>
+  </div>
+
+  <p class="footer-note">
+    Agent registration does not mean every specialist is independently executing tasks yet.
+    Task execution depends on the connected orchestration service.
+  </p>
+</section>
+ 
       <!-- CUSTOMS -->
 
       <section class="page" id="page-customs">
@@ -1942,3 +2024,4 @@ initialise();
 </script>
 </body>
 </html>
+
