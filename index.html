@@ -1504,7 +1504,88 @@ async function initialise(){
   }
 }
 
-/* SHIPMENT MANAGEMENT */
+
+/* BORDERFLOW AI AGENT REGISTRY */
+
+async function loadAgents(){
+  if(!currentUser)return;
+
+  const table=$("agentsTable");
+  table.innerHTML='<tr><td colspan="3" class="empty">Loading agents...</td></tr>';
+
+  const {data,error}=await db
+    .from("agent_registry")
+    .select("id,name,role,category,status")
+    .order("category");
+
+  if(error){
+    table.innerHTML=
+      `<tr><td colspan="3" class="empty">${escapeHTML(error.message)}</td></tr>`;
+    return;
+  }
+
+  const agents=data||[];
+
+  $("agentTotal").textContent=agents.length;
+  $("agentConfigured").textContent=
+    agents.filter(agent=>agent.status==="configured").length;
+  $("agentPlanned").textContent=
+    agents.filter(agent=>agent.status==="planned").length;
+
+  table.innerHTML=agents.length
+    ?agents.map(agent=>`
+      <tr>
+        <td>
+          <strong>${escapeHTML(agent.name)}</strong>
+          <div class="small muted">${escapeHTML(agent.role||"")}</div>
+        </td>
+        <td>${escapeHTML(agent.category||"Other")}</td>
+        <td>
+          <span class="tag">
+            ${escapeHTML(agent.status||"Unknown")}
+          </span>
+        </td>
+      </tr>
+    `).join("")
+    :'<tr><td colspan="3" class="empty">No agents found.</td></tr>';
+}
+
+/* BORDERFLOW AI TASK HISTORY */
+
+async function loadAgentTasks(){
+  if(!currentUser)return;
+
+  const list=$("agentTasksList");
+  list.textContent="Loading tasks...";
+
+  const {data,error}=await db
+    .from("agent_tasks")
+    .select("id,task_title,status,created_at")
+    .order("created_at",{ascending:false})
+    .limit(20);
+
+  if(error){
+    list.textContent="Could not load tasks: "+error.message;
+    return;
+  }
+
+  const tasks=data||[];
+  $("agentTaskTotal").textContent=tasks.length;
+
+  list.innerHTML=tasks.length
+    ?tasks.map(task=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <strong>${escapeHTML(task.task_title||"Untitled task")}</strong>
+        <div class="small muted">
+          ${escapeHTML(task.status||"Unknown status")}
+          · ${formatDate(task.created_at)}
+        </div>
+      </div>
+    `).join("")
+    :"No AI tasks submitted yet.";
+}
+
+  /* SHIPMENT MANAGEMENT */
 
 async function loadShipments(){
   if(!currentUser)return;
@@ -2091,7 +2172,56 @@ async function loadAgentTasks(){
   }
 }
 
-/* PAGE STARTUP */
+
+/* BORDERFLOW AI TASK SUBMISSION */
+
+$("agentTaskForm").addEventListener("submit",async function(event){
+  event.preventDefault();
+
+  const title=$("agentTaskTitle").value.trim();
+  const description=$("agentTaskDescription").value.trim();
+  const button=$("agentTaskButton");
+  const message=$("agentTaskMessage");
+
+  if(!title||!description){
+    message.textContent="Please enter a task title and description.";
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="Sending task...";
+  message.textContent="BorderFlow is sending your task to the AI coordinator...";
+
+  try{
+    const {data,error}=await db.functions.invoke(
+      "agent-orchestrator",
+      {
+        body:{
+          task_title:title,
+          task_description:description
+        }
+      }
+    );
+
+    if(error)throw error;
+    if(data&&data.error)throw new Error(data.error);
+
+    message.textContent="Task submitted successfully! Check your AI task history.";
+
+    $("agentTaskForm").reset();
+
+    await loadAgentTasks();
+
+  }catch(error){
+    console.error("AI task submission error:",error);
+    message.textContent="Task submission failed: "+error.message;
+  }finally{
+    button.disabled=false;
+    button.textContent="Submit AI task";
+  }
+});
+
+  /* PAGE STARTUP */
 
 $("copyrightYear").textContent=new Date().getFullYear();
 
@@ -2108,6 +2238,7 @@ initialise();
 </script>
 </body>
 </html>
+
 
 
 
