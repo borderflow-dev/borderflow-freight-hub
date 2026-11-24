@@ -2074,18 +2074,25 @@ function displayAnalysis(result, extractedText = "") {
   const fieldStatus = value =>
     String(value?.status || "missing").toLowerCase();
 
-  const displayValue = value => {
-    if (value === null || value === undefined || value === "") {
-      return "—";
+ const displayValue = value => {
+  if (value === null || value === undefined || value === "") {
+    return "—";
+  }
+
+  if (typeof value === "object") {
+    if (Array.isArray(value)) {
+      return value.map(displayValue).join(", ");
     }
 
-    if (typeof value === "object") {
-      return JSON.stringify(value);
+    if (Object.prototype.hasOwnProperty.call(value, "value")) {
+      return displayValue(value.value);
     }
 
-    return String(value);
-  };
+    return "—";
+  }
 
+  return String(value);
+};
   const extractedFields = Object.entries(fieldLabels)
     .map(([key, label]) => {
       const field = extracted[key] || {};
