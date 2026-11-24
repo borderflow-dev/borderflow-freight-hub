@@ -1979,53 +1979,157 @@ displayAnalysis(aiResult);
   }
 });
 
-/* DISPLAY AI REPORT */
 
-function displayAnalysis(result){
+/* DISPLAY BORDERFLOW AI REPORT */
+
+function displayAnalysis(result, extractedText = "") {
   $("analysisResult").classList.remove("hidden");
 
-  const status=result.overall_status||"Needs Review";
-  $("analysisStatus").textContent=status;
-  $("analysisStatus").className="tag "+statusClass(status);
-  $("analysisSummary").textContent=
-    result.summary||"Analysis completed. Please review the findings.";
+  /* OVERALL STATUS */
 
-  const findings=Array.isArray(result.findings)?result.findings:[];
+  const status = result.overall_status || "needs_review";
 
-  $("analysisFindings").innerHTML=findings.length
-    ?"<h4>Findings</h4>"+findings.map(item=>{
-      const severity=["High","Medium","Low"].includes(item.severity)
-        ?item.severity:"Medium";
+  $("analysisStatus").textContent = status.replace(/_/g, " ");
+  $("analysisStatus").className = "tag " + statusClass(status);
 
-      return `
-        <div class="finding ${severity}">
-          <strong>${escapeHTML(severity)} priority: ${escapeHTML(item.issue||"Issue identified")}</strong>
-          <p>${escapeHTML(item.recommendation||"Please review this item.")}</p>
-        </div>
-      `;
-    }).join("")
-    :"<h4>Findings</h4><p class='muted small'>No specific findings were returned. Human review is still required.</p>";
+  $("analysisSummary").textContent =
+    result.summary || "Analysis completed. Please review the findings.";
 
-  const missing=Array.isArray(result.missing_fields)
-    ?result.missing_fields:[];
+  /* AI FINDINGS */
 
-  $("analysisMissing").innerHTML=`
+  const findings = Array.isArray(result.findings)
+    ? result.findings
+    : [];
+
+  $("analysisFindings").innerHTML = findings.length
+    ? "<h4>Findings</h4>" + findings.map(item => {
+        const priority = String(
+          item.priority || item.severity || "medium"
+        ).toLowerCase();
+
+        const title = item.title || item.issue || "Issue identified";
+
+        const description =
+          item.description ||
+          item.recommendation ||
+          "Please review this finding.";
+
+        return `
+          <div class="finding ${escapeHTML(priority)}">
+            <strong>
+              ${escapeHTML(priority.toUpperCase())} priority:
+              ${escapeHTML(title)}
+            </strong>
+            <p>${escapeHTML(description)}</p>
+          </div>
+        `;
+      }).join("")
+    : "<h4>Findings</h4><p class='muted small'>No specific findings were returned. Human review is still required.</p>";
+
+  /* MISSING FIELDS */
+
+  const missing = Array.isArray(result.missing_fields)
+    ? result.missing_fields
+    : [];
+
+  $("analysisMissing").innerHTML = `
     <h4>Missing fields</h4>
-    ${missing.length
-      ?`<ul>${missing.map(item=>`<li>${escapeHTML(typeof item==="string"?item:JSON.stringify(item))}</li>`).join("")}</ul>`
-      :"<p class='muted small'>No missing fields were reported by the AI.</p>"}
+    ${
+      missing.length
+        ? `<ul>${missing.map(item => `
+            <li>${escapeHTML(
+              typeof item === "string"
+                ? item
+                : JSON.stringify(item)
+            )}</li>
+          `).join("")}</ul>`
+        : "<p class='muted small'>No missing fields were reported by the AI.</p>"
+    }
   `;
 
-  const checks=Array.isArray(result.consistency_checks)
-    ?result.consistency_checks:[];
+  /* CONSISTENCY CHECKS */
 
-  $("analysisConsistency").innerHTML=`
+  const checks = Array.isArray(result.consistency_checks)
+    ? result.consistency_checks
+    : [];
+
+  $("analysisConsistency").innerHTML = `
     <h4>Consistency checks</h4>
-    ${checks.length
-      ?`<ul>${checks.map(item=>`<li>${escapeHTML(typeof item==="string"?item:item.issue||JSON.stringify(item))}</li>`).join("")}</ul>`
-      :"<p class='muted small'>No additional consistency warnings.</p>"}
+    ${
+      checks.length
+        ? checks.map(item => {
+            if (typeof item === "string") {
+              return `<p>${escapeHTML(item)}</p>`;
+            }
+
+            return `
+              <div class="finding">
+                <strong>${escapeHTML(item.check || "Document check")}</strong>
+                <p>Status: ${escapeHTML(item.status || "Not verified")}</p>
+                <p>${escapeHTML(item.details || item.issue || "")}</p>
+              </div>
+            `;
+          }).join("")
+        : "<p class='muted small'>No additional consistency warnings.</p>"
+    }
   `;
+
+  /* 12 AI SPECIALISTS */
+
+  const agents = Array.isArray(result.agents)
+    ? result.agents
+    : [];
+
+  $("analysisConsistency").innerHTML += `
+    <h4>BorderFlow AI Specialist Team</h4>
+    <p class="muted small">
+      ${agents.length} of 12 specialist results returned.
+    </p>
+
+    ${
+      agents.length
+        ? agents.map(agent => `
+            <div class="finding">
+              <strong>${escapeHTML(agent.agent_name || agent.agent_id || "AI Specialist")}</strong>
+              <p>Status: ${escapeHTML(agent.status || "Not verified")}</p>
+              <p>${escapeHTML(agent.summary || "No assessment returned.")}</p>
+
+              ${
+                Array.isArray(agent.findings) && agent.findings.length
+                  ? `<ul>${agent.findings.map(item =>
+                      `<li>${escapeHTML(
+                        typeof item === "string" ? item : JSON.stringify(item)
+                      )}</li>`
+                    ).join("")}</ul>`
+                  : ""
+              }
+
+              ${
+                Array.isArray(agent.next_steps) && agent.next_steps.length
+                  ? `<p><strong>Next steps:</strong></p>
+                     <ul>${agent.next_steps.map(item =>
+                       `<li>${escapeHTML(item)}</li>`
+                     ).join("")}</ul>`
+                  : ""
+              }
+            </div>
+          `).join("")
+        : "<p class='muted small'>No specialist results were returned.</p>"
+    }
+  `;
+
+  /* EXTRACTED OCR TEXT */
+
+  if (extractedText) {
+    $("analysisFindings").innerHTML += `
+      <details class="ocr-result">
+        <summary><strong>View extracted OCR text</strong></summary>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${escapeHTML(extractedText)}</pre>
+      </details>
+    `;
+  }
 }
+
 
 /* DOCUMENT LIBRARY */
 
