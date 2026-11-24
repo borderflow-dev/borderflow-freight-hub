@@ -2194,7 +2194,7 @@ $("agentTaskForm").addEventListener("submit",async function(event){
 
   try{
     const {data,error}=await db.functions.invoke(
-      "agent-orchestrator",
+      "clever-task",
       {
         body:{
           task_title:title,
