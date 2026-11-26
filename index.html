@@ -4,1100 +4,2069 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071b3a">
-<meta name="description" content="BorderFlow AI trade document intelligence for cross-border freight and customs.">
-<title>BorderFlow | AI Document Checker</title>
+<meta name="description" content="BorderFlow helps freight businesses and clearing agents manage trade documents and cross-border operations.">
+<meta name="theme-color" content="#101d35">
+<title>BorderFlow | Freight & Customs</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
 <style>
 :root {
-  --navy:#071b3a;
-  --blue:#1769ff;
-  --blue2:#3988ff;
-  --cyan:#42d7ff;
-  --bg:#07152d;
-  --panel:#102747;
-  --panel2:#15345b;
-  --text:#f4f8ff;
-  --muted:#a9bdd8;
-  --border:rgba(255,255,255,.1);
-  --green:#35d49a;
-  --orange:#ffbd59;
-  --red:#ff737d;
+  --navy: #101d35;
+  --navy2: #172844;
+  --blue: #2864e8;
+  --light: #f4f7fc;
+  --white: #ffffff;
+  --text: #172033;
+  --muted: #718096;
+  --border: #e3e9f2;
+  --green: #168653;
+  --red: #c03939;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,Arial,sans-serif;
-  background:radial-gradient(circle at 80% 0%,#123c76 0,transparent 35%),var(--bg);
-  color:var(--text);
-  min-height:100vh;
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
 
-.logo{display:flex;align-items:center;gap:12px;padding:4px 9px 30px}
-.logo-mark{
-  width:42px;height:42px;border-radius:13px;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,#1684ff,#35d7ff);
-  font-size:22px;font-weight:900;
-  box-shadow:0 8px 25px #1769ff55;
-}
-.logo strong{font-size:21px;letter-spacing:.2px}
-.logo small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+* { box-sizing: border-box; }
 
-.app{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}
-.sidebar{
-  background:rgba(5,19,42,.96);
-  border-right:1px solid var(--border);
-  padding:25px 17px;
-  position:sticky;top:0;height:100vh;overflow-y:auto;
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--light);
+  color: var(--text);
 }
-.nav-label{color:#7792b4;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:12px}
-.nav-button{
-  width:100%;display:flex;align-items:center;gap:12px;
-  padding:13px 14px;margin:4px 0;color:#b9cbe2;
-  background:transparent;border:0;border-radius:11px;text-align:left;
-}
-.nav-button:hover,.nav-button.active{color:white;background:linear-gradient(100deg,#1769ff55,#1769ff12)}
-.nav-button.active{border:1px solid #3988ff55}
-.nav-icon{font-size:18px;width:22px;text-align:center}
-.sidebar-bottom{margin-top:35px;border-top:1px solid var(--border);padding:18px 8px;color:var(--muted);font-size:12px}
 
-.main{min-width:0;padding:25px 32px 50px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}
-.page-title h1{margin:0;font-size:26px}
-.page-title p{margin:7px 0 0;color:var(--muted);font-size:13px}
-.user-area{display:flex;align-items:center;gap:12px}
-.user-avatar{
-  width:39px;height:39px;border-radius:50%;
-  display:grid;place-items:center;background:linear-gradient(135deg,#1769ff,#40d7ff);font-weight:800
+button, input, select, textarea {
+  font: inherit;
 }
-.status-pill{
-  padding:7px 11px;border-radius:30px;color:#8df1c7;
-  background:#35d49a18;border:1px solid #35d49a44;font-size:11px
-}
-.page{display:none}
-.page.active{display:block}
 
-.hero{
-  position:relative;overflow:hidden;padding:34px;border-radius:22px;
-  background:linear-gradient(120deg,#1154bd,#087edb 58%,#16a8d2);
-  box-shadow:0 20px 50px #001b4480;margin-bottom:23px
+button {
+  cursor: pointer;
 }
-.hero:after{
-  content:"";position:absolute;width:280px;height:280px;right:-70px;top:-100px;
-  border:1px solid #ffffff30;border-radius:50%;
-  box-shadow:0 0 0 35px #ffffff0c,0 0 0 75px #ffffff08
-}
-.hero-content{position:relative;z-index:1;max-width:650px}
-.hero-tag{display:inline-block;background:#ffffff20;padding:7px 12px;border-radius:20px;font-size:11px;margin-bottom:14px}
-.hero h2{font-size:30px;margin:0 0 12px;line-height:1.2}
-.hero p{color:#e2f1ff;line-height:1.7;max-width:580px;font-size:14px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 
-.btn{border:0;border-radius:10px;padding:12px 17px;font-weight:750;font-size:13px;transition:.2s}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn-primary{background:linear-gradient(135deg,#1684ff,#36b9ff);color:white}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.btn-light{background:white;color:#0752b8}
-.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff55}
-.btn-danger{background:#ff737d20;color:#ff9ca3;border:1px solid #ff737d55}
+.hidden { display: none !important; }
 
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:23px}
-.stat-card,.panel{
-  background:linear-gradient(145deg,#112b4d,#0d2341);
-  border:1px solid var(--border);border-radius:16px;padding:20px
-}
-.stat-card small{color:var(--muted);font-size:12px}
-.stat-card strong{display:block;font-size:27px;margin:12px 0 5px}
-.stat-card span{color:#8cbaff;font-size:11px}
-.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:28px 0 15px}
-.section-heading h2{font-size:18px;margin:0}
-.section-heading p{font-size:12px;color:var(--muted);margin:5px 0 0}
-.panel{margin-bottom:18px}
-.panel h3{margin:0 0 8px;font-size:16px}
-.panel-description{font-size:12px;color:var(--muted);line-height:1.6}
+/* BRAND */
 
-.checker-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
-.upload-zone{
-  border:1.5px dashed #3988ff88;background:#1769ff0b;
-  border-radius:15px;padding:28px 18px;text-align:center;margin:17px 0
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
-.upload-icon{font-size:36px;margin-bottom:10px}
-.upload-zone strong{display:block;margin-bottom:8px}
-.upload-zone p{font-size:12px;color:var(--muted);line-height:1.6}
-.field{margin:15px 0}
-.field label{display:block;font-size:12px;color:#c6d7ec;margin-bottom:8px}
-.field input,.field select{
-  width:100%;background:#071b35;border:1px solid #29496d;color:white;
-  border-radius:9px;padding:12px;outline:none
-}
-.field input:focus,.field select:focus{border-color:#3988ff}
-.field select option{background:#102747}
-.file-name{font-size:12px;color:#8fc3ff;margin-top:10px;overflow-wrap:anywhere}
-.progress-track{height:7px;background:#203a5b;border-radius:10px;overflow:hidden;margin-top:12px}
-.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#1769ff,#42d7ff);transition:width .3s}
-.result-box{
-  background:#071b35;border:1px solid var(--border);border-radius:12px;
-  padding:17px;margin-top:16px;min-height:100px;font-size:13px;line-height:1.7;overflow-wrap:anywhere
-}
-.result-box h4{margin:0 0 10px;color:#8fc3ff}
-.result-item{padding:10px 0;border-bottom:1px solid var(--border)}
-.result-item:last-child{border:0}
-.result-good{color:#71e5b5}
-.result-warning{color:#ffd17c}
-.result-error{color:#ff929a}
-.side-step{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
-.side-step:last-child{border:0}
-.step-number{
-  width:27px;height:27px;flex-shrink:0;border-radius:9px;
-  display:grid;place-items:center;background:#1769ff30;color:#78b4ff;font-size:12px;font-weight:800
-}
-.side-step strong{font-size:12px}
-.side-step p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
 
-.library-list{display:grid;gap:10px}
-.library-item{
-  display:flex;justify-content:space-between;align-items:center;gap:15px;
-  padding:14px;border:1px solid var(--border);background:#071b35;border-radius:11px
+.brand-mark {
+  width: 39px;
+  height: 39px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: white;
+  font-size: 23px;
+  font-weight: 900;
 }
-.library-item strong{font-size:12px;overflow-wrap:anywhere}
-.library-item small{display:block;color:var(--muted);font-size:11px;margin-top:5px}
-.empty-state{text-align:center;color:var(--muted);padding:35px 10px;font-size:13px}
 
-.media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
-.media-card{background:#102747;border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.media-card video,.media-card img{
-  display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#06152b
-}
-.media-card div{padding:13px}
-.media-card strong{font-size:12px}
-.media-card p{font-size:11px;color:var(--muted);line-height:1.5}
+.brand-border { color: white; }
+.brand-flow { color: #5790ff; }
 
-.notice{
-  border:1px solid #ffbd5944;background:#ffbd5910;color:#f8d99e;
-  padding:13px 15px;border-radius:11px;font-size:12px;line-height:1.6;margin-top:15px
-}
-.auth-screen{
-  min-height:100vh;display:grid;place-items:center;padding:20px;
-  background:radial-gradient(circle at 50% 0%,#174b91,#07152d 65%)
-}
-.auth-card{
-  width:min(420px,100%);padding:30px;background:#102747;
-  border:1px solid var(--border);border-radius:20px;box-shadow:0 25px 70px #0007
-}
-.auth-card h1{margin:0 0 8px}
-.auth-card p{color:var(--muted);font-size:13px;line-height:1.6}
-.auth-card .btn{width:100%;margin-top:10px}
-.auth-switch{text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
-.auth-switch button{background:none;border:0;color:#68b3ff}
-#appRoot{display:none}
-#message{font-size:12px;color:#8fc3ff;margin-top:12px;line-height:1.5}
+/* BUTTONS */
 
-@media(max-width:1050px){
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .checker-layout{grid-template-columns:1fr}
-  .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 12px 19px;
+  font-weight: 700;
+  transition: .2s;
 }
-@media(max-width:720px){
-  .app{grid-template-columns:1fr}
-  .sidebar{height:auto;position:relative;padding:13px}
-  .logo{padding:4px 8px 12px}
-  .nav-label,.sidebar-bottom{display:none}
-  .nav-button{width:auto;display:inline-flex;padding:10px;margin:3px}
-  .sidebar nav{display:flex;flex-wrap:wrap}
-  .main{padding:18px 14px 35px}
-  .topbar{align-items:flex-start}
-  .hero{padding:24px}
-  .hero h2{font-size:24px}
-  .stats{gap:9px}
-  .stat-card{padding:14px}
-  .stat-card strong{font-size:22px}
-  .media-grid{grid-template-columns:1fr}
+
+.btn-primary {
+  background: var(--blue);
+  color: white;
+}
+
+.btn-primary:hover { background: #174fc8; }
+
+.btn-secondary {
+  background: white;
+  color: var(--navy);
+  border: 1px solid var(--border);
+}
+
+.btn-dark {
+  background: var(--navy);
+  color: white;
+}
+
+/* WELCOME PAGE */
+
+#welcomePage {
+  min-height: 100vh;
+  background: var(--navy);
+  color: white;
+}
+
+.welcome-nav {
+  min-height: 76px;
+  padding: 15px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hero {
+  padding: 85px 7% 75px;
+  max-width: 1150px;
+  margin: auto;
+}
+
+.hero-label {
+  color: #77a3ff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 850px;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 1.08;
+  margin: 20px 0;
+  letter-spacing: -2px;
+}
+
+.hero h1 span { color: #6192ff; }
+
+.hero p {
+  max-width: 700px;
+  color: #c4d0e3;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.welcome-section {
+  padding: 45px 5%;
+}
+
+.welcome-section h2 {
+  font-size: 30px;
+  margin: 0 0 12px;
+}
+
+.section-description {
+  color: #b9c7dc;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1450px;
+  margin: auto;
+}
+
+.media-item {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #081326;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.media-item img,
+.media-item video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #081326;
+}
+
+.media-caption {
+  padding: 15px 18px;
+  color: white;
+  font-weight: 700;
+}
+
+.welcome-footer {
+  padding: 35px 6%;
+  text-align: center;
+  color: #aebbd0;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+/* AUTHENTICATION */
+
+#authScreen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 25px;
+  background:
+    radial-gradient(circle at top right, #294b85, transparent 40%),
+    var(--navy);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border-radius: 17px;
+  padding: 34px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.auth-card .brand { margin-bottom: 25px; }
+
+.auth-card h2 {
+  margin-bottom: 8px;
+  color: var(--navy);
+}
+
+.auth-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.field {
+  margin: 17px 0;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  background: white;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--blue);
+}
+
+.auth-card .btn { width: 100%; }
+
+.auth-switch {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+}
+
+.auth-switch button {
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  display: none;
+}
+
+.message.show { display: block; }
+.message.error { background: #fff0f0; color: var(--red); }
+.message.success { background: #eaf8f0; color: var(--green); }
+
+/* APPLICATION */
+
+#appShell {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 245px;
+  background: var(--navy);
+  color: white;
+  padding: 24px 16px;
+  flex-shrink: 0;
+}
+
+.sidebar .brand {
+  padding: 0 7px 27px;
+  font-size: 22px;
+}
+
+.sidebar-label {
+  color: #8fa1bc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 14px 10px 9px;
+  text-transform: uppercase;
+}
+
+.nav-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 13px;
+  margin: 4px 0;
+  text-align: left;
+  color: #d0d9e8;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  background: #243b60;
+  color: white;
+}
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar {
+  min-height: 72px;
+  padding: 15px 28px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.topbar small { color: var(--muted); }
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.content {
+  padding: 30px;
+  max-width: 1500px;
+  margin: auto;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.page-heading {
+  margin-bottom: 25px;
+}
+
+.page-heading h1 {
+  margin: 0 0 8px;
+  font-size: 27px;
+}
+
+.page-heading p {
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+  margin-bottom: 25px;
+}
+
+.stat-card,
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.stat-card small { color: var(--muted); }
+
+.stat-card strong {
+  display: block;
+  font-size: 28px;
+  margin-top: 10px;
+  color: var(--navy);
+}
+
+.panel { margin-bottom: 22px; }
+
+.panel h2 {
+  font-size: 18px;
+  margin: 0 0 15px;
+}
+
+.panel p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.status-line {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.status-line:last-child { border-bottom: 0; }
+
+.status-label {
+  color: var(--muted);
+  display: inline-block;
+  min-width: 130px;
+}
+
+.result-box {
+  padding: 15px;
+  border-radius: 9px;
+  background: #f3f6fc;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 45px;
+}
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 17px;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px;
+  background: #f7f9fc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.file-row button {
+  flex-shrink: 0;
+}
+
+.app-media-stack .media-item {
+  background: var(--navy);
+}
+
+.app-media-stack .media-caption {
+  color: white;
+}
+
+.empty-state {
+  padding: 25px;
+  color: var(--muted);
+  background: #f7f9fc;
+  border-radius: 9px;
+  text-align: center;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+  #appShell { display: block; }
+
+  .sidebar {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .sidebar .brand { padding-bottom: 12px; }
+
+  .sidebar nav {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+  }
+
+  .sidebar-label { display: none; }
+
+  .nav-btn {
+    white-space: nowrap;
+    width: auto;
+  }
+
+  .content { padding: 18px; }
+
+  .stats-grid { grid-template-columns: 1fr; }
+  .two-columns { grid-template-columns: 1fr; }
+
+  .topbar { padding: 14px 18px; }
+}
+
+@media (max-width: 520px) {
+  .welcome-nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero { padding: 55px 6%; }
+
+  .hero h1 { letter-spacing: -1px; }
+
+  .welcome-section { padding: 30px 4%; }
+
+  .auth-card { padding: 24px; }
+
+  .file-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="authScreen" class="auth-screen">
-  <div class="auth-card">
-    <div class="logo" style="padding:0 0 20px">
-      <div class="logo-mark">B</div>
+<!-- =====================================================
+     1. PUBLIC WELCOME PAGE
+====================================================== -->
+
+<section id="welcomePage">
+
+  <header class="welcome-nav">
+    <div class="brand">
+      <div class="brand-mark">B</div>
       <div>
-        <strong><span style="color:white">Border</span><span style="color:#3988ff">Flow</span></strong>
-        <small>AI DOCUMENT INTELLIGENCE</small>
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
       </div>
     </div>
 
-    <h1 id="authTitle">Welcome back</h1>
-    <p>Sign in to your BorderFlow workspace and check your trade documents.</p>
-
-    <div class="field">
-      <label>Email address</label>
-      <input id="email" type="email" placeholder="you@company.com" autocomplete="email">
+    <div class="welcome-actions">
+      <button class="btn btn-secondary" onclick="showLogin()">
+        Log in
+      </button>
+      <button class="btn btn-primary" onclick="showSignup()">
+        Get Started
+      </button>
     </div>
-    <div class="field">
-      <label>Password</label>
-      <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+  </header>
+
+  <section class="hero">
+    <div class="hero-label">Freight • Customs • Trade Technology</div>
+
+    <h1>
+      Making cross-border trade
+      <span>smarter and simpler.</span>
+    </h1>
+
+    <p>
+      BorderFlow is a freight and customs technology platform designed
+      to help clearing agents and businesses organise trade documents,
+      review shipment information and manage cross-border operations.
+    </p>
+
+    <div class="hero-buttons">
+      <button class="btn btn-primary" onclick="showSignup()">
+        Get Started
+      </button>
+
+      <button class="btn btn-secondary" onclick="scrollToMedia()">
+        Explore BorderFlow
+      </button>
+    </div>
+  </section>
+
+  <section class="welcome-section" id="welcomeMedia">
+    <h2>BorderFlow in action</h2>
+
+    <p class="section-description">
+      Explore our freight, clearing-agent and cross-border trade media.
+    </p>
+
+    <div class="media-stack" id="welcomeMediaStack"></div>
+  </section>
+
+  <footer class="welcome-footer">
+    <div class="brand" style="justify-content:center;margin-bottom:12px">
+      <div class="brand-mark">B</div>
+      <div>
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
+      </div>
+    </div>
+    BorderFlow — Freight and Customs Technology
+  </footer>
+
+</section>
+
+
+<!-- =====================================================
+     2. LOGIN AND SIGN-UP
+====================================================== -->
+
+<section id="authScreen" class="hidden">
+
+  <div class="auth-card">
+
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div>
+        <span style="color:#101d35">Border</span><span style="color:#2864e8">Flow</span>
+      </div>
     </div>
 
-    <button class="btn btn-primary" id="authButton" onclick="authenticate()">Sign in</button>
-    <div id="message"></div>
+    <h2 id="authTitle">Welcome back</h2>
+
+    <p id="authDescription">
+      Log in to access your BorderFlow workspace.
+    </p>
+
+    <div id="authMessage" class="message"></div>
+
+    <form id="authForm">
+
+      <div class="field hidden" id="nameField">
+        <label for="fullName">Full name</label>
+        <input id="fullName" type="text" autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <input id="email" type="email" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" required
+               minlength="6" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-primary" id="authSubmit" type="submit">
+        Log in
+      </button>
+
+    </form>
 
     <div class="auth-switch">
       <span id="authSwitchText">Don't have an account?</span>
-      <button onclick="toggleAuth()" id="authSwitchButton">Create account</button>
+      <button type="button" id="authSwitchButton" onclick="showSignup()">
+        Sign up
+      </button>
     </div>
-  </div>
-</div>
 
-<!-- APPLICATION -->
-<div id="appRoot">
-<div class="app">
-
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">B</div>
-    <div>
-      <strong><span style="color:white">Border</span><span style="color:#3988ff">Flow</span></strong>
-      <small>TRADE DOCUMENT AI</small>
+    <div class="auth-switch">
+      <button type="button" onclick="showWelcome()">
+        ← Back to welcome page
+      </button>
     </div>
-  </div>
 
-  <div class="nav-label">WORKSPACE</div>
-  <nav>
-    <button class="nav-button active" data-page="dashboard" onclick="showPage('dashboard')"><span class="nav-icon">⌂</span> Dashboard</button>
-    <button class="nav-button" data-page="checker" onclick="showPage('checker')"><span class="nav-icon">✧</span> AI Document Checker</button>
-    <button class="nav-button" data-page="library" onclick="showPage('library')"><span class="nav-icon">▤</span> Document Library</button>
-    <button class="nav-button" data-page="media" onclick="showPage('media')"><span class="nav-icon">▶</span> BorderFlow Media</button>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <div class="status-pill">● Workspace</div>
-    <p>AI assistance for cross-border trade documents.</p>
-    <button class="nav-button" onclick="logout()">↪ Log out</button>
-  </div>
-</aside>
-
-<main class="main">
-<header class="topbar">
-  <div class="page-title">
-    <h1 id="pageHeading">Dashboard</h1>
-    <p id="pageSubtitle">Your document intelligence workspace</p>
-  </div>
-  <div class="user-area">
-    <span class="status-pill">● Connected workspace</span>
-    <div class="user-avatar" id="userAvatar">B</div>
-  </div>
-</header>
-
-<!-- DASHBOARD -->
-<section class="page active" id="dashboardPage">
-  <div class="hero">
-    <div class="hero-content">
-      <span class="hero-tag">✦ BORDERFLOW AI DOCUMENT INTELLIGENCE</span>
-      <h2>Make document checking simpler, faster and smarter.</h2>
-      <p>
-        Upload trade documents. BorderFlow reads the information,
-        checks for possible errors and helps clearing agents identify
-        missing details before documents are submitted.
-      </p>
-      <div class="hero-actions">
-        <button class="btn btn-light" onclick="showPage('checker')">Start checking documents →</button>
-        <button class="btn btn-outline" onclick="showPage('library')">Open document library</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat-card"><small>Documents uploaded</small><strong id="statDocuments">0</strong><span>Your saved documents</span></div>
-    <div class="stat-card"><small>AI checks completed</small><strong id="statChecks">0</strong><span>Reports generated this session</span></div>
-    <div class="stat-card"><small>Documents needing review</small><strong id="statReview">0</strong><span>Flagged findings this session</span></div>
-    <div class="stat-card"><small>Document types</small><strong>6+</strong><span>Trade document categories</span></div>
-  </div>
-
-  <div class="section-heading">
-    <div><h2>Start your document workflow</h2><p>Choose the next step in your checking process.</p></div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
-    <div class="panel">
-      <div style="font-size:27px">📄</div>
-      <h3>Upload documents</h3>
-      <p class="panel-description">Add invoices, packing lists, bills of lading and certificates.</p>
-      <button class="btn btn-primary" onclick="showPage('checker')">Upload document</button>
-    </div>
-    <div class="panel">
-      <div style="font-size:27px">✧</div>
-      <h3>Run AI checks</h3>
-      <p class="panel-description">Find missing details, mismatched values and possible document errors.</p>
-      <button class="btn btn-primary" onclick="showPage('checker')">Check documents</button>
-    </div>
-    <div class="panel">
-      <div style="font-size:27px">▤</div>
-      <h3>View saved documents</h3>
-      <p class="panel-description">Return to your uploaded documents.</p>
-      <button class="btn btn-primary" onclick="showPage('library')">Open library</button>
-    </div>
-  </div>
-
-  <div class="notice">
-    BorderFlow provides document-reading and checking assistance.
-    A qualified clearing agent must verify important findings and official customs requirements.
   </div>
 </section>
 
-<!-- DOCUMENT CHECKER -->
-<section class="page" id="checkerPage">
-  <div class="section-heading">
-    <div><h2>AI Document Checker</h2><p>Upload a document, extract its text and send it for AI analysis.</p></div>
-  </div>
 
-  <div class="checker-layout">
-    <div class="panel">
-      <h3>1. Document information</h3>
-      <p class="panel-description">Tell BorderFlow what type of document you are checking.</p>
+<!-- =====================================================
+     3. BORDERFLOW APPLICATION
+====================================================== -->
 
-      <div class="field">
-        <label>Shipment reference</label>
-        <input id="shipmentRef" placeholder="Example: BF001">
-      </div>
-      <div class="field">
-        <label>Document type</label>
-        <select id="documentType">
-          <option value="Commercial Invoice">Commercial Invoice</option>
-          <option value="Packing List">Packing List</option>
-          <option value="Bill of Lading">Bill of Lading</option>
-          <option value="Certificate of Origin">Certificate of Origin</option>
-          <option value="Customs Declaration">Customs Declaration</option>
-          <option value="Other">Other trade document</option>
-        </select>
-      </div>
+<section id="appShell" class="hidden">
 
-      <h3 style="margin-top:25px">2. Upload your document</h3>
-      <div class="upload-zone">
-        <div class="upload-icon">☁</div>
-        <strong>Choose a document to check</strong>
-        <p>Supported: PDF, PNG, JPG and JPEG. Maximum file size: 10 MB.</p>
-        <input type="file" id="documentFile" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" onchange="fileSelected()">
-        <div class="file-name" id="fileName">No document selected</div>
-      </div>
+  <aside class="sidebar">
 
-      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
-      <p id="progressText" class="panel-description">Ready when you are.</p>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:17px">
-        <button class="btn btn-primary" id="checkButton" onclick="processDocument()">Read and check document</button>
-        <button class="btn btn-outline" onclick="clearChecker()">Clear</button>
-      </div>
-
-      <div id="ocrResult" class="result-box">
-        <h4>Document reading</h4>
-        Your extracted document text will appear here.
-      </div>
-      <div id="aiResult" class="result-box">
-        <h4>AI checking report</h4>
-        Your AI analysis will appear here after checking.
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div>
+        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
       </div>
     </div>
 
-    <div>
-      <div class="panel">
-        <h3>How it works</h3>
-        <div class="side-step"><div class="step-number">1</div><div><strong>Upload</strong><p>Select a trade document from your computer.</p></div></div>
-        <div class="side-step"><div class="step-number">2</div><div><strong>Read</strong><p>OCR attempts to extract text from your document.</p></div></div>
-        <div class="side-step"><div class="step-number">3</div><div><strong>Analyse</strong><p>AI checks the extracted information for potential issues.</p></div></div>
-        <div class="side-step"><div class="step-number">4</div><div><strong>Review</strong><p>Read the findings and have a qualified person verify them.</p></div></div>
+    <div class="sidebar-label">Workspace</div>
+
+    <nav>
+      <button class="nav-btn active" data-page="dashboardPage">
+        Overview
+      </button>
+
+      <button class="nav-btn" data-page="checkerPage">
+        AI Document Checker
+      </button>
+
+      <button class="nav-btn" data-page="libraryPage">
+        Document Library
+      </button>
+
+      <button class="nav-btn" data-page="mediaPage">
+        BorderFlow Media
+      </button>
+    </nav>
+
+    <div class="sidebar-label">Account</div>
+
+    <button class="nav-btn" onclick="logout()">
+      Log out
+    </button>
+
+  </aside>
+
+
+  <main class="main-area">
+
+    <header class="topbar">
+      <div>
+        <strong>BorderFlow Workspace</strong><br>
+        <small>Freight and customs management</small>
       </div>
 
-      <div class="panel">
-        <h3>What BorderFlow checks</h3>
-        <div class="result-item">✓ Missing document information</div>
-        <div class="result-item">✓ Invoice totals and calculations</div>
-        <div class="result-item">✓ Shipment and party details</div>
-        <div class="result-item">✓ Possible inconsistencies</div>
-        <div class="result-item">✓ Goods descriptions and HS-code suggestions</div>
-        <div class="result-item">✓ Items requiring human review</div>
+      <div class="topbar-user">
+        <span id="userEmail">Account</span>
       </div>
+    </header>
 
-      <div class="notice">
-        OCR and AI can make mistakes. A result marked as passed does not guarantee customs acceptance or clearance.
-      </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+
+      <section class="page active" id="dashboardPage">
+
+        <div class="page-heading">
+          <h1>Overview</h1>
+          <p>Welcome to your BorderFlow workspace.</p>
+        </div>
+
+        <div class="stats-grid">
+
+          <div class="stat-card">
+            <small>Uploaded Documents</small>
+            <strong id="documentCount">0</strong>
+          </div>
+
+          <div class="stat-card">
+            <small>Checks Completed This Session</small>
+            <strong id="checksCount">0</strong>
+          </div>
+
+          <div class="stat-card">
+            <small>Documents Requiring Review</small>
+            <strong id="reviewCount">0</strong>
+          </div>
+
+        </div>
+
+        <div class="two-columns">
+
+          <div class="panel">
+            <h2>AI Document Checker</h2>
+            <p>
+              Upload a trade document, extract its text and request an
+              AI-assisted review.
+            </p>
+            <button class="btn btn-primary"
+                    onclick="openPage('checkerPage')">
+              Open Document Checker
+            </button>
+          </div>
+
+          <div class="panel">
+            <h2>Document Library</h2>
+            <p>
+              View the files uploaded to your private BorderFlow storage.
+            </p>
+            <button class="btn btn-secondary"
+                    onclick="openPage('libraryPage')">
+              Open Library
+            </button>
+          </div>
+
+        </div>
+
+        <div class="panel">
+          <h2>Workspace information</h2>
+
+          <div class="status-line">
+            <span class="status-label">Account</span>
+            <strong id="dashboardEmail">Not signed in</strong>
+          </div>
+
+          <div class="status-line">
+            <span class="status-label">Storage</span>
+            <strong>Supabase private storage</strong>
+          </div>
+
+          <div class="status-line">
+            <span class="status-label">AI service</span>
+            <strong>BorderFlow Document Intelligence</strong>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- DOCUMENT CHECKER -->
+
+      <section class="page" id="checkerPage">
+
+        <div class="page-heading">
+          <h1>AI Document Checker</h1>
+          <p>
+            Upload a trade document, extract its text and request an
+            AI-assisted document review.
+          </p>
+        </div>
+
+        <div class="panel">
+
+          <h2>1. Document information</h2>
+
+          <div class="field">
+            <label for="shipmentRef">Shipment reference</label>
+            <input id="shipmentRef" type="text"
+                   placeholder="Example: BF001">
+          </div>
+
+          <div class="field">
+            <label for="documentType">Document type</label>
+            <select id="documentType">
+              <option value="Commercial Invoice">Commercial Invoice</option>
+              <option value="Packing List">Packing List</option>
+              <option value="Bill of Lading">Bill of Lading</option>
+              <option value="Customs Declaration">Customs Declaration</option>
+              <option value="Certificate of Origin">Certificate of Origin</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="documentFile">Choose document</label>
+            <input id="documentFile" type="file"
+                   accept=".pdf,.png,.jpg,.jpeg,.webp">
+            <small style="color:#718096">
+              Maximum file size: 10 MB. Supported: PDF and images.
+            </small>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-secondary" id="ocrButton"
+                    onclick="readDocument()">
+              Read Document (OCR)
+            </button>
+
+            <button class="btn btn-primary" id="checkButton"
+                    onclick="checkDocument()" disabled>
+              Check Document with AI
+            </button>
+
+            <button class="btn btn-dark" id="uploadButton"
+                    onclick="uploadDocument()" disabled>
+              Upload Document
+            </button>
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <h2>2. Extracted document text</h2>
+
+          <div id="ocrStatus" class="message"></div>
+
+          <div class="field">
+            <textarea id="extractedText" rows="10"
+              placeholder="Extracted document text will appear here. You can also paste text here."></textarea>
+          </div>
+
+          <button class="btn btn-secondary"
+                  onclick="enableManualText()">
+            Use Pasted Text
+          </button>
+
+        </div>
+
+
+        <div class="panel">
+
+          <h2>3. AI document review</h2>
+
+          <div id="aiStatus" class="message"></div>
+
+          <div id="aiResult" class="result-box">
+            Your AI document review will appear here.
+          </div>
+
+          <p>
+            AI results are assistance only. A qualified clearing agent
+            or customs professional must verify the information and
+            applicable country requirements.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- DOCUMENT LIBRARY -->
+
+      <section class="page" id="libraryPage">
+
+        <div class="page-heading">
+          <h1>Document Library</h1>
+          <p>Your uploaded documents in private BorderFlow storage.</p>
+        </div>
+
+        <div class="panel">
+          <div class="action-row" style="margin-top:0">
+            <button class="btn btn-primary" onclick="loadDocuments()">
+              Refresh Documents
+            </button>
+          </div>
+
+          <div id="libraryStatus" class="message"></div>
+
+          <div id="fileList" class="file-list" style="margin-top:18px">
+            <div class="empty-state">Loading your documents...</div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- MEDIA PAGE -->
+
+      <section class="page" id="mediaPage">
+
+        <div class="page-heading">
+          <h1>BorderFlow Media</h1>
+          <p>Freight, clearing-agent and cross-border trade media.</p>
+        </div>
+
+        <div class="app-media-stack media-stack" id="appMediaStack"></div>
+
+      </section>
+
     </div>
-  </div>
+  </main>
 </section>
 
-<!-- LIBRARY -->
-<section class="page" id="libraryPage">
-  <div class="section-heading">
-    <div><h2>Document Library</h2><p>Your saved BorderFlow documents.</p></div>
-    <button class="btn btn-primary" onclick="showPage('checker')">+ Upload document</button>
-  </div>
-  <div class="panel">
-    <div id="libraryList" class="library-list">
-      <div class="empty-state">Your saved documents will appear here.</div>
-    </div>
-  </div>
-</section>
 
-<!-- MEDIA -->
-<section class="page" id="mediaPage">
-  <div class="section-heading">
-    <div><h2>BorderFlow Media</h2><p>Clearing-agent and transport videos from your repository.</p></div>
-  </div>
+<!-- =====================================================
+     4. JAVASCRIPT LIBRARIES
+====================================================== -->
 
-  <div class="panel">
-    <h3>Clearing-agent videos</h3>
-    <p class="panel-description">Your five uploaded clearing-agent videos.</p>
-    <div class="media-grid">
-      <div class="media-card">
-        <video controls preload="none"><source src="clearent%20agent%201.mp4" type="video/mp4"></video>
-        <div><strong>Clearing Agent 1</strong><p>Clearing-agent video</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="clearent%20agent%202.mp4" type="video/mp4"></video>
-        <div><strong>Clearing Agent 2</strong><p>Clearing-agent video</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="clearent%20agent%203.mp4" type="video/mp4"></video>
-        <div><strong>Clearing Agent 3</strong><p>Clearing-agent video</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="clearent%20agent%204.mp4" type="video/mp4"></video>
-        <div><strong>Clearing Agent 4</strong><p>Clearing-agent video</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="clearent%20agent%205.mp4" type="video/mp4"></video>
-        <div><strong>Clearing Agent 5</strong><p>Clearing-agent video</p></div>
-      </div>
-    </div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <div class="panel">
-    <h3>Truck and border videos</h3>
-    <div class="media-grid">
-      <div class="media-card">
-        <video controls preload="none"><source src="truck%201.mp4" type="video/mp4"></video>
-        <div><strong>Truck 1</strong><p>Transport and border operations</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="truck%202.mp4" type="video/mp4"></video>
-        <div><strong>Truck 2</strong><p>Transport and border operations</p></div>
-      </div>
-      <div class="media-card">
-        <video controls preload="none"><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4"></video>
-        <div><strong>BorderFlow video</strong><p>Additional uploaded video</p></div>
-      </div>
-    </div>
-  </div>
 
-  <div class="panel">
-    <h3>BorderFlow pictures</h3>
-    <p class="panel-description">Your existing Beitbridge border picture.</p>
-    <div class="media-grid">
-      <div class="media-card">
-        <img src="trucks-at-Beitbridge-border.webp" alt="Trucks at Beitbridge border" onerror="this.parentElement.style.display='none'">
-        <div><strong>Beitbridge border</strong><p>Cross-border transport operations</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-</main>
-</div>
-</div>
+<!-- =====================================================
+     5. BORDERFLOW APPLICATION LOGIC
+====================================================== -->
 
 <script>
-// ==========================================
-// BORDERFLOW APPLICATION
-// Supabase + Authentication + OCR + AI
-// ==========================================
+"use strict";
 
-const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
+/* -----------------------------------------------------
+   SUPABASE CONFIGURATION
+------------------------------------------------------ */
+
+const SUPABASE_URL =
+  "https://ngkmbpbdaachqymnfffe.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
+
 const STORAGE_BUCKET = "freight-documents";
-const AI_FUNCTION = "document-intelligence";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const EDGE_FUNCTION = "document-intelligence";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
+/* -----------------------------------------------------
+   MEDIA FILES
+
+   Keep these files beside index.html in GitHub.
+   Add your other existing picture filenames to images.
+------------------------------------------------------ */
+
+const videos = [
+  {
+    title: "Clearing Agent 1",
+    file: "clearent agent 1.mp4"
+  },
+  {
+    title: "Clearing Agent 2",
+    file: "clearent agent 2.mp4"
+  },
+  {
+    title: "Clearing Agent 3",
+    file: "clearent agent 3.mp4"
+  },
+  {
+    title: "Clearing Agent 4",
+    file: "clearent agent 4.mp4"
+  },
+  {
+    title: "Clearing Agent 5",
+    file: "clearent agent 5.mp4"
+  },
+  {
+    title: "Truck 1",
+    file: "truck 1.mp4"
+  },
+  {
+    title: "Truck 2",
+    file: "truck 2.mp4"
+  },
+  {
+    title: "BorderFlow Video",
+    file: "17899033-hd_1920_1080_24fps.mp4"
+  }
+];
+
+const images = [
+  {
+    title: "Trucks at Beitbridge Border",
+    file: "trucks-at-Beitbridge-border.webp"
+  }
+
+  /*
+    ADD YOUR OTHER EXISTING PICTURES HERE.
+
+    Example:
+    ,
+    {
+      title: "Your Picture Title",
+      file: "your-exact-picture-filename.jpg"
+    }
+
+    Use the exact filenames from your GitHub repository.
+  */
+];
+
+
+/* -----------------------------------------------------
+   APPLICATION STATE
+------------------------------------------------------ */
 
 let currentUser = null;
 let selectedFile = null;
-let authMode = "login";
+let uploadedDocument = null;
 let extractedDocumentText = "";
-let sessionChecks = 0;
-let sessionReviews = 0;
+let currentAuthMode = "login";
+let checksThisSession = 0;
+let reviewsThisSession = 0;
 
-// ==========================================
-// HELPERS
-// ==========================================
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  })[char]);
+/* -----------------------------------------------------
+   SMALL HELPER FUNCTIONS
+------------------------------------------------------ */
+
+function byId(id) {
+  return document.getElementById(id);
 }
 
-function showMessage(message, isError = false) {
-  const element = document.getElementById("message");
+function showMessage(id, message, type = "success") {
+  const element = byId(id);
   if (!element) return;
+
   element.textContent = message;
-  element.style.color = isError ? "#ff929a" : "#8fc3ff";
+  element.className = "message show " + type;
 }
 
-function setProgress(percent, message) {
-  const bar = document.getElementById("progressBar");
-  const text = document.getElementById("progressText");
-  if (bar) bar.style.width = `${percent}%`;
-  if (text) text.textContent = message;
+function hideMessage(id) {
+  const element = byId(id);
+  if (!element) return;
+
+  element.textContent = "";
+  element.className = "message";
 }
 
-function setHTML(id, html) {
-  const element = document.getElementById(id);
-  if (element) element.innerHTML = html;
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(1) + " KB";
+  }
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
 }
 
-function loadExternalScript(src) {
-  return new Promise((resolve, reject) => {
-    const existing = [...document.scripts].find(script => script.src === src);
-    if (existing) {
-      if (existing.dataset.loaded === "yes") return resolve();
-      existing.addEventListener("load", resolve, {once:true});
-      existing.addEventListener("error", reject, {once:true});
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => {
-      script.dataset.loaded = "yes";
-      resolve();
-    };
-    script.onerror = () => reject(new Error("A required reading library could not load. Check your internet connection."));
-    document.head.appendChild(script);
+function safeFileName(name) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+
+/* -----------------------------------------------------
+   MEDIA DISPLAY
+
+   Videos do not preload automatically.
+   Images load lazily.
+------------------------------------------------------ */
+
+function renderMedia() {
+  const welcomeStack = byId("welcomeMediaStack");
+  const appStack = byId("appMediaStack");
+
+  const mediaHtml = [];
+
+  images.forEach(item => {
+    const filename = encodeURIComponent(item.file);
+
+    mediaHtml.push(`
+      <article class="media-item">
+        <img
+          src="${filename}"
+          alt="${escapeHtml(item.title)}"
+          loading="lazy"
+          decoding="async">
+        <div class="media-caption">
+          ${escapeHtml(item.title)}
+        </div>
+      </article>
+    `);
+  });
+
+  videos.forEach(item => {
+    const filename = encodeURIComponent(item.file);
+
+    mediaHtml.push(`
+      <article class="media-item">
+        <video
+          controls
+          preload="none"
+          playsinline
+          aria-label="${escapeHtml(item.title)}">
+          <source src="${filename}" type="video/mp4">
+          Your browser does not support video playback.
+        </video>
+        <div class="media-caption">
+          ${escapeHtml(item.title)}
+        </div>
+      </article>
+    `);
+  });
+
+  const html = mediaHtml.join("");
+
+  welcomeStack.innerHTML = html;
+
+  if (appStack) {
+    appStack.innerHTML = html;
+  }
+}
+
+
+/* -----------------------------------------------------
+   PAGE NAVIGATION
+------------------------------------------------------ */
+
+function showWelcome() {
+  byId("welcomePage").classList.remove("hidden");
+  byId("authScreen").classList.add("hidden");
+  byId("appShell").classList.add("hidden");
+  window.scrollTo(0, 0);
+}
+
+function showLogin() {
+  currentAuthMode = "login";
+
+  byId("welcomePage").classList.add("hidden");
+  byId("authScreen").classList.remove("hidden");
+  byId("appShell").classList.add("hidden");
+
+  byId("authTitle").textContent = "Welcome back";
+  byId("authDescription").textContent =
+    "Log in to access your BorderFlow workspace.";
+
+  byId("authSubmit").textContent = "Log in";
+  byId("authSwitchText").textContent = "Don't have an account?";
+  byId("authSwitchButton").textContent = "Sign up";
+
+  byId("nameField").classList.add("hidden");
+  byId("fullName").required = false;
+
+  hideMessage("authMessage");
+  window.scrollTo(0, 0);
+}
+
+function showSignup() {
+  currentAuthMode = "signup";
+
+  byId("welcomePage").classList.add("hidden");
+  byId("authScreen").classList.remove("hidden");
+  byId("appShell").classList.add("hidden");
+
+  byId("authTitle").textContent = "Create your account";
+  byId("authDescription").textContent =
+    "Create an account to start using BorderFlow.";
+
+  byId("authSubmit").textContent = "Create Account";
+  byId("authSwitchText").textContent = "Already have an account?";
+  byId("authSwitchButton").textContent = "Log in";
+
+  byId("nameField").classList.remove("hidden");
+  byId("fullName").required = true;
+
+  hideMessage("authMessage");
+  window.scrollTo(0, 0);
+}
+
+function scrollToMedia() {
+  byId("welcomeMedia").scrollIntoView({
+    behavior: "smooth"
   });
 }
 
-// ==========================================
-// AUTHENTICATION
-// ==========================================
+function openPage(pageId) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
 
-function toggleAuth() {
-  authMode = authMode === "login" ? "signup" : "login";
-  document.getElementById("authTitle").textContent =
-    authMode === "login" ? "Welcome back" : "Create your account";
-  document.getElementById("authButton").textContent =
-    authMode === "login" ? "Sign in" : "Create account";
-  document.getElementById("authSwitchText").textContent =
-    authMode === "login" ? "Don't have an account?" : "Already have an account?";
-  document.getElementById("authSwitchButton").textContent =
-    authMode === "login" ? "Create account" : "Sign in";
-  showMessage("");
+  const target = byId(pageId);
+
+  if (target) {
+    target.classList.add("active");
+  }
+
+  document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageId
+    );
+  });
+
+  if (pageId === "libraryPage") {
+    loadDocuments();
+  }
 }
 
-async function authenticate() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
+  button.addEventListener("click", () => {
+    openPage(button.dataset.page);
+  });
+});
 
-  if (!email || !password) {
-    showMessage("Enter your email and password.", true);
-    return;
-  }
-  if (password.length < 6) {
-    showMessage("Your password must contain at least 6 characters.", true);
-    return;
-  }
 
-  const button = document.getElementById("authButton");
-  button.disabled = true;
-  button.textContent = "Please wait...";
+/* -----------------------------------------------------
+   AUTHENTICATION
+------------------------------------------------------ */
+
+byId("authSwitchButton").addEventListener("click", () => {
+  if (currentAuthMode === "login") {
+    showSignup();
+  } else {
+    showLogin();
+  }
+});
+
+byId("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const email = byId("email").value.trim();
+  const password = byId("password").value;
+  const fullName = byId("fullName").value.trim();
+
+  const submitButton = byId("authSubmit");
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Please wait...";
+
+  hideMessage("authMessage");
 
   try {
-    let result;
-    if (authMode === "signup") {
-      result = await db.auth.signUp({email, password});
+    if (currentAuthMode === "signup") {
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        await enterWorkspace(data.session.user);
+      } else {
+        showMessage(
+          "authMessage",
+          "Account created. Check your email if confirmation is required, then log in.",
+          "success"
+        );
+        showLogin();
+        showMessage(
+          "authMessage",
+          "Account created. Log in to continue. Check your email if confirmation is required.",
+          "success"
+        );
+      }
+
     } else {
-      result = await db.auth.signInWithPassword({email, password});
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) throw error;
+
+      await enterWorkspace(data.user);
     }
 
-    if (result.error) throw result.error;
-
-    if (result.data.session) {
-      currentUser = result.data.user;
-      await openWorkspace();
-    } else {
-      showMessage("Account created. Check your email if email confirmation is enabled.");
-    }
   } catch (error) {
-    showMessage(error.message || "Authentication failed.", true);
+    showMessage(
+      "authMessage",
+      error.message || "Authentication failed. Please try again.",
+      "error"
+    );
+
   } finally {
-    button.disabled = false;
-    button.textContent = authMode === "login" ? "Sign in" : "Create account";
+    submitButton.disabled = false;
+    submitButton.textContent =
+      currentAuthMode === "signup" ? "Create Account" : "Log in";
   }
+});
+
+
+async function enterWorkspace(user) {
+  currentUser = user;
+
+  byId("welcomePage").classList.add("hidden");
+  byId("authScreen").classList.add("hidden");
+  byId("appShell").classList.remove("hidden");
+
+  byId("userEmail").textContent = user.email || "Account";
+  byId("dashboardEmail").textContent = user.email || "Account";
+
+  openPage("dashboardPage");
+
+  await loadDocuments();
 }
+
 
 async function logout() {
-  const {error} = await db.auth.signOut();
+  const { error } = await supabaseClient.auth.signOut();
+
   if (error) {
-    alert(error.message);
+    alert("Could not log out: " + error.message);
     return;
   }
+
   currentUser = null;
-  document.getElementById("appRoot").style.display = "none";
-  document.getElementById("authScreen").style.display = "grid";
+  selectedFile = null;
+  uploadedDocument = null;
+  extractedDocumentText = "";
+
+  byId("appShell").classList.add("hidden");
+  showLogin();
 }
 
-async function openWorkspace() {
-  if (!currentUser) return;
-  document.getElementById("authScreen").style.display = "none";
-  document.getElementById("appRoot").style.display = "block";
 
-  const email = currentUser.email || "BorderFlow User";
-  document.getElementById("userAvatar").textContent = email.charAt(0).toUpperCase();
+/* -----------------------------------------------------
+   FILE SELECTION
+------------------------------------------------------ */
 
-  await loadDashboardData();
-  await loadLibrary();
-}
+byId("documentFile").addEventListener("change", event => {
+  selectedFile = event.target.files[0] || null;
 
-// ==========================================
-// NAVIGATION
-// ==========================================
+  uploadedDocument = null;
+  extractedDocumentText = "";
 
-function showPage(page) {
-  document.querySelectorAll(".page").forEach(section => section.classList.remove("active"));
-  const target = document.getElementById(page + "Page");
-  if (target) target.classList.add("active");
+  byId("extractedText").value = "";
+  byId("aiResult").textContent =
+    "Your AI document review will appear here.";
 
-  document.querySelectorAll(".nav-button[data-page]").forEach(item => {
-    item.classList.toggle("active", item.dataset.page === page);
-  });
+  byId("checkButton").disabled = true;
+  byId("uploadButton").disabled = true;
 
-  const titles = {
-    dashboard:["Dashboard","Your document intelligence workspace"],
-    checker:["AI Document Checker","Read and analyse trade documents"],
-    library:["Document Library","Your saved trade documents"],
-    media:["BorderFlow Media","Clearing-agent and transport videos"]
-  };
-  const heading = titles[page] || titles.dashboard;
-  document.getElementById("pageHeading").textContent = heading[0];
-  document.getElementById("pageSubtitle").textContent = heading[1];
+  hideMessage("ocrStatus");
+  hideMessage("aiStatus");
 
-  if (page === "library") loadLibrary();
-}
-
-// ==========================================
-// FILE SELECTION
-// ==========================================
-
-function fileSelected() {
-  const input = document.getElementById("documentFile");
-  selectedFile = input.files && input.files[0] ? input.files[0] : null;
   if (!selectedFile) return;
 
-  const allowedTypes = ["application/pdf","image/png","image/jpeg"];
-  if (!allowedTypes.includes(selectedFile.type)) {
-    alert("Please choose a PDF, PNG or JPG document.");
-    input.value = "";
+  if (selectedFile.size > MAX_FILE_SIZE) {
+    showMessage(
+      "ocrStatus",
+      "This file is larger than the 10 MB limit.",
+      "error"
+    );
+
     selectedFile = null;
-    return;
-  }
-  if (selectedFile.size > 10 * 1024 * 1024) {
-    alert("The maximum file size is 10 MB.");
-    input.value = "";
-    selectedFile = null;
+    event.target.value = "";
     return;
   }
 
-  document.getElementById("fileName").textContent =
-    selectedFile.name + " (" + (selectedFile.size / 1024 / 1024).toFixed(2) + " MB)";
-}
+  showMessage(
+    "ocrStatus",
+    "Selected: " + selectedFile.name +
+    " (" + formatBytes(selectedFile.size) + ")",
+    "success"
+  );
+});
 
-// ==========================================
-// OCR LIBRARIES
-// ==========================================
+
+/* -----------------------------------------------------
+   OCR: IMAGE DOCUMENTS
+------------------------------------------------------ */
 
 async function loadTesseract() {
   if (window.Tesseract) return window.Tesseract;
-  await loadExternalScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
-  if (!window.Tesseract) throw new Error("OCR library did not initialise.");
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+
+    script.src =
+      "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+
+    script.onload = resolve;
+    script.onerror = () => reject(
+      new Error("Could not load the OCR library.")
+    );
+
+    document.head.appendChild(script);
+  });
+
   return window.Tesseract;
 }
 
-async function loadPDFLibrary() {
-  if (window.pdfjsLib) return window.pdfjsLib;
-  await loadExternalScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
-  if (!window.pdfjsLib) throw new Error("PDF reader did not initialise.");
-  window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-  return window.pdfjsLib;
-}
 
 async function readImage(file) {
-  const Tesseract = await loadTesseract();
-  const result = await Tesseract.recognize(file, "eng", {
-    logger: message => {
-      if (message.status === "recognizing text") {
-        const percent = Math.round(20 + (message.progress || 0) * 35);
-        setProgress(percent, "Reading image: " + percent + "%");
+  const tesseract = await loadTesseract();
+
+  const result = await tesseract.recognize(
+    file,
+    "eng",
+    {
+      logger: message => {
+        if (message.status === "recognizing text") {
+          const percent = Math.round(
+            (message.progress || 0) * 100
+          );
+
+          showMessage(
+            "ocrStatus",
+            "Reading image... " + percent + "%",
+            "success"
+          );
+        }
       }
     }
-  });
+  );
+
   return result.data.text || "";
 }
 
-async function readPDF(file) {
-  const pdfjs = await loadPDFLibrary();
-  const Tesseract = await loadTesseract();
-  const buffer = await file.arrayBuffer();
-  const pdf = await pdfjs.getDocument({data:new Uint8Array(buffer)}).promise;
 
-  let combinedText = "";
+/* -----------------------------------------------------
+   OCR: PDF DOCUMENTS
+------------------------------------------------------ */
+
+async function loadPdfJs() {
+  if (window.pdfjsLib) return window.pdfjsLib;
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+
+    script.onload = resolve;
+    script.onerror = () => reject(
+      new Error("Could not load the PDF reader.")
+    );
+
+    document.head.appendChild(script);
+  });
+
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  return window.pdfjsLib;
+}
+
+
+async function readPdf(file) {
+  const pdfjs = await loadPdfJs();
+
+  const bytes = await file.arrayBuffer();
+
+  const pdf = await pdfjs.getDocument({
+    data: bytes
+  }).promise;
+
+  let fullText = "";
+
   const pagesToRead = Math.min(pdf.numPages, 10);
 
-  for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber++) {
-    setProgress(
-      20 + Math.round((pageNumber / pagesToRead) * 30),
-      `Reading PDF page ${pageNumber} of ${pagesToRead}`
+  for (let pageNumber = 1;
+       pageNumber <= pagesToRead;
+       pageNumber++) {
+
+    showMessage(
+      "ocrStatus",
+      "Reading PDF page " + pageNumber + " of " + pagesToRead,
+      "success"
     );
 
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    const pageText = content.items.map(item => item.str || "").join(" ");
 
-    if (pageText.trim().length > 30) {
-      combinedText += "\n--- PAGE " + pageNumber + " ---\n" + pageText + "\n";
-    } else {
-      const viewport = page.getViewport({scale:1.5});
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+    const pageText = content.items
+      .map(item => item.str)
+      .join(" ");
 
-      await page.render({canvasContext:context,viewport}).promise;
-      const result = await Tesseract.recognize(canvas,"eng");
-      combinedText += "\n--- PAGE " + pageNumber + " ---\n" + result.data.text + "\n";
-    }
+    fullText += "\n\nPAGE " + pageNumber + "\n" + pageText;
   }
 
-  if (pdf.numPages > 10) {
-    combinedText += "\nOnly the first 10 pages were processed. Review the remaining pages separately.";
-  }
-  return combinedText;
-}
-
-async function extractDocumentText(file) {
-  if (file.type === "application/pdf") return readPDF(file);
-  return readImage(file);
-}
-
-// ==========================================
-// UPLOAD TO PRIVATE SUPABASE STORAGE
-// ==========================================
-
-async function uploadDocument(file) {
-  if (!currentUser) throw new Error("Please sign in before uploading documents.");
-
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-  const storagePath = currentUser.id + "/" + Date.now() + "_" + safeName;
-
-  const {error} = await db.storage.from(STORAGE_BUCKET).upload(storagePath,file,{
-    cacheControl:"3600",
-    upsert:false,
-    contentType:file.type
-  });
-
-  if (error) throw error;
-  return {storage_path:storagePath,file_name:file.name};
-}
-
-// ==========================================
-// GROQ-POWERED SUPABASE EDGE FUNCTION
-// ==========================================
-
-async function analyseDocument(savedDocument, shipmentRef, documentType, text) {
-  const {data,error} = await db.functions.invoke(AI_FUNCTION,{
-    body:{
-      action:"check_document",
-      document_id:savedDocument.storage_path,
-      shipment_ref:shipmentRef || null,
-      document_type:documentType,
-      file_name:savedDocument.file_name,
-      storage_path:savedDocument.storage_path,
-      extracted_text:text
-    }
-  });
-
-  if (error) throw error;
-
-  if (!data || data.success !== true) {
-    throw new Error(data?.error || data?.message || "The AI function did not return a successful result.");
+  if (!fullText.trim()) {
+    throw new Error(
+      "No selectable text was found in this PDF. If it is a scanned PDF, use an image version for OCR."
+    );
   }
 
-  return data.result ?? data.report ?? data;
+  return fullText;
 }
 
-// ==========================================
-// COMPLETE DOCUMENT CHECK WORKFLOW
-// ==========================================
 
-async function processDocument() {
-  if (!currentUser) {
-    alert("Please sign in first.");
+/* -----------------------------------------------------
+   READ DOCUMENT
+------------------------------------------------------ */
+
+async function readDocument() {
+  if (!selectedFile) {
+    showMessage(
+      "ocrStatus",
+      "Please choose a document first.",
+      "error"
+    );
     return;
   }
 
-  const file = selectedFile;
-  const shipmentRef = document.getElementById("shipmentRef").value.trim();
-  const documentType = document.getElementById("documentType").value;
+  const button = byId("ocrButton");
 
-  if (!file) {
-    alert("Choose a document first.");
-    return;
-  }
-
-  const button = document.getElementById("checkButton");
   button.disabled = true;
-  button.textContent = "Processing...";
+  button.textContent = "Reading...";
 
-  setHTML("ocrResult","<h4>Document reading</h4>Preparing document...");
-  setHTML("aiResult","<h4>AI checking report</h4>Waiting for document reading...");
+  hideMessage("ocrStatus");
 
   try {
-    setProgress(10,"Starting document reading...");
-    extractedDocumentText = await extractDocumentText(file);
+    let text = "";
 
-    if (!extractedDocumentText.trim()) {
-      throw new Error("No readable text was found. Try a clearer scan or image.");
+    const extension = selectedFile.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (extension === "pdf") {
+      text = await readPdf(selectedFile);
+    } else {
+      text = await readImage(selectedFile);
     }
 
-    setProgress(55,"Document reading completed.");
-
-    setHTML("ocrResult",`
-      <h4>Extracted document text</h4>
-      <div>${escapeHTML(extractedDocumentText.slice(0,12000))}</div>
-      ${extractedDocumentText.length > 12000 ? "<p>Only the first part is displayed.</p>" : ""}
-    `);
-
-    setProgress(60,"Saving document to BorderFlow...");
-    const savedDocument = await uploadDocument(file);
-
-    setProgress(75,"Sending document to BorderFlow AI...");
-    const report = await analyseDocument(savedDocument,shipmentRef,documentType,extractedDocumentText);
-
-    displayAIReport(report);
-    sessionChecks++;
-
-    const reportText = JSON.stringify(report).toLowerCase();
-    if (
-      reportText.includes("warning") ||
-      reportText.includes("missing") ||
-      reportText.includes("review") ||
-      reportText.includes("error")
-    ) {
-      sessionReviews++;
+    if (!text.trim()) {
+      throw new Error("No text could be extracted from this document.");
     }
 
-    setProgress(100,"Document checking completed.");
-    await loadDashboardData();
-    await loadLibrary();
+    extractedDocumentText = text;
+    byId("extractedText").value = text;
+
+    byId("checkButton").disabled = false;
+    byId("uploadButton").disabled = false;
+
+    showMessage(
+      "ocrStatus",
+      "Document reading completed successfully.",
+      "success"
+    );
 
   } catch (error) {
-    console.error("BorderFlow document workflow:",error);
-    setHTML("aiResult",`
-      <h4>Document checking could not finish</h4>
-      <div class="result-error">${escapeHTML(error.message)}</div>
-      <p>Check your Supabase Storage permissions and Edge Function logs.</p>
-    `);
-    setProgress(0,"There was a problem. Review the message above.");
+    showMessage(
+      "ocrStatus",
+      error.message || "Document reading failed.",
+      "error"
+    );
+
   } finally {
     button.disabled = false;
-    button.textContent = "Read and check document";
+    button.textContent = "Read Document (OCR)";
   }
 }
 
-// ==========================================
-// DISPLAY AI REPORT
-// ==========================================
 
-function displayAIReport(report) {
-  if (typeof report === "string") {
-    setHTML("aiResult",`<h4>BorderFlow AI Report</h4><div>${escapeHTML(report)}</div>`);
+/* -----------------------------------------------------
+   MANUAL TEXT ENTRY
+------------------------------------------------------ */
+
+function enableManualText() {
+  const text = byId("extractedText").value.trim();
+
+  if (!text) {
+    showMessage(
+      "ocrStatus",
+      "Paste the document text into the text box first.",
+      "error"
+    );
     return;
   }
 
-  const safeReport = report || {};
-  const findings = safeReport.findings || safeReport.issues || safeReport.checks || [];
-  const missing = safeReport.missing_fields || safeReport.missing_information || [];
-  const status = safeReport.overall_status || safeReport.status || "Review required";
+  extractedDocumentText = text;
 
-  let html = `
-    <h4>✧ BorderFlow AI Checking Report</h4>
-    <div class="result-item"><strong>Overall status:</strong> ${escapeHTML(status)}</div>
-  `;
+  byId("checkButton").disabled = false;
 
-  if (safeReport.summary) {
-    html += `<div class="result-item"><strong>Summary</strong><br>${escapeHTML(safeReport.summary)}</div>`;
+  if (selectedFile) {
+    byId("uploadButton").disabled = false;
   }
 
-  if (Array.isArray(missing) && missing.length) {
-    html += `<div class="result-item"><strong class="result-warning">Missing information</strong><ul>
-      ${missing.map(item=>`<li>${escapeHTML(typeof item==="object"?JSON.stringify(item):item)}</li>`).join("")}
-    </ul></div>`;
-  }
-
-  if (Array.isArray(findings) && findings.length) {
-    html += `<div class="result-item"><strong>Findings</strong>
-      ${findings.map(item=>{
-        const obj = typeof item === "object" && item !== null ? item : {description:item};
-        return `<div style="padding:9px 0;border-bottom:1px solid #ffffff15">
-          <strong>${escapeHTML(obj.title || obj.name || obj.category || "Finding")}</strong>
-          <p>${escapeHTML(obj.description || obj.message || obj.details || JSON.stringify(obj))}</p>
-          ${obj.severity ? `<small>Severity: ${escapeHTML(obj.severity)}</small>` : ""}
-        </div>`;
-      }).join("")}
-    </div>`;
-  }
-
-  if (safeReport.recommendations) {
-    const recommendations = Array.isArray(safeReport.recommendations)
-      ? safeReport.recommendations : [safeReport.recommendations];
-    html += `<div class="result-item"><strong>Recommended next steps</strong><ul>
-      ${recommendations.map(item=>`<li>${escapeHTML(item)}</li>`).join("")}
-    </ul></div>`;
-  }
-
-  html += `<div class="notice">AI-generated findings are suggestions for review, not official customs approval. Verify the original documents and applicable customs rules before submission.</div>`;
-  setHTML("aiResult",html);
+  showMessage(
+    "ocrStatus",
+    "Text is ready for AI review.",
+    "success"
+  );
 }
 
-// ==========================================
-// CLEAR CHECKER
-// ==========================================
 
-function clearChecker() {
-  selectedFile = null;
-  extractedDocumentText = "";
-  document.getElementById("documentFile").value = "";
-  document.getElementById("shipmentRef").value = "";
-  document.getElementById("fileName").textContent = "No document selected";
-  setProgress(0,"Ready when you are.");
-  setHTML("ocrResult","<h4>Document reading</h4>Your extracted document text will appear here.");
-  setHTML("aiResult","<h4>AI checking report</h4>Your AI analysis will appear here after checking.");
-}
+/* -----------------------------------------------------
+   UPLOAD DOCUMENT TO PRIVATE SUPABASE STORAGE
+------------------------------------------------------ */
 
-// ==========================================
-// DOCUMENT LIBRARY
-// Uses Supabase Storage as the source of truth.
-// ==========================================
-
-async function loadLibrary() {
-  if (!currentUser) return;
-
-  const list = document.getElementById("libraryList");
-  list.innerHTML = '<div class="empty-state">Loading your documents...</div>';
-
-  const {data,error} = await db.storage.from(STORAGE_BUCKET).list(currentUser.id,{
-    limit:100,
-    sortBy:{column:"created_at",order:"desc"}
-  });
-
-  if (error) {
-    list.innerHTML = `<div class="empty-state">Could not load documents: ${escapeHTML(error.message)}</div>`;
+async function uploadDocument() {
+  if (!currentUser) {
+    showMessage(
+      "ocrStatus",
+      "Please log in first.",
+      "error"
+    );
     return;
   }
 
-  const files = (data || []).filter(file => file.name && file.name !== ".emptyFolderPlaceholder");
-
-  if (!files.length) {
-    list.innerHTML = '<div class="empty-state">No saved documents yet. Upload your first document using the AI Checker.</div>';
+  if (!selectedFile) {
+    showMessage(
+      "ocrStatus",
+      "Choose a document before uploading.",
+      "error"
+    );
     return;
   }
 
-  list.innerHTML = files.map(file=>{
-    const path = currentUser.id + "/" + file.name;
-    const date = file.created_at ? new Date(file.created_at).toLocaleString() : "Saved document";
-    return `<div class="library-item">
-      <div>
-        <strong>${escapeHTML(file.name)}</strong>
-        <small>${escapeHTML(date)} · Stored in your private document library</small>
-      </div>
-      <button class="btn btn-outline" onclick="downloadDocument('${encodeURIComponent(path)}')">Open</button>
-    </div>`;
-  }).join("");
-}
+  const button = byId("uploadButton");
 
-async function downloadDocument(encodedPath) {
-  if (!currentUser) return;
-  const path = decodeURIComponent(encodedPath);
+  button.disabled = true;
+  button.textContent = "Uploading...";
 
-  const {data,error} = await db.storage.from(STORAGE_BUCKET).createSignedUrl(path,60);
-  if (error) {
-    alert("Could not open document: " + error.message);
-    return;
-  }
-  window.open(data.signedUrl,"_blank","noopener,noreferrer");
-}
-
-// ==========================================
-// DASHBOARD COUNTS
-// ==========================================
-
-async function loadDashboardData() {
-  if (!currentUser) return;
-
-  const {data,error} = await db.storage.from(STORAGE_BUCKET).list(currentUser.id,{
-    limit:1000
-  });
-
-  if (error) {
-    console.error("Could not load dashboard document count:",error);
-  } else {
-    const files = (data || []).filter(file=>file.name && file.name !== ".emptyFolderPlaceholder");
-    document.getElementById("statDocuments").textContent = files.length;
-  }
-
-  document.getElementById("statChecks").textContent = sessionChecks;
-  document.getElementById("statReview").textContent = sessionReviews;
-}
-
-// ==========================================
-// STARTUP AND SESSION RESTORATION
-// ==========================================
-
-async function initialise() {
   try {
-    const {data,error} = await db.auth.getSession();
+    const safeName = safeFileName(selectedFile.name);
+
+    const storagePath =
+      currentUser.id + "/" +
+      Date.now() + "-" + safeName;
+
+    const { data, error } = await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .upload(storagePath, selectedFile, {
+        cacheControl: "3600",
+        upsert: false
+      });
+
     if (error) throw error;
 
-    currentUser = data.session?.user || null;
+    uploadedDocument = {
+      storage_path: data.path,
+      file_name: selectedFile.name,
+      document_type: byId("documentType").value,
+      shipment_ref: byId("shipmentRef").value.trim()
+    };
 
-    if (currentUser) {
-      await openWorkspace();
-    } else {
-      document.getElementById("authScreen").style.display = "grid";
-      document.getElementById("appRoot").style.display = "none";
+    showMessage(
+      "ocrStatus",
+      "Document uploaded successfully.",
+      "success"
+    );
+
+    await loadDocuments();
+
+  } catch (error) {
+    showMessage(
+      "ocrStatus",
+      "Upload failed: " + error.message,
+      "error"
+    );
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Upload Document";
+  }
+}
+
+
+/* -----------------------------------------------------
+   AI DOCUMENT CHECK
+
+   Calls the Supabase Edge Function using the logged-in
+   user's authenticated Supabase session.
+
+   The Edge Function must accept this request format.
+------------------------------------------------------ */
+
+async function checkDocument() {
+  if (!currentUser) {
+    showMessage(
+      "aiStatus",
+      "Please log in first.",
+      "error"
+    );
+    return;
+  }
+
+  const text = byId("extractedText").value.trim();
+
+  if (!text) {
+    showMessage(
+      "aiStatus",
+      "Read a document or paste its text first.",
+      "error"
+    );
+    return;
+  }
+
+  extractedDocumentText = text;
+
+  const button = byId("checkButton");
+
+  button.disabled = true;
+  button.textContent = "Checking...";
+
+  hideMessage("aiStatus");
+
+  byId("aiResult").textContent =
+    "BorderFlow AI is reviewing your document...";
+
+  try {
+    const requestBody = {
+      action: "check_document",
+
+      document_id: uploadedDocument
+        ? uploadedDocument.storage_path
+        : null,
+
+      shipment_ref:
+        byId("shipmentRef").value.trim() || null,
+
+      document_type:
+        byId("documentType").value,
+
+      file_name:
+        selectedFile ? selectedFile.name : null,
+
+      storage_path:
+        uploadedDocument
+          ? uploadedDocument.storage_path
+          : null,
+
+      extracted_text: text
+    };
+
+    const { data, error } =
+      await supabaseClient.functions.invoke(
+        EDGE_FUNCTION,
+        {
+          body: requestBody
+        }
+      );
+
+    if (error) {
+      let details = error.message || "Unknown function error.";
+
+      if (error.context && typeof error.context.json === "function") {
+        try {
+          const responseBody = await error.context.json();
+
+          details =
+            responseBody.message ||
+            responseBody.error ||
+            details;
+        } catch (_) {}
+      }
+
+      throw new Error(details);
     }
 
-    db.auth.onAuthStateChange((_event,session)=>{
-      currentUser = session?.user || null;
+    if (!data) {
+      throw new Error("The AI function returned an empty response.");
+    }
 
-      if (!currentUser) {
-        document.getElementById("appRoot").style.display = "none";
-        document.getElementById("authScreen").style.display = "grid";
-      }
+    if (data.success === false) {
+      throw new Error(
+        data.error || data.message || "The AI review failed."
+      );
+    }
+
+    const result =
+      data.result ??
+      data.analysis ??
+      data.review ??
+      data.message ??
+      data;
+
+    byId("aiResult").textContent =
+      typeof result === "string"
+        ? result
+        : JSON.stringify(result, null, 2);
+
+    checksThisSession++;
+
+    const resultText = byId("aiResult").textContent.toLowerCase();
+
+    if (
+      resultText.includes("missing") ||
+      resultText.includes("error") ||
+      resultText.includes("mismatch") ||
+      resultText.includes("review")
+    ) {
+      reviewsThisSession++;
+    }
+
+    byId("checksCount").textContent = checksThisSession;
+    byId("reviewCount").textContent = reviewsThisSession;
+
+    showMessage(
+      "aiStatus",
+      "AI review completed. Please verify the findings.",
+      "success"
+    );
+
+  } catch (error) {
+    byId("aiResult").textContent =
+      "The AI review could not be completed.\n\n" +
+      (error.message || "Unknown error.");
+
+    showMessage(
+      "aiStatus",
+      "AI review failed. Check your Edge Function and its logs.",
+      "error"
+    );
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Check Document with AI";
+  }
+}
+
+
+/* -----------------------------------------------------
+   DOCUMENT LIBRARY
+------------------------------------------------------ */
+
+async function loadDocuments() {
+  if (!currentUser) return;
+
+  const list = byId("fileList");
+
+  list.innerHTML =
+    '<div class="empty-state">Loading documents...</div>';
+
+  hideMessage("libraryStatus");
+
+  try {
+    const { data, error } = await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .list(currentUser.id, {
+        limit: 100,
+        sortBy: {
+          column: "created_at",
+          order: "desc"
+        }
+      });
+
+    if (error) throw error;
+
+    const files = (data || []).filter(file => {
+      return file.name &&
+        file.name !== ".emptyFolderPlaceholder";
+    });
+
+    byId("documentCount").textContent = files.length;
+
+    if (!files.length) {
+      list.innerHTML =
+        '<div class="empty-state">No documents uploaded yet.</div>';
+      return;
+    }
+
+    list.innerHTML = "";
+
+    files.forEach(file => {
+      const path = currentUser.id + "/" + file.name;
+
+      const row = document.createElement("div");
+      row.className = "file-row";
+
+      const details = document.createElement("div");
+
+      const name = document.createElement("strong");
+      name.textContent = file.name;
+
+      const info = document.createElement("div");
+      info.style.color = "#718096";
+      info.style.marginTop = "5px";
+      info.textContent = file.metadata &&
+        file.metadata.size
+          ? formatBytes(file.metadata.size)
+          : "Stored document";
+
+      details.appendChild(name);
+      details.appendChild(info);
+
+      const openButton = document.createElement("button");
+      openButton.className = "btn btn-secondary";
+      openButton.textContent = "View";
+      openButton.addEventListener("click", () => {
+        viewDocument(path);
+      });
+
+      row.appendChild(details);
+      row.appendChild(openButton);
+
+      list.appendChild(row);
     });
 
   } catch (error) {
-    console.error("BorderFlow startup:",error);
-    showMessage("Could not connect to your workspace: " + error.message,true);
+    list.innerHTML =
+      '<div class="empty-state">Could not load documents.</div>';
+
+    showMessage(
+      "libraryStatus",
+      "Library error: " + error.message,
+      "error"
+    );
   }
 }
 
+
+async function viewDocument(path) {
+  try {
+    const { data, error } = await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(path, 60);
+
+    if (error) throw error;
+
+    window.open(data.signedUrl, "_blank", "noopener");
+
+  } catch (error) {
+    showMessage(
+      "libraryStatus",
+      "Could not open document: " + error.message,
+      "error"
+    );
+  }
+}
+
+
+/* -----------------------------------------------------
+   INITIALISE BORDERFLOW
+------------------------------------------------------ */
+
+async function initialise() {
+  renderMedia();
+
+  try {
+    const { data, error } =
+      await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    if (data.session && data.session.user) {
+      await enterWorkspace(data.session.user);
+    } else {
+      showWelcome();
+    }
+
+  } catch (error) {
+    console.error("BorderFlow startup error:", error);
+    showWelcome();
+  }
+}
+
+
+/* -----------------------------------------------------
+   AUTH STATE CHANGES
+------------------------------------------------------ */
+
+supabaseClient.auth.onAuthStateChange(
+  async (event, session) => {
+    if (event === "SIGNED_IN" && session?.user) {
+      currentUser = session.user;
+    }
+
+    if (event === "SIGNED_OUT") {
+      currentUser = null;
+    }
+  }
+);
+
+
+/* START BORDERFLOW */
+
 initialise();
+
 </script>
 
 </body>
