@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071b3a">
+<meta name="description" content="BorderFlow AI trade document intelligence for cross-border freight and customs.">
 <title>BorderFlow | AI Document Checker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
 :root {
@@ -26,362 +26,198 @@
   --orange:#ffbd59;
   --red:#ff737d;
 }
-
-* {box-sizing:border-box}
-
-body {
+*{box-sizing:border-box}
+body{
   margin:0;
   font-family:Inter,Arial,sans-serif;
-  background:
-    radial-gradient(circle at 80% 0%,#123c76 0,transparent 35%),
-    var(--bg);
+  background:radial-gradient(circle at 80% 0%,#123c76 0,transparent 35%),var(--bg);
   color:var(--text);
   min-height:100vh;
 }
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-button,input,select,textarea {font:inherit}
-button {cursor:pointer}
-
-.app {
-  display:grid;
-  grid-template-columns:245px minmax(0,1fr);
-  min-height:100vh;
+.logo{display:flex;align-items:center;gap:12px;padding:4px 9px 30px}
+.logo-mark{
+  width:42px;height:42px;border-radius:13px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#1684ff,#35d7ff);
+  font-size:22px;font-weight:900;
+  box-shadow:0 8px 25px #1769ff55;
 }
+.logo strong{font-size:21px;letter-spacing:.2px}
+.logo small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
 
-.sidebar {
+.app{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}
+.sidebar{
   background:rgba(5,19,42,.96);
   border-right:1px solid var(--border);
   padding:25px 17px;
-  position:sticky;
-  top:0;
-  height:100vh;
-  overflow-y:auto;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
 }
-
-.logo {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:4px 9px 30px;
+.nav-label{color:#7792b4;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:12px}
+.nav-button{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:13px 14px;margin:4px 0;color:#b9cbe2;
+  background:transparent;border:0;border-radius:11px;text-align:left;
 }
+.nav-button:hover,.nav-button.active{color:white;background:linear-gradient(100deg,#1769ff55,#1769ff12)}
+.nav-button.active{border:1px solid #3988ff55}
+.nav-icon{font-size:18px;width:22px;text-align:center}
+.sidebar-bottom{margin-top:35px;border-top:1px solid var(--border);padding:18px 8px;color:var(--muted);font-size:12px}
 
-.logo-mark {
-  width:42px;
-  height:42px;
-  border-radius:13px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#1684ff,#35d7ff);
-  font-size:22px;
-  font-weight:900;
-  box-shadow:0 8px 25px #1769ff55;
-}
-
-.logo strong {font-size:21px;letter-spacing:.2px}
-.logo small {display:block;color:var(--muted);font-size:10px;margin-top:3px}
-
-.nav-label {
-  color:#7792b4;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:1.5px;
-  padding:12px 12px;
-}
-
-.nav-button {
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 14px;
-  margin:4px 0;
-  color:#b9cbe2;
-  background:transparent;
-  border:0;
-  border-radius:11px;
-  text-align:left;
-  transition:.2s;
-}
-
-.nav-button:hover,.nav-button.active {
-  color:white;
-  background:linear-gradient(100deg,#1769ff55,#1769ff12);
-}
-
-.nav-button.active {
-  border:1px solid #3988ff55;
-}
-
-.nav-icon {font-size:18px;width:22px;text-align:center}
-
-.sidebar-bottom {
-  margin-top:35px;
-  border-top:1px solid var(--border);
-  padding:18px 8px;
-  color:var(--muted);
-  font-size:12px;
-}
-
-.main {min-width:0;padding:25px 32px 50px}
-
-.topbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:28px;
-}
-
-.page-title h1 {margin:0;font-size:26px}
-.page-title p {margin:7px 0 0;color:var(--muted);font-size:13px}
-
-.user-area {display:flex;align-items:center;gap:12px}
-.user-avatar {
+.main{min-width:0;padding:25px 32px 50px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}
+.page-title h1{margin:0;font-size:26px}
+.page-title p{margin:7px 0 0;color:var(--muted);font-size:13px}
+.user-area{display:flex;align-items:center;gap:12px}
+.user-avatar{
   width:39px;height:39px;border-radius:50%;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,#1769ff,#40d7ff);
-  font-weight:800;
+  display:grid;place-items:center;background:linear-gradient(135deg,#1769ff,#40d7ff);font-weight:800
 }
-
-.status-pill {
-  padding:7px 11px;
-  border-radius:30px;
-  color:#8df1c7;
-  background:#35d49a18;
-  border:1px solid #35d49a44;
-  font-size:11px;
+.status-pill{
+  padding:7px 11px;border-radius:30px;color:#8df1c7;
+  background:#35d49a18;border:1px solid #35d49a44;font-size:11px
 }
+.page{display:none}
+.page.active{display:block}
 
-.page {display:none}
-.page.active {display:block}
-
-.hero {
-  position:relative;
-  overflow:hidden;
-  padding:34px;
-  border-radius:22px;
+.hero{
+  position:relative;overflow:hidden;padding:34px;border-radius:22px;
   background:linear-gradient(120deg,#1154bd,#087edb 58%,#16a8d2);
-  box-shadow:0 20px 50px #001b4480;
-  margin-bottom:23px;
+  box-shadow:0 20px 50px #001b4480;margin-bottom:23px
 }
-
-.hero:after {
-  content:"";
-  position:absolute;
-  width:280px;height:280px;
-  right:-70px;top:-100px;
-  border:1px solid #ffffff30;
-  border-radius:50%;
-  box-shadow:0 0 0 35px #ffffff0c,0 0 0 75px #ffffff08;
+.hero:after{
+  content:"";position:absolute;width:280px;height:280px;right:-70px;top:-100px;
+  border:1px solid #ffffff30;border-radius:50%;
+  box-shadow:0 0 0 35px #ffffff0c,0 0 0 75px #ffffff08
 }
+.hero-content{position:relative;z-index:1;max-width:650px}
+.hero-tag{display:inline-block;background:#ffffff20;padding:7px 12px;border-radius:20px;font-size:11px;margin-bottom:14px}
+.hero h2{font-size:30px;margin:0 0 12px;line-height:1.2}
+.hero p{color:#e2f1ff;line-height:1.7;max-width:580px;font-size:14px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 
-.hero-content {position:relative;z-index:1;max-width:650px}
-.hero-tag {
-  display:inline-block;
-  background:#ffffff20;
-  padding:7px 12px;
-  border-radius:20px;
-  font-size:11px;
-  margin-bottom:14px;
-}
-.hero h2 {font-size:30px;margin:0 0 12px;line-height:1.2}
-.hero p {color:#e2f1ff;line-height:1.7;max-width:580px;font-size:14px}
-.hero-actions {display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{border:0;border-radius:10px;padding:12px 17px;font-weight:750;font-size:13px;transition:.2s}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,#1684ff,#36b9ff);color:white}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn-light{background:white;color:#0752b8}
+.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff55}
+.btn-danger{background:#ff737d20;color:#ff9ca3;border:1px solid #ff737d55}
 
-.btn {
-  border:0;
-  border-radius:10px;
-  padding:12px 17px;
-  font-weight:750;
-  font-size:13px;
-  transition:.2s;
-}
-
-.btn-primary {background:linear-gradient(135deg,#1684ff,#36b9ff);color:white}
-.btn-primary:hover {filter:brightness(1.12);transform:translateY(-1px)}
-.btn-light {background:white;color:#0752b8}
-.btn-outline {background:#ffffff12;color:white;border:1px solid #ffffff55}
-.btn-danger {background:#ff737d20;color:#ff9ca3;border:1px solid #ff737d55}
-
-.stats {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;
-  margin-bottom:23px;
-}
-
-.stat-card,.panel {
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:23px}
+.stat-card,.panel{
   background:linear-gradient(145deg,#112b4d,#0d2341);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:20px;
+  border:1px solid var(--border);border-radius:16px;padding:20px
 }
+.stat-card small{color:var(--muted);font-size:12px}
+.stat-card strong{display:block;font-size:27px;margin:12px 0 5px}
+.stat-card span{color:#8cbaff;font-size:11px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:28px 0 15px}
+.section-heading h2{font-size:18px;margin:0}
+.section-heading p{font-size:12px;color:var(--muted);margin:5px 0 0}
+.panel{margin-bottom:18px}
+.panel h3{margin:0 0 8px;font-size:16px}
+.panel-description{font-size:12px;color:var(--muted);line-height:1.6}
 
-.stat-card small {color:var(--muted);font-size:12px}
-.stat-card strong {display:block;font-size:27px;margin:12px 0 5px}
-.stat-card span {color:#8cbaff;font-size:11px}
-
-.section-heading {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin:28px 0 15px;
+.checker-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+.upload-zone{
+  border:1.5px dashed #3988ff88;background:#1769ff0b;
+  border-radius:15px;padding:28px 18px;text-align:center;margin:17px 0
 }
-
-.section-heading h2 {font-size:18px;margin:0}
-.section-heading p {font-size:12px;color:var(--muted);margin:5px 0 0}
-
-.panel {margin-bottom:18px}
-.panel h3 {margin:0 0 8px;font-size:16px}
-.panel-description {font-size:12px;color:var(--muted);line-height:1.6}
-
-.checker-layout {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 310px;
-  gap:18px;
-  align-items:start;
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-zone strong{display:block;margin-bottom:8px}
+.upload-zone p{font-size:12px;color:var(--muted);line-height:1.6}
+.field{margin:15px 0}
+.field label{display:block;font-size:12px;color:#c6d7ec;margin-bottom:8px}
+.field input,.field select{
+  width:100%;background:#071b35;border:1px solid #29496d;color:white;
+  border-radius:9px;padding:12px;outline:none
 }
-
-.upload-zone {
-  border:1.5px dashed #3988ff88;
-  background:#1769ff0b;
-  border-radius:15px;
-  padding:28px 18px;
-  text-align:center;
-  margin:17px 0;
+.field input:focus,.field select:focus{border-color:#3988ff}
+.field select option{background:#102747}
+.file-name{font-size:12px;color:#8fc3ff;margin-top:10px;overflow-wrap:anywhere}
+.progress-track{height:7px;background:#203a5b;border-radius:10px;overflow:hidden;margin-top:12px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#1769ff,#42d7ff);transition:width .3s}
+.result-box{
+  background:#071b35;border:1px solid var(--border);border-radius:12px;
+  padding:17px;margin-top:16px;min-height:100px;font-size:13px;line-height:1.7;overflow-wrap:anywhere
 }
-
-.upload-icon {font-size:36px;margin-bottom:10px}
-.upload-zone strong {display:block;margin-bottom:8px}
-.upload-zone p {font-size:12px;color:var(--muted);line-height:1.6}
-
-.field {margin:15px 0}
-.field label {display:block;font-size:12px;color:#c6d7ec;margin-bottom:8px}
-.field input,.field select,.field textarea {
-  width:100%;
-  background:#071b35;
-  border:1px solid #29496d;
-  color:white;
-  border-radius:9px;
-  padding:12px;
-  outline:none;
+.result-box h4{margin:0 0 10px;color:#8fc3ff}
+.result-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.result-item:last-child{border:0}
+.result-good{color:#71e5b5}
+.result-warning{color:#ffd17c}
+.result-error{color:#ff929a}
+.side-step{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.side-step:last-child{border:0}
+.step-number{
+  width:27px;height:27px;flex-shrink:0;border-radius:9px;
+  display:grid;place-items:center;background:#1769ff30;color:#78b4ff;font-size:12px;font-weight:800
 }
-.field input:focus,.field select:focus,.field textarea:focus {border-color:#3988ff}
-.field select option {background:#102747}
+.side-step strong{font-size:12px}
+.side-step p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
 
-.file-name {font-size:12px;color:#8fc3ff;margin-top:10px;overflow-wrap:anywhere}
-.progress-track {height:7px;background:#203a5b;border-radius:10px;overflow:hidden;margin-top:12px}
-.progress-bar {height:100%;width:0;background:linear-gradient(90deg,#1769ff,#42d7ff);transition:width .3s}
+.library-list{display:grid;gap:10px}
+.library-item{
+  display:flex;justify-content:space-between;align-items:center;gap:15px;
+  padding:14px;border:1px solid var(--border);background:#071b35;border-radius:11px
+}
+.library-item strong{font-size:12px;overflow-wrap:anywhere}
+.library-item small{display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.empty-state{text-align:center;color:var(--muted);padding:35px 10px;font-size:13px}
 
-.result-box {
-  background:#071b35;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:17px;
-  margin-top:16px;
-  min-height:100px;
-  font-size:13px;
-  line-height:1.7;
-  overflow-wrap:anywhere;
+.media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.media-card{background:#102747;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.media-card video,.media-card img{
+  display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#06152b
 }
+.media-card div{padding:13px}
+.media-card strong{font-size:12px}
+.media-card p{font-size:11px;color:var(--muted);line-height:1.5}
 
-.result-box h4 {margin:0 0 10px;color:#8fc3ff}
-.result-item {padding:10px 0;border-bottom:1px solid var(--border)}
-.result-item:last-child {border:0}
-.result-good {color:#71e5b5}
-.result-warning {color:#ffd17c}
-.result-error {color:#ff929a}
-
-.side-step {
-  display:flex;gap:12px;
-  padding:13px 0;
-  border-bottom:1px solid var(--border);
+.notice{
+  border:1px solid #ffbd5944;background:#ffbd5910;color:#f8d99e;
+  padding:13px 15px;border-radius:11px;font-size:12px;line-height:1.6;margin-top:15px
 }
-.side-step:last-child {border:0}
-.step-number {
-  width:27px;height:27px;flex-shrink:0;
-  border-radius:9px;display:grid;place-items:center;
-  background:#1769ff30;color:#78b4ff;font-size:12px;font-weight:800;
-}
-.side-step strong {font-size:12px}
-.side-step p {margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
-
-.library-list {display:grid;gap:10px}
-.library-item {
-  display:flex;justify-content:space-between;align-items:center;
-  gap:15px;padding:14px;
-  border:1px solid var(--border);
-  background:#071b35;border-radius:11px;
-}
-.library-item strong {font-size:12px;overflow-wrap:anywhere}
-.library-item small {display:block;color:var(--muted);font-size:11px;margin-top:5px}
-.empty-state {text-align:center;color:var(--muted);padding:35px 10px;font-size:13px}
-
-.media-grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:15px;
-}
-.media-card {
-  background:#102747;border:1px solid var(--border);
-  border-radius:14px;overflow:hidden;
-}
-.media-card video,.media-card img {
-  display:block;width:100%;aspect-ratio:16/9;
-  object-fit:cover;background:#06152b;
-}
-.media-card div {padding:13px}
-.media-card strong {font-size:12px}
-.media-card p {font-size:11px;color:var(--muted);line-height:1.5}
-
-.notice {
-  border:1px solid #ffbd5944;
-  background:#ffbd5910;
-  color:#f8d99e;
-  padding:13px 15px;border-radius:11px;
-  font-size:12px;line-height:1.6;margin-top:15px;
-}
-
-.auth-screen {
+.auth-screen{
   min-height:100vh;display:grid;place-items:center;padding:20px;
-  background:radial-gradient(circle at 50% 0%,#174b91,#07152d 65%);
+  background:radial-gradient(circle at 50% 0%,#174b91,#07152d 65%)
 }
-.auth-card {
-  width:min(420px,100%);padding:30px;
-  background:#102747;border:1px solid var(--border);
-  border-radius:20px;box-shadow:0 25px 70px #0007;
+.auth-card{
+  width:min(420px,100%);padding:30px;background:#102747;
+  border:1px solid var(--border);border-radius:20px;box-shadow:0 25px 70px #0007
 }
-.auth-card h1 {margin:0 0 8px}
-.auth-card p {color:var(--muted);font-size:13px;line-height:1.6}
-.auth-card .btn {width:100%;margin-top:10px}
-.auth-switch {text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
-.auth-switch button {background:none;border:0;color:#68b3ff}
+.auth-card h1{margin:0 0 8px}
+.auth-card p{color:var(--muted);font-size:13px;line-height:1.6}
+.auth-card .btn{width:100%;margin-top:10px}
+.auth-switch{text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
+.auth-switch button{background:none;border:0;color:#68b3ff}
+#appRoot{display:none}
+#message{font-size:12px;color:#8fc3ff;margin-top:12px;line-height:1.5}
 
-#appRoot {display:none}
-#message {font-size:12px;color:#8fc3ff;margin-top:12px;line-height:1.5}
-.hidden {display:none!important}
-
-@media(max-width:1050px) {
-  .stats {grid-template-columns:repeat(2,minmax(0,1fr))}
-  .checker-layout {grid-template-columns:1fr}
-  .media-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1050px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .checker-layout{grid-template-columns:1fr}
+  .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:720px) {
-  .app {grid-template-columns:1fr}
-  .sidebar {height:auto;position:relative;padding:13px}
-  .logo {padding:4px 8px 12px}
-  .nav-label,.sidebar-bottom {display:none}
-  .nav-button {width:auto;display:inline-flex;padding:10px;margin:3px}
-  .sidebar nav {display:flex;flex-wrap:wrap}
-  .main {padding:18px 14px 35px}
-  .topbar {align-items:flex-start}
-  .hero {padding:24px}
-  .hero h2 {font-size:24px}
-  .stats {gap:9px}
-  .stat-card {padding:14px}
-  .stat-card strong {font-size:22px}
-  .media-grid {grid-template-columns:1fr}
+@media(max-width:720px){
+  .app{grid-template-columns:1fr}
+  .sidebar{height:auto;position:relative;padding:13px}
+  .logo{padding:4px 8px 12px}
+  .nav-label,.sidebar-bottom{display:none}
+  .nav-button{width:auto;display:inline-flex;padding:10px;margin:3px}
+  .sidebar nav{display:flex;flex-wrap:wrap}
+  .main{padding:18px 14px 35px}
+  .topbar{align-items:flex-start}
+  .hero{padding:24px}
+  .hero h2{font-size:24px}
+  .stats{gap:9px}
+  .stat-card{padding:14px}
+  .stat-card strong{font-size:22px}
+  .media-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -393,7 +229,10 @@ button {cursor:pointer}
   <div class="auth-card">
     <div class="logo" style="padding:0 0 20px">
       <div class="logo-mark">B</div>
-      <div><strong>BorderFlow</strong><small>AI DOCUMENT INTELLIGENCE</small></div>
+      <div>
+        <strong><span style="color:white">Border</span><span style="color:#3988ff">Flow</span></strong>
+        <small>AI DOCUMENT INTELLIGENCE</small>
+      </div>
     </div>
 
     <h1 id="authTitle">Welcome back</h1>
@@ -401,12 +240,11 @@ button {cursor:pointer}
 
     <div class="field">
       <label>Email address</label>
-      <input id="email" type="email" placeholder="you@company.com">
+      <input id="email" type="email" placeholder="you@company.com" autocomplete="email">
     </div>
-
     <div class="field">
       <label>Password</label>
-      <input id="password" type="password" placeholder="Your password">
+      <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
     </div>
 
     <button class="btn btn-primary" id="authButton" onclick="authenticate()">Sign in</button>
@@ -426,23 +264,18 @@ button {cursor:pointer}
 <aside class="sidebar">
   <div class="logo">
     <div class="logo-mark">B</div>
-    <div><strong>BorderFlow</strong><small>TRADE DOCUMENT AI</small></div>
+    <div>
+      <strong><span style="color:white">Border</span><span style="color:#3988ff">Flow</span></strong>
+      <small>TRADE DOCUMENT AI</small>
+    </div>
   </div>
 
   <div class="nav-label">WORKSPACE</div>
   <nav>
-    <button class="nav-button active" data-page="dashboard" onclick="showPage('dashboard',this)">
-      <span class="nav-icon">⌂</span> Dashboard
-    </button>
-    <button class="nav-button" data-page="checker" onclick="showPage('checker',this)">
-      <span class="nav-icon">✧</span> AI Document Checker
-    </button>
-    <button class="nav-button" data-page="library" onclick="showPage('library',this)">
-      <span class="nav-icon">▤</span> Document Library
-    </button>
-    <button class="nav-button" data-page="media" onclick="showPage('media',this)">
-      <span class="nav-icon">▶</span> BorderFlow Media
-    </button>
+    <button class="nav-button active" data-page="dashboard" onclick="showPage('dashboard')"><span class="nav-icon">⌂</span> Dashboard</button>
+    <button class="nav-button" data-page="checker" onclick="showPage('checker')"><span class="nav-icon">✧</span> AI Document Checker</button>
+    <button class="nav-button" data-page="library" onclick="showPage('library')"><span class="nav-icon">▤</span> Document Library</button>
+    <button class="nav-button" data-page="media" onclick="showPage('media')"><span class="nav-icon">▶</span> BorderFlow Media</button>
   </nav>
 
   <div class="sidebar-bottom">
@@ -453,7 +286,6 @@ button {cursor:pointer}
 </aside>
 
 <main class="main">
-
 <header class="topbar">
   <div class="page-title">
     <h1 id="pageHeading">Dashboard</h1>
@@ -465,9 +297,8 @@ button {cursor:pointer}
   </div>
 </header>
 
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 <section class="page active" id="dashboardPage">
-
   <div class="hero">
     <div class="hero-content">
       <span class="hero-tag">✦ BORDERFLOW AI DOCUMENT INTELLIGENCE</span>
@@ -485,36 +316,17 @@ button {cursor:pointer}
   </div>
 
   <div class="stats">
-    <div class="stat-card">
-      <small>Documents uploaded</small>
-      <strong id="statDocuments">0</strong>
-      <span>Your saved documents</span>
-    </div>
-    <div class="stat-card">
-      <small>AI checks completed</small>
-      <strong id="statChecks">0</strong>
-      <span>Reports generated</span>
-    </div>
-    <div class="stat-card">
-      <small>Documents needing review</small>
-      <strong id="statReview">0</strong>
-      <span>Check flagged findings</span>
-    </div>
-    <div class="stat-card">
-      <small>Document types</small>
-      <strong>6+</strong>
-      <span>Trade document categories</span>
-    </div>
+    <div class="stat-card"><small>Documents uploaded</small><strong id="statDocuments">0</strong><span>Your saved documents</span></div>
+    <div class="stat-card"><small>AI checks completed</small><strong id="statChecks">0</strong><span>Reports generated this session</span></div>
+    <div class="stat-card"><small>Documents needing review</small><strong id="statReview">0</strong><span>Flagged findings this session</span></div>
+    <div class="stat-card"><small>Document types</small><strong>6+</strong><span>Trade document categories</span></div>
   </div>
 
   <div class="section-heading">
-    <div>
-      <h2>Start your document workflow</h2>
-      <p>Choose the next step in your checking process.</p>
-    </div>
+    <div><h2>Start your document workflow</h2><p>Choose the next step in your checking process.</p></div>
   </div>
 
-  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
     <div class="panel">
       <div style="font-size:27px">📄</div>
       <h3>Upload documents</h3>
@@ -529,25 +341,22 @@ button {cursor:pointer}
     </div>
     <div class="panel">
       <div style="font-size:27px">▤</div>
-      <h3>View saved reports</h3>
-      <p class="panel-description">Return to your uploaded documents and saved checking results.</p>
+      <h3>View saved documents</h3>
+      <p class="panel-description">Return to your uploaded documents.</p>
       <button class="btn btn-primary" onclick="showPage('library')">Open library</button>
     </div>
   </div>
 
   <div class="notice">
     BorderFlow provides document-reading and checking assistance.
-    Always have a qualified clearing agent verify important findings and official customs requirements.
+    A qualified clearing agent must verify important findings and official customs requirements.
   </div>
 </section>
 
-<!-- DOCUMENT CHECKER PAGE -->
+<!-- DOCUMENT CHECKER -->
 <section class="page" id="checkerPage">
   <div class="section-heading">
-    <div>
-      <h2>AI Document Checker</h2>
-      <p>Upload a document, extract its text and send it for AI analysis.</p>
-    </div>
+    <div><h2>AI Document Checker</h2><p>Upload a document, extract its text and send it for AI analysis.</p></div>
   </div>
 
   <div class="checker-layout">
@@ -559,7 +368,6 @@ button {cursor:pointer}
         <label>Shipment reference</label>
         <input id="shipmentRef" placeholder="Example: BF001">
       </div>
-
       <div class="field">
         <label>Document type</label>
         <select id="documentType">
@@ -577,7 +385,7 @@ button {cursor:pointer}
         <div class="upload-icon">☁</div>
         <strong>Choose a document to check</strong>
         <p>Supported: PDF, PNG, JPG and JPEG. Maximum file size: 10 MB.</p>
-        <input type="file" id="documentFile" accept=".pdf,.png,.jpg,.jpeg" onchange="fileSelected()">
+        <input type="file" id="documentFile" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" onchange="fileSelected()">
         <div class="file-name" id="fileName">No document selected</div>
       </div>
 
@@ -593,7 +401,6 @@ button {cursor:pointer}
         <h4>Document reading</h4>
         Your extracted document text will appear here.
       </div>
-
       <div id="aiResult" class="result-box">
         <h4>AI checking report</h4>
         Your AI analysis will appear here after checking.
@@ -603,22 +410,10 @@ button {cursor:pointer}
     <div>
       <div class="panel">
         <h3>How it works</h3>
-        <div class="side-step">
-          <div class="step-number">1</div>
-          <div><strong>Upload</strong><p>Select a trade document from your computer.</p></div>
-        </div>
-        <div class="side-step">
-          <div class="step-number">2</div>
-          <div><strong>Read</strong><p>OCR attempts to extract the text from the document.</p></div>
-        </div>
-        <div class="side-step">
-          <div class="step-number">3</div>
-          <div><strong>Analyse</strong><p>AI checks the extracted information for potential issues.</p></div>
-        </div>
-        <div class="side-step">
-          <div class="step-number">4</div>
-          <div><strong>Review</strong><p>Read the findings and have a qualified person verify them.</p></div>
-        </div>
+        <div class="side-step"><div class="step-number">1</div><div><strong>Upload</strong><p>Select a trade document from your computer.</p></div></div>
+        <div class="side-step"><div class="step-number">2</div><div><strong>Read</strong><p>OCR attempts to extract text from your document.</p></div></div>
+        <div class="side-step"><div class="step-number">3</div><div><strong>Analyse</strong><p>AI checks the extracted information for potential issues.</p></div></div>
+        <div class="side-step"><div class="step-number">4</div><div><strong>Review</strong><p>Read the findings and have a qualified person verify them.</p></div></div>
       </div>
 
       <div class="panel">
@@ -638,13 +433,10 @@ button {cursor:pointer}
   </div>
 </section>
 
-<!-- DOCUMENT LIBRARY -->
+<!-- LIBRARY -->
 <section class="page" id="libraryPage">
   <div class="section-heading">
-    <div>
-      <h2>Document Library</h2>
-      <p>Your saved BorderFlow documents.</p>
-    </div>
+    <div><h2>Document Library</h2><p>Your saved BorderFlow documents.</p></div>
     <button class="btn btn-primary" onclick="showPage('checker')">+ Upload document</button>
   </div>
   <div class="panel">
@@ -657,34 +449,31 @@ button {cursor:pointer}
 <!-- MEDIA -->
 <section class="page" id="mediaPage">
   <div class="section-heading">
-    <div>
-      <h2>BorderFlow Media</h2>
-      <p>Clearing-agent and transport videos from your repository.</p>
-    </div>
+    <div><h2>BorderFlow Media</h2><p>Clearing-agent and transport videos from your repository.</p></div>
   </div>
 
   <div class="panel">
     <h3>Clearing-agent videos</h3>
-    <p class="panel-description">Your uploaded clearing-agent videos.</p>
+    <p class="panel-description">Your five uploaded clearing-agent videos.</p>
     <div class="media-grid">
       <div class="media-card">
-        <video controls preload="metadata"><source src="clearent%20agent%201.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="clearent%20agent%201.mp4" type="video/mp4"></video>
         <div><strong>Clearing Agent 1</strong><p>Clearing-agent video</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="clearent%20agent%202.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="clearent%20agent%202.mp4" type="video/mp4"></video>
         <div><strong>Clearing Agent 2</strong><p>Clearing-agent video</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="clearent%20agent%203.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="clearent%20agent%203.mp4" type="video/mp4"></video>
         <div><strong>Clearing Agent 3</strong><p>Clearing-agent video</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="clearent%20agent%204.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="clearent%20agent%204.mp4" type="video/mp4"></video>
         <div><strong>Clearing Agent 4</strong><p>Clearing-agent video</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="clearent%20agent%205.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="clearent%20agent%205.mp4" type="video/mp4"></video>
         <div><strong>Clearing Agent 5</strong><p>Clearing-agent video</p></div>
       </div>
     </div>
@@ -694,15 +483,15 @@ button {cursor:pointer}
     <h3>Truck and border videos</h3>
     <div class="media-grid">
       <div class="media-card">
-        <video controls preload="metadata"><source src="truck%201.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="truck%201.mp4" type="video/mp4"></video>
         <div><strong>Truck 1</strong><p>Transport and border operations</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="truck%202.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="truck%202.mp4" type="video/mp4"></video>
         <div><strong>Truck 2</strong><p>Transport and border operations</p></div>
       </div>
       <div class="media-card">
-        <video controls preload="metadata"><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4"></video>
+        <video controls preload="none"><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4"></video>
         <div><strong>BorderFlow video</strong><p>Additional uploaded video</p></div>
       </div>
     </div>
@@ -710,11 +499,11 @@ button {cursor:pointer}
 
   <div class="panel">
     <h3>BorderFlow pictures</h3>
-    <p class="panel-description">Keep your existing picture files in the repository. Add their exact filenames here when we confirm them.</p>
+    <p class="panel-description">Your existing Beitbridge border picture.</p>
     <div class="media-grid">
       <div class="media-card">
         <img src="trucks-at-Beitbridge-border.webp" alt="Trucks at Beitbridge border" onerror="this.parentElement.style.display='none'">
-        <div><strong>Beitbridge border</strong><p>Cross-border transport</p></div>
+        <div><strong>Beitbridge border</strong><p>Cross-border transport operations</p></div>
       </div>
     </div>
   </div>
@@ -725,47 +514,38 @@ button {cursor:pointer}
 </div>
 
 <script>
-<script>
-
 // ==========================================
-// BORDERFLOW GROUP 2
-// SUPABASE + AUTH + OCR + DOCUMENT CHECKER
+// BORDERFLOW APPLICATION
+// Supabase + Authentication + OCR + AI
 // ==========================================
 
 const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
-
 const STORAGE_BUCKET = "freight-documents";
 const AI_FUNCTION = "document-intelligence";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
 let selectedFile = null;
 let authMode = "login";
 let extractedDocumentText = "";
+let sessionChecks = 0;
+let sessionReviews = 0;
 
 // ==========================================
-// SAFE DISPLAY HELPERS
+// HELPERS
 // ==========================================
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   })[char]);
 }
 
 function showMessage(message, isError = false) {
   const element = document.getElementById("message");
   if (!element) return;
-
   element.textContent = message;
   element.style.color = isError ? "#ff929a" : "#8fc3ff";
 }
@@ -773,7 +553,6 @@ function showMessage(message, isError = false) {
 function setProgress(percent, message) {
   const bar = document.getElementById("progressBar");
   const text = document.getElementById("progressText");
-
   if (bar) bar.style.width = `${percent}%`;
   if (text) text.textContent = message;
 }
@@ -783,27 +562,40 @@ function setHTML(id, html) {
   if (element) element.innerHTML = html;
 }
 
+function loadExternalScript(src) {
+  return new Promise((resolve, reject) => {
+    const existing = [...document.scripts].find(script => script.src === src);
+    if (existing) {
+      if (existing.dataset.loaded === "yes") return resolve();
+      existing.addEventListener("load", resolve, {once:true});
+      existing.addEventListener("error", reject, {once:true});
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => {
+      script.dataset.loaded = "yes";
+      resolve();
+    };
+    script.onerror = () => reject(new Error("A required reading library could not load. Check your internet connection."));
+    document.head.appendChild(script);
+  });
+}
+
 // ==========================================
 // AUTHENTICATION
 // ==========================================
 
 function toggleAuth() {
   authMode = authMode === "login" ? "signup" : "login";
-
   document.getElementById("authTitle").textContent =
     authMode === "login" ? "Welcome back" : "Create your account";
-
   document.getElementById("authButton").textContent =
     authMode === "login" ? "Sign in" : "Create account";
-
   document.getElementById("authSwitchText").textContent =
-    authMode === "login"
-      ? "Don't have an account?"
-      : "Already have an account?";
-
+    authMode === "login" ? "Don't have an account?" : "Already have an account?";
   document.getElementById("authSwitchButton").textContent =
     authMode === "login" ? "Create account" : "Sign in";
-
   showMessage("");
 }
 
@@ -815,7 +607,6 @@ async function authenticate() {
     showMessage("Enter your email and password.", true);
     return;
   }
-
   if (password.length < 6) {
     showMessage("Your password must contain at least 6 characters.", true);
     return;
@@ -827,17 +618,10 @@ async function authenticate() {
 
   try {
     let result;
-
     if (authMode === "signup") {
-      result = await db.auth.signUp({
-        email,
-        password
-      });
+      result = await db.auth.signUp({email, password});
     } else {
-      result = await db.auth.signInWithPassword({
-        email,
-        password
-      });
+      result = await db.auth.signInWithPassword({email, password});
     }
 
     if (result.error) throw result.error;
@@ -846,28 +630,22 @@ async function authenticate() {
       currentUser = result.data.user;
       await openWorkspace();
     } else {
-      showMessage(
-        "Account created. Check your email if email confirmation is enabled."
-      );
+      showMessage("Account created. Check your email if email confirmation is enabled.");
     }
-
   } catch (error) {
     showMessage(error.message || "Authentication failed.", true);
   } finally {
     button.disabled = false;
-    button.textContent =
-      authMode === "login" ? "Sign in" : "Create account";
+    button.textContent = authMode === "login" ? "Sign in" : "Create account";
   }
 }
 
 async function logout() {
-  const { error } = await db.auth.signOut();
-
+  const {error} = await db.auth.signOut();
   if (error) {
     alert(error.message);
     return;
   }
-
   currentUser = null;
   document.getElementById("appRoot").style.display = "none";
   document.getElementById("authScreen").style.display = "grid";
@@ -875,14 +653,11 @@ async function logout() {
 
 async function openWorkspace() {
   if (!currentUser) return;
-
   document.getElementById("authScreen").style.display = "none";
   document.getElementById("appRoot").style.display = "block";
 
   const email = currentUser.email || "BorderFlow User";
-
-  document.getElementById("userAvatar").textContent =
-    email.charAt(0).toUpperCase();
+  document.getElementById("userAvatar").textContent = email.charAt(0).toUpperCase();
 
   await loadDashboardData();
   await loadLibrary();
@@ -892,37 +667,22 @@ async function openWorkspace() {
 // NAVIGATION
 // ==========================================
 
-function showPage(page, button) {
-  document.querySelectorAll(".page").forEach(section => {
-    section.classList.remove("active");
-  });
-
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(section => section.classList.remove("active"));
   const target = document.getElementById(page + "Page");
-
   if (target) target.classList.add("active");
 
   document.querySelectorAll(".nav-button[data-page]").forEach(item => {
-    item.classList.remove("active");
+    item.classList.toggle("active", item.dataset.page === page);
   });
 
-  if (button) {
-    button.classList.add("active");
-  } else {
-    const nav = document.querySelector(
-      `.nav-button[data-page="${page}"]`
-    );
-    if (nav) nav.classList.add("active");
-  }
-
   const titles = {
-    dashboard: ["Dashboard", "Your document intelligence workspace"],
-    checker: ["AI Document Checker", "Read and analyse trade documents"],
-    library: ["Document Library", "Your saved trade documents"],
-    media: ["BorderFlow Media", "Clearing-agent and transport videos"]
+    dashboard:["Dashboard","Your document intelligence workspace"],
+    checker:["AI Document Checker","Read and analyse trade documents"],
+    library:["Document Library","Your saved trade documents"],
+    media:["BorderFlow Media","Clearing-agent and transport videos"]
   };
-
   const heading = titles[page] || titles.dashboard;
-
   document.getElementById("pageHeading").textContent = heading[0];
   document.getElementById("pageSubtitle").textContent = heading[1];
 
@@ -935,25 +695,16 @@ function showPage(page, button) {
 
 function fileSelected() {
   const input = document.getElementById("documentFile");
-  selectedFile = input.files && input.files[0]
-    ? input.files[0]
-    : null;
-
+  selectedFile = input.files && input.files[0] ? input.files[0] : null;
   if (!selectedFile) return;
 
-  const allowedTypes = [
-    "application/pdf",
-    "image/png",
-    "image/jpeg"
-  ];
-
+  const allowedTypes = ["application/pdf","image/png","image/jpeg"];
   if (!allowedTypes.includes(selectedFile.type)) {
     alert("Please choose a PDF, PNG or JPG document.");
     input.value = "";
     selectedFile = null;
     return;
   }
-
   if (selectedFile.size > 10 * 1024 * 1024) {
     alert("The maximum file size is 10 MB.");
     input.value = "";
@@ -962,76 +713,47 @@ function fileSelected() {
   }
 
   document.getElementById("fileName").textContent =
-    selectedFile.name + " (" +
-    (selectedFile.size / 1024 / 1024).toFixed(2) +
-    " MB)";
+    selectedFile.name + " (" + (selectedFile.size / 1024 / 1024).toFixed(2) + " MB)";
 }
 
 // ==========================================
-// PDF.JS LOADER
+// OCR LIBRARIES
 // ==========================================
+
+async function loadTesseract() {
+  if (window.Tesseract) return window.Tesseract;
+  await loadExternalScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
+  if (!window.Tesseract) throw new Error("OCR library did not initialise.");
+  return window.Tesseract;
+}
 
 async function loadPDFLibrary() {
   if (window.pdfjsLib) return window.pdfjsLib;
-
-  await new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-
-    script.onload = resolve;
-    script.onerror = () => reject(
-      new Error("Could not load the PDF reader. Check your internet connection.")
-    );
-
-    document.head.appendChild(script);
-  });
-
+  await loadExternalScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+  if (!window.pdfjsLib) throw new Error("PDF reader did not initialise.");
   window.pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
   return window.pdfjsLib;
 }
 
-// ==========================================
-// OCR FOR IMAGES
-// ==========================================
-
 async function readImage(file) {
-  if (!window.Tesseract) {
-    throw new Error("OCR library did not load. Refresh and try again.");
-  }
-
-  const result = await Tesseract.recognize(
-    file,
-    "eng",
-    {
-      logger: message => {
-        if (message.status === "recognizing text") {
-          const percent = Math.round(
-            20 + (message.progress || 0) * 35
-          );
-
-          setProgress(percent, "Reading image: " + percent + "%");
-        }
+  const Tesseract = await loadTesseract();
+  const result = await Tesseract.recognize(file, "eng", {
+    logger: message => {
+      if (message.status === "recognizing text") {
+        const percent = Math.round(20 + (message.progress || 0) * 35);
+        setProgress(percent, "Reading image: " + percent + "%");
       }
     }
-  );
-
+  });
   return result.data.text || "";
 }
 
-// ==========================================
-// OCR FOR PDF DOCUMENTS
-// ==========================================
-
 async function readPDF(file) {
   const pdfjs = await loadPDFLibrary();
+  const Tesseract = await loadTesseract();
   const buffer = await file.arrayBuffer();
-
-  const pdf = await pdfjs.getDocument({
-    data: new Uint8Array(buffer)
-  }).promise;
+  const pdf = await pdfjs.getDocument({data:new Uint8Array(buffer)}).promise;
 
   let combinedText = "";
   const pagesToRead = Math.min(pdf.numPages, 10);
@@ -1044,140 +766,82 @@ async function readPDF(file) {
 
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-
-    const pageText = content.items
-      .map(item => item.str || "")
-      .join(" ");
+    const pageText = content.items.map(item => item.str || "").join(" ");
 
     if (pageText.trim().length > 30) {
-      combinedText +=
-        "\n--- PAGE " + pageNumber + " ---\n" +
-        pageText + "\n";
+      combinedText += "\n--- PAGE " + pageNumber + " ---\n" + pageText + "\n";
     } else {
-      const viewport = page.getViewport({ scale: 1.5 });
+      const viewport = page.getViewport({scale:1.5});
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
-
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
-      await page.render({
-        canvasContext: context,
-        viewport
-      }).promise;
-
-      const result = await Tesseract.recognize(
-        canvas,
-        "eng"
-      );
-
-      combinedText +=
-        "\n--- PAGE " + pageNumber + " ---\n" +
-        result.data.text + "\n";
+      await page.render({canvasContext:context,viewport}).promise;
+      const result = await Tesseract.recognize(canvas,"eng");
+      combinedText += "\n--- PAGE " + pageNumber + " ---\n" + result.data.text + "\n";
     }
   }
 
   if (pdf.numPages > 10) {
-    combinedText +=
-      "\nOnly the first 10 pages were processed. Review the remaining pages separately.";
+    combinedText += "\nOnly the first 10 pages were processed. Review the remaining pages separately.";
   }
-
   return combinedText;
 }
 
-// ==========================================
-// DOCUMENT TEXT EXTRACTION
-// ==========================================
-
 async function extractDocumentText(file) {
-  if (file.type === "application/pdf") {
-    return await readPDF(file);
-  }
-
-  return await readImage(file);
+  if (file.type === "application/pdf") return readPDF(file);
+  return readImage(file);
 }
 
 // ==========================================
-// DOCUMENT UPLOAD
+// UPLOAD TO PRIVATE SUPABASE STORAGE
 // ==========================================
 
-async function uploadDocument(file, shipmentRef, documentType, text) {
-  if (!currentUser) {
-    throw new Error("Please sign in before uploading documents.");
-  }
+async function uploadDocument(file) {
+  if (!currentUser) throw new Error("Please sign in before uploading documents.");
 
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const storagePath = currentUser.id + "/" + Date.now() + "_" + safeName;
 
-  const storagePath =
-    currentUser.id + "/" +
-    Date.now() + "_" +
-    safeName;
+  const {error} = await db.storage.from(STORAGE_BUCKET).upload(storagePath,file,{
+    cacheControl:"3600",
+    upsert:false,
+    contentType:file.type
+  });
 
-  const { error: storageError } = await db.storage
-    .from(STORAGE_BUCKET)
-    .upload(storagePath, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type
-    });
-
-  if (storageError) throw storageError;
-
-  const { data, error } = await db
-    .from("bf_documents")
-    .insert({
-      user_id: currentUser.id,
-      shipment_ref: shipmentRef || null,
-      document_type: documentType,
-      file_name: file.name,
-      storage_path: storagePath,
-      extracted_text: text,
-      status: "uploaded"
-    })
-    .select()
-    .single();
-
-  if (error) {
-    // Avoid leaving an orphaned uploaded file when the database insert fails.
-    await db.storage.from(STORAGE_BUCKET).remove([storagePath]);
-    throw error;
-  }
-
-  return data;
+  if (error) throw error;
+  return {storage_path:storagePath,file_name:file.name};
 }
 
 // ==========================================
-// AI DOCUMENT ANALYSIS
+// GROQ-POWERED SUPABASE EDGE FUNCTION
 // ==========================================
 
-async function analyseDocument(document, shipmentRef, documentType, text) {
-  const { data, error } = await db.functions.invoke(
-    AI_FUNCTION,
-    {
-      body: {
-        action: "check_document",
-        document_id: document.id,
-        shipment_ref: shipmentRef,
-        document_type: documentType,
-        extracted_text: text
-      }
+async function analyseDocument(savedDocument, shipmentRef, documentType, text) {
+  const {data,error} = await db.functions.invoke(AI_FUNCTION,{
+    body:{
+      action:"check_document",
+      document_id:savedDocument.storage_path,
+      shipment_ref:shipmentRef || null,
+      document_type:documentType,
+      file_name:savedDocument.file_name,
+      storage_path:savedDocument.storage_path,
+      extracted_text:text
     }
-  );
+  });
 
   if (error) throw error;
 
   if (!data || data.success !== true) {
-    throw new Error(
-      data?.error || data?.message ||
-      "The AI function did not return a successful result."
-    );
+    throw new Error(data?.error || data?.message || "The AI function did not return a successful result.");
   }
 
   return data.result ?? data.report ?? data;
 }
 
 // ==========================================
-// MAIN DOCUMENT CHECKING WORKFLOW
+// COMPLETE DOCUMENT CHECK WORKFLOW
 // ==========================================
 
 async function processDocument() {
@@ -1187,11 +851,8 @@ async function processDocument() {
   }
 
   const file = selectedFile;
-  const shipmentRef =
-    document.getElementById("shipmentRef").value.trim();
-
-  const documentType =
-    document.getElementById("documentType").value;
+  const shipmentRef = document.getElementById("shipmentRef").value.trim();
+  const documentType = document.getElementById("documentType").value;
 
   if (!file) {
     alert("Choose a document first.");
@@ -1202,79 +863,56 @@ async function processDocument() {
   button.disabled = true;
   button.textContent = "Processing...";
 
-  setHTML("ocrResult", `
-    <h4>Document reading</h4>
-    Preparing document...
-  `);
-
-  setHTML("aiResult", `
-    <h4>AI checking report</h4>
-    Waiting for document reading...
-  `);
+  setHTML("ocrResult","<h4>Document reading</h4>Preparing document...");
+  setHTML("aiResult","<h4>AI checking report</h4>Waiting for document reading...");
 
   try {
-    // Step 1: Read the document.
-    setProgress(10, "Starting document reading...");
-
+    setProgress(10,"Starting document reading...");
     extractedDocumentText = await extractDocumentText(file);
 
     if (!extractedDocumentText.trim()) {
-      throw new Error(
-        "No readable text was found. Try a clearer scan or image."
-      );
+      throw new Error("No readable text was found. Try a clearer scan or image.");
     }
 
-    setProgress(55, "Document reading completed.");
+    setProgress(55,"Document reading completed.");
 
-    setHTML("ocrResult", `
+    setHTML("ocrResult",`
       <h4>Extracted document text</h4>
-      <div>${escapeHTML(extractedDocumentText.slice(0, 12000))}</div>
-      ${
-        extractedDocumentText.length > 12000
-          ? "<p>Only the first part is displayed.</p>"
-          : ""
-      }
+      <div>${escapeHTML(extractedDocumentText.slice(0,12000))}</div>
+      ${extractedDocumentText.length > 12000 ? "<p>Only the first part is displayed.</p>" : ""}
     `);
 
-    // Step 2: Upload the original file and extracted text.
-    setProgress(60, "Saving document to BorderFlow...");
+    setProgress(60,"Saving document to BorderFlow...");
+    const savedDocument = await uploadDocument(file);
 
-    const savedDocument = await uploadDocument(
-      file,
-      shipmentRef,
-      documentType,
-      extractedDocumentText
-    );
+    setProgress(75,"Sending document to BorderFlow AI...");
+    const report = await analyseDocument(savedDocument,shipmentRef,documentType,extractedDocumentText);
 
-    // Step 3: Send the extracted information to AI.
-    setProgress(75, "Sending document to BorderFlow AI...");
-
-    const report = await analyseDocument(
-      savedDocument,
-      shipmentRef,
-      documentType,
-      extractedDocumentText
-    );
-
-    // Step 4: Display the returned AI report.
     displayAIReport(report);
+    sessionChecks++;
 
-    setProgress(100, "Document checking completed.");
+    const reportText = JSON.stringify(report).toLowerCase();
+    if (
+      reportText.includes("warning") ||
+      reportText.includes("missing") ||
+      reportText.includes("review") ||
+      reportText.includes("error")
+    ) {
+      sessionReviews++;
+    }
 
+    setProgress(100,"Document checking completed.");
     await loadDashboardData();
     await loadLibrary();
 
   } catch (error) {
-    console.error("BorderFlow document workflow:", error);
-
-    setHTML("aiResult", `
+    console.error("BorderFlow document workflow:",error);
+    setHTML("aiResult",`
       <h4>Document checking could not finish</h4>
       <div class="result-error">${escapeHTML(error.message)}</div>
-      <p>Please check your Supabase tables, storage permissions and Edge Function logs.</p>
+      <p>Check your Supabase Storage permissions and Edge Function logs.</p>
     `);
-
-    setProgress(0, "There was a problem. Review the message above.");
-
+    setProgress(0,"There was a problem. Review the message above.");
   } finally {
     button.disabled = false;
     button.textContent = "Read and check document";
@@ -1287,111 +925,53 @@ async function processDocument() {
 
 function displayAIReport(report) {
   if (typeof report === "string") {
-    setHTML("aiResult", `
-      <h4>BorderFlow AI Report</h4>
-      <div>${escapeHTML(report)}</div>
-    `);
+    setHTML("aiResult",`<h4>BorderFlow AI Report</h4><div>${escapeHTML(report)}</div>`);
     return;
   }
 
   const safeReport = report || {};
-
-  const findings =
-    safeReport.findings ||
-    safeReport.issues ||
-    safeReport.checks ||
-    [];
-
-  const missing =
-    safeReport.missing_fields ||
-    safeReport.missing_information ||
-    [];
-
-  const status =
-    safeReport.overall_status ||
-    safeReport.status ||
-    "Review required";
+  const findings = safeReport.findings || safeReport.issues || safeReport.checks || [];
+  const missing = safeReport.missing_fields || safeReport.missing_information || [];
+  const status = safeReport.overall_status || safeReport.status || "Review required";
 
   let html = `
     <h4>✧ BorderFlow AI Checking Report</h4>
-    <div class="result-item">
-      <strong>Overall status:</strong>
-      ${escapeHTML(status)}
-    </div>
+    <div class="result-item"><strong>Overall status:</strong> ${escapeHTML(status)}</div>
   `;
 
   if (safeReport.summary) {
-    html += `
-      <div class="result-item">
-        <strong>Summary</strong><br>
-        ${escapeHTML(safeReport.summary)}
-      </div>
-    `;
+    html += `<div class="result-item"><strong>Summary</strong><br>${escapeHTML(safeReport.summary)}</div>`;
   }
 
   if (Array.isArray(missing) && missing.length) {
-    html += `
-      <div class="result-item">
-        <strong class="result-warning">Missing information</strong>
-        <ul>
-          ${missing.map(item =>
-            `<li>${escapeHTML(
-              typeof item === "object"
-                ? JSON.stringify(item)
-                : item
-            )}</li>`
-          ).join("")}
-        </ul>
-      </div>
-    `;
+    html += `<div class="result-item"><strong class="result-warning">Missing information</strong><ul>
+      ${missing.map(item=>`<li>${escapeHTML(typeof item==="object"?JSON.stringify(item):item)}</li>`).join("")}
+    </ul></div>`;
   }
 
   if (Array.isArray(findings) && findings.length) {
-    html += `
-      <div class="result-item">
-        <strong>Findings</strong>
-        ${findings.map(item => `
-          <div style="padding:9px 0;border-bottom:1px solid #ffffff15">
-            <strong>${escapeHTML(
-              item.title || item.name || item.category || "Finding"
-            )}</strong>
-            <p>${escapeHTML(
-              item.description || item.message || item.details || item
-            )}</p>
-            ${item.severity
-              ? `<small>Severity: ${escapeHTML(item.severity)}</small>`
-              : ""}
-          </div>
-        `).join("")}
-      </div>
-    `;
+    html += `<div class="result-item"><strong>Findings</strong>
+      ${findings.map(item=>{
+        const obj = typeof item === "object" && item !== null ? item : {description:item};
+        return `<div style="padding:9px 0;border-bottom:1px solid #ffffff15">
+          <strong>${escapeHTML(obj.title || obj.name || obj.category || "Finding")}</strong>
+          <p>${escapeHTML(obj.description || obj.message || obj.details || JSON.stringify(obj))}</p>
+          ${obj.severity ? `<small>Severity: ${escapeHTML(obj.severity)}</small>` : ""}
+        </div>`;
+      }).join("")}
+    </div>`;
   }
 
   if (safeReport.recommendations) {
     const recommendations = Array.isArray(safeReport.recommendations)
-      ? safeReport.recommendations
-      : [safeReport.recommendations];
-
-    html += `
-      <div class="result-item">
-        <strong>Recommended next steps</strong>
-        <ul>
-          ${recommendations.map(item =>
-            `<li>${escapeHTML(item)}</li>`
-          ).join("")}
-        </ul>
-      </div>
-    `;
+      ? safeReport.recommendations : [safeReport.recommendations];
+    html += `<div class="result-item"><strong>Recommended next steps</strong><ul>
+      ${recommendations.map(item=>`<li>${escapeHTML(item)}</li>`).join("")}
+    </ul></div>`;
   }
 
-  html += `
-    <div class="notice">
-      AI-generated findings are suggestions for review, not official customs approval.
-      Verify the original documents and applicable customs rules before submission.
-    </div>
-  `;
-
-  setHTML("aiResult", html);
+  html += `<div class="notice">AI-generated findings are suggestions for review, not official customs approval. Verify the original documents and applicable customs rules before submission.</div>`;
+  setHTML("aiResult",html);
 }
 
 // ==========================================
@@ -1401,106 +981,65 @@ function displayAIReport(report) {
 function clearChecker() {
   selectedFile = null;
   extractedDocumentText = "";
-
   document.getElementById("documentFile").value = "";
   document.getElementById("shipmentRef").value = "";
-  document.getElementById("fileName").textContent =
-    "No document selected";
-
-  setProgress(0, "Ready when you are.");
-
-  setHTML("ocrResult", `
-    <h4>Document reading</h4>
-    Your extracted document text will appear here.
-  `);
-
-  setHTML("aiResult", `
-    <h4>AI checking report</h4>
-    Your AI analysis will appear here after checking.
-  `);
+  document.getElementById("fileName").textContent = "No document selected";
+  setProgress(0,"Ready when you are.");
+  setHTML("ocrResult","<h4>Document reading</h4>Your extracted document text will appear here.");
+  setHTML("aiResult","<h4>AI checking report</h4>Your AI analysis will appear here after checking.");
 }
 
 // ==========================================
 // DOCUMENT LIBRARY
+// Uses Supabase Storage as the source of truth.
 // ==========================================
 
 async function loadLibrary() {
   if (!currentUser) return;
 
   const list = document.getElementById("libraryList");
+  list.innerHTML = '<div class="empty-state">Loading your documents...</div>';
 
-  list.innerHTML = `
-    <div class="empty-state">Loading your documents...</div>
-  `;
-
-  const { data, error } = await db
-    .from("bf_documents")
-    .select("id,file_name,document_type,shipment_ref,status,created_at")
-    .eq("user_id", currentUser.id)
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const {data,error} = await db.storage.from(STORAGE_BUCKET).list(currentUser.id,{
+    limit:100,
+    sortBy:{column:"created_at",order:"desc"}
+  });
 
   if (error) {
-    list.innerHTML = `
-      <div class="empty-state">
-        Could not load documents: ${escapeHTML(error.message)}
-      </div>
-    `;
+    list.innerHTML = `<div class="empty-state">Could not load documents: ${escapeHTML(error.message)}</div>`;
     return;
   }
 
-  if (!data || data.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        No saved documents yet. Upload your first document using the AI Checker.
-      </div>
-    `;
+  const files = (data || []).filter(file => file.name && file.name !== ".emptyFolderPlaceholder");
+
+  if (!files.length) {
+    list.innerHTML = '<div class="empty-state">No saved documents yet. Upload your first document using the AI Checker.</div>';
     return;
   }
 
-  list.innerHTML = data.map(document => `
-    <div class="library-item">
+  list.innerHTML = files.map(file=>{
+    const path = currentUser.id + "/" + file.name;
+    const date = file.created_at ? new Date(file.created_at).toLocaleString() : "Saved document";
+    return `<div class="library-item">
       <div>
-        <strong>${escapeHTML(document.file_name)}</strong>
-        <small>
-          ${escapeHTML(document.document_type || "Document")}
-          · Shipment: ${escapeHTML(document.shipment_ref || "Not supplied")}
-          · ${escapeHTML(document.status || "Uploaded")}
-        </small>
+        <strong>${escapeHTML(file.name)}</strong>
+        <small>${escapeHTML(date)} · Stored in your private document library</small>
       </div>
-      <button class="btn btn-outline"
-        onclick="downloadDocument('${escapeHTML(document.id)}')">
-        Open
-      </button>
-    </div>
-  `).join("");
+      <button class="btn btn-outline" onclick="downloadDocument('${encodeURIComponent(path)}')">Open</button>
+    </div>`;
+  }).join("");
 }
 
-async function downloadDocument(documentId) {
+async function downloadDocument(encodedPath) {
   if (!currentUser) return;
+  const path = decodeURIComponent(encodedPath);
 
-  const { data: document, error } = await db
-    .from("bf_documents")
-    .select("storage_path")
-    .eq("id", documentId)
-    .eq("user_id", currentUser.id)
-    .single();
-
-  if (error || !document) {
-    alert("Could not find that document.");
+  const {data,error} = await db.storage.from(STORAGE_BUCKET).createSignedUrl(path,60);
+  if (error) {
+    alert("Could not open document: " + error.message);
     return;
   }
-
-  const { data, error: downloadError } = await db.storage
-    .from(STORAGE_BUCKET)
-    .createSignedUrl(document.storage_path, 60);
-
-  if (downloadError) {
-    alert(downloadError.message);
-    return;
-  }
-
-  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  window.open(data.signedUrl,"_blank","noopener,noreferrer");
 }
 
 // ==========================================
@@ -1510,47 +1049,28 @@ async function downloadDocument(documentId) {
 async function loadDashboardData() {
   if (!currentUser) return;
 
-  const { count: documentCount, error: documentError } = await db
-    .from("bf_documents")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", currentUser.id);
+  const {data,error} = await db.storage.from(STORAGE_BUCKET).list(currentUser.id,{
+    limit:1000
+  });
 
-  const { data: reports, error: reportError } = await db
-    .from("bf_document_checks")
-    .select("*")
-    .eq("user_id", currentUser.id)
-    .limit(200);
-
-  if (!documentError) {
-    document.getElementById("statDocuments").textContent =
-      documentCount ?? 0;
+  if (error) {
+    console.error("Could not load dashboard document count:",error);
+  } else {
+    const files = (data || []).filter(file=>file.name && file.name !== ".emptyFolderPlaceholder");
+    document.getElementById("statDocuments").textContent = files.length;
   }
 
-  if (!reportError && reports) {
-    document.getElementById("statChecks").textContent =
-      reports.length;
-
-    const reviewCount = reports.filter(report => {
-      const status = String(
-        report.overall_status || report.status || ""
-      ).toLowerCase();
-
-      return status && !["passed", "clear", "approved"].includes(status);
-    }).length;
-
-    document.getElementById("statReview").textContent =
-      reviewCount;
-  }
+  document.getElementById("statChecks").textContent = sessionChecks;
+  document.getElementById("statReview").textContent = sessionReviews;
 }
 
 // ==========================================
-// SESSION RESTORATION
+// STARTUP AND SESSION RESTORATION
 // ==========================================
 
 async function initialise() {
   try {
-    const { data, error } = await db.auth.getSession();
-
+    const {data,error} = await db.auth.getSession();
     if (error) throw error;
 
     currentUser = data.session?.user || null;
@@ -1562,7 +1082,7 @@ async function initialise() {
       document.getElementById("appRoot").style.display = "none";
     }
 
-    db.auth.onAuthStateChange((_event, session) => {
+    db.auth.onAuthStateChange((_event,session)=>{
       currentUser = session?.user || null;
 
       if (!currentUser) {
@@ -1572,14 +1092,12 @@ async function initialise() {
     });
 
   } catch (error) {
-    console.error("BorderFlow startup:", error);
-    showMessage("Could not connect to your workspace: " + error.message, true);
+    console.error("BorderFlow startup:",error);
+    showMessage("Could not connect to your workspace: " + error.message,true);
   }
 }
 
 initialise();
-
-</script>
 </script>
 
 </body>
