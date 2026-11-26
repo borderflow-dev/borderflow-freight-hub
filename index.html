@@ -2553,6 +2553,109 @@ document.querySelectorAll(".photo-card img").forEach(img=>{
 });
 
 initialise();
+
+/* BORDERFLOW VIDEO GALLERY */
+
+const borderFlowVideos = [
+  {
+    title: "Clearing Agent 1",
+    file: "clearent agent 1.mp4",
+    category: "Clearing Agents"
+  },
+  {
+    title: "Clearing Agent 2",
+    file: "clearent agent 2.mp4",
+    category: "Clearing Agents"
+  },
+  {
+    title: "Clearing Agent 3",
+    file: "clearent agent 3.mp4",
+    category: "Clearing Agents"
+  },
+  {
+    title: "Clearing Agent 4",
+    file: "clearent agent 4.mp4",
+    category: "Clearing Agents"
+  },
+  {
+    title: "Clearing Agent 5",
+    file: "clearent agent 5.mp4",
+    category: "Clearing Agents"
+  },
+  {
+    title: "Truck 1",
+    file: "truck 1.mp4",
+    category: "Transport"
+  },
+  {
+    title: "Truck 2",
+    file: "truck 2.mp4",
+    category: "Transport"
+  },
+  {
+    title: "BorderFlow Video",
+    file: "17899033-hd_1920_1080_24fps.mp4",
+    category: "Transport"
+  }
+];
+
+const gallery = document.createElement("section");
+gallery.id = "borderflow-video-gallery";
+gallery.innerHTML = `
+  <h2>BorderFlow in Action</h2>
+  <p>Clearing agents, freight and cross-border transport.</p>
+  <div class="bf-video-grid">
+    ${borderFlowVideos.map(video => `
+      <article class="bf-video-card">
+        <video controls preload="metadata" playsinline>
+          <source src="${encodeURI(video.file)}" type="video/mp4">
+          Your browser does not support video.
+        </video>
+        <h3>${video.title}</h3>
+        <p>${video.category}</p>
+      </article>
+    `).join("")}
+  </div>
+`;
+
+document.body.appendChild(gallery);
+
+const galleryStyle = document.createElement("style");
+galleryStyle.textContent = `
+#borderflow-video-gallery {
+  padding: 45px 5%;
+  background: #101d35;
+  color: white;
+}
+#borderflow-video-gallery h2 {
+  font-size: 30px;
+}
+.bf-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  gap: 24px;
+}
+.bf-video-card {
+  background: #1b2b48;
+  padding: 14px;
+  border-radius: 14px;
+}
+.bf-video-card video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  background: black;
+}
+.bf-video-card h3 {
+  margin-bottom: 5px;
+}
+.bf-video-card p {
+  color: #aebfda;
+}
+`;
+document.head.appendChild(galleryStyle);
+
 </script>
 </body>
 </html>
