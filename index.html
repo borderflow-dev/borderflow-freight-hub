@@ -1983,20 +1983,88 @@ displayAnalysis(aiResult, extractedText);
 
 
 
+
 /* DISPLAY BORDERFLOW AI REPORT */
 
 function displayAnalysis(result, extractedText = "") {
   $("analysisResult").classList.remove("hidden");
 
+  result = result || {};
+
   /* OVERALL STATUS */
 
   const status = result.overall_status || "needs_review";
 
-  $("analysisStatus").textContent = status.replace(/_/g, " ");
+  $("analysisStatus").textContent = String(status).replace(/_/g, " ");
   $("analysisStatus").className = "tag " + statusClass(status);
 
   $("analysisSummary").textContent =
     result.summary || "Analysis completed. Please review the findings.";
+
+  /* SAFE VALUE DISPLAY */
+
+  const displayValue = value => {
+    if (value === null || value === undefined || value === "") {
+      return "—";
+    }
+
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        return value.map(displayValue).join(", ");
+      }
+
+      if (Object.prototype.hasOwnProperty.call(value, "value")) {
+        return displayValue(value.value);
+      }
+
+      return "—";
+    }
+
+    return String(value);
+  };
+
+  const getField = (keys) => {
+    for (const key of keys) {
+      const field = result.extracted_data?.[key];
+
+      if (field !== undefined && field !== null) {
+        return field;
+      }
+    }
+
+    return null;
+  };
+
+  const getFieldValue = field => {
+    if (field && typeof field === "object" &&
+        Object.prototype.hasOwnProperty.call(field, "value")) {
+      return field.value;
+    }
+
+    return field;
+  };
+
+  const getFieldStatus = field => {
+    if (field && typeof field === "object" && field.status) {
+      return String(field.status).toLowerCase();
+    }
+
+    return getFieldValue(field) !== null &&
+      getFieldValue(field) !== undefined &&
+      getFieldValue(field) !== ""
+        ? "found"
+        : "missing";
+  };
+
+  const getEvidence = field => {
+    if (!field || typeof field !== "object") return "";
+
+    const evidence = field.evidence || "";
+
+    return typeof evidence === "string"
+      ? evidence
+      : JSON.stringify(evidence);
+  };
 
   /* AI FINDINGS */
 
@@ -2031,83 +2099,61 @@ function displayAnalysis(result, extractedText = "") {
 
   /* STRUCTURED DOCUMENT EXTRACTION */
 
+  const fieldLabels = [
+    { label: "Document Type", keys: ["document_type"] },
+    { label: "Shipment Reference", keys: ["shipment_reference", "shipment_ref"] },
+    { label: "Seller / Exporter", keys: ["seller_name", "exporter_name", "exporter"] },
+    { label: "Buyer / Importer", keys: ["buyer_name", "importer_name", "importer"] },
+    { label: "Invoice Number", keys: ["invoice_number"] },
+    { label: "Invoice Date", keys: ["invoice_date"] },
+    { label: "Currency", keys: ["currency"] },
+    { label: "Subtotal", keys: ["subtotal"] },
+    { label: "Freight", keys: ["freight"] },
+    { label: "Insurance", keys: ["insurance"] },
+    { label: "Taxes", keys: ["taxes"] },
+    { label: "Discount", keys: ["discount", "discounts"] },
+    { label: "Total Amount", keys: ["total_amount"] },
+    { label: "Package Count", keys: ["package_count"] },
+    { label: "Gross Weight", keys: ["gross_weight"] },
+    { label: "Net Weight", keys: ["net_weight"] },
+    { label: "Goods Description", keys: ["goods_description"] },
+    { label: "Shipper", keys: ["shipper"] },
+    { label: "Consignee", keys: ["consignee"] },
+    { label: "Vessel / Vehicle", keys: ["vessel_or_vehicle", "vessel_name"] },
+    { label: "Port of Loading", keys: ["port_of_loading"] },
+    { label: "Port of Discharge", keys: ["port_of_discharge"] },
+    { label: "Country of Origin", keys: ["country_of_origin"] },
+    { label: "Certificate Number", keys: ["certificate_number"] },
+    { label: "Declaration Number", keys: ["declaration_number"] },
+    { label: "Customs Value", keys: ["customs_value"] }
+  ];
+
+  let foundCount = 0;
+  let missingCount = 0;
+  let unreadableCount = 0;
+
+  const extractedFields = fieldLabels.map(({ label, keys }) => {
+    const field = getField(keys);
+    const value = getFieldValue(field);
+    const state = getFieldStatus(field);
+
+    if (state === "found") foundCount++;
+    else if (state === "unreadable") unreadableCount++;
+    else missingCount++;
+
+    return `
+      <tr>
+        <td><strong>${escapeHTML(label)}</strong></td>
+        <td>${escapeHTML(displayValue(value))}</td>
+        <td>${escapeHTML(state.replace(/_/g, " "))}</td>
+        <td>${escapeHTML(getEvidence(field))}</td>
+      </tr>
+    `;
+  }).join("");
+
+  /* GOODS / INVOICE ITEMS */
+
   const extracted = result.extracted_data || {};
-
-  const fieldLabels = {
-    document_type: "Document Type",
-    exporter_name: "Exporter",
-    exporter_address: "Exporter Address",
-    importer_name: "Importer",
-    importer_address: "Importer Address",
-    invoice_number: "Invoice Number",
-    invoice_date: "Invoice Date",
-    shipment_reference: "Shipment Reference",
-    currency: "Currency",
-    incoterms: "Incoterms",
-    goods_description: "Goods Description",
-    hs_code: "HS Code",
-    quantity: "Quantity",
-    unit_price: "Unit Price",
-    line_total: "Line Total",
-    package_count: "Package Count",
-    net_weight: "Net Weight",
-    gross_weight: "Gross Weight",
-    dimensions: "Dimensions",
-    bill_of_lading_number: "Bill of Lading Number",
-    shipper: "Shipper",
-    consignee: "Consignee",
-    notify_party: "Notify Party",
-    vessel_name: "Vessel Name",
-    port_of_loading: "Port of Loading",
-    port_of_discharge: "Port of Discharge",
-    country_of_origin: "Country of Origin",
-    certificate_number: "Certificate Number",
-    declaration_number: "Declaration Number",
-    subtotal: "Subtotal",
-    freight: "Freight",
-    insurance: "Insurance",
-    taxes: "Taxes",
-    discounts: "Discounts",
-    total_amount: "Total Amount"
-  };
-
-  const fieldStatus = value =>
-    String(value?.status || "missing").toLowerCase();
-
- const displayValue = value => {
-  if (value === null || value === undefined || value === "") {
-    return "—";
-  }
-
-  if (typeof value === "object") {
-    if (Array.isArray(value)) {
-      return value.map(displayValue).join(", ");
-    }
-
-    if (Object.prototype.hasOwnProperty.call(value, "value")) {
-      return displayValue(value.value);
-    }
-
-    return "—";
-  }
-
-  return String(value);
-};
-  const extractedFields = Object.entries(fieldLabels)
-    .map(([key, label]) => {
-      const field = extracted[key] || {};
-      const value = displayValue(field.value);
-      const state = fieldStatus(field);
-
-      return `
-        <tr>
-          <td><strong>${escapeHTML(label)}</strong></td>
-          <td>${escapeHTML(value)}</td>
-          <td>${escapeHTML(state.replace(/_/g, " "))}</td>
-          <td>${escapeHTML(field.evidence || "")}</td>
-        </tr>
-      `;
-    }).join("");
 
   const items = Array.isArray(extracted.items)
     ? extracted.items
@@ -2123,21 +2169,6 @@ function displayAnalysis(result, extractedText = "") {
       <td>${escapeHTML(displayValue(item.line_total))}</td>
     </tr>
   `).join("");
-
-  const foundCount = Object.values(extracted).filter(
-    field => field && typeof field === "object" &&
-      field.status === "found"
-  ).length;
-
-  const missingCount = Object.values(extracted).filter(
-    field => field && typeof field === "object" &&
-      field.status === "missing"
-  ).length;
-
-  const unreadableCount = Object.values(extracted).filter(
-    field => field && typeof field === "object" &&
-      field.status === "unreadable"
-  ).length;
 
   $("analysisFindings").innerHTML += `
     <section class="extracted-data">
@@ -2163,9 +2194,7 @@ function displayAnalysis(result, extractedText = "") {
               <th>Evidence</th>
             </tr>
           </thead>
-          <tbody>
-            ${extractedFields}
-          </tbody>
+          <tbody>${extractedFields}</tbody>
         </table>
       </div>
 
@@ -2189,7 +2218,7 @@ function displayAnalysis(result, extractedText = "") {
               </table>
             </div>
           `
-          : ""
+          : "<p class='muted small'>No individual goods items were returned.</p>"
       }
     </section>
   `;
@@ -2206,9 +2235,7 @@ function displayAnalysis(result, extractedText = "") {
       missing.length
         ? `<ul>${missing.map(item => `
             <li>${escapeHTML(
-              typeof item === "string"
-                ? item
-                : JSON.stringify(item)
+              typeof item === "string" ? item : JSON.stringify(item)
             )}</li>
           `).join("")}</ul>`
         : "<p class='muted small'>No missing fields were reported by the AI.</p>"
@@ -2242,7 +2269,7 @@ function displayAnalysis(result, extractedText = "") {
     }
   `;
 
-  /* 12 AI SPECIALISTS */
+  /* AI SPECIALIST RESULTS */
 
   const agents = Array.isArray(result.agents)
     ? result.agents
@@ -2250,8 +2277,9 @@ function displayAnalysis(result, extractedText = "") {
 
   $("analysisConsistency").innerHTML += `
     <h4>BorderFlow AI Specialist Team</h4>
+
     <p class="muted small">
-      ${agents.length} of 12 specialist results returned.
+      ${agents.length} specialist results returned.
     </p>
 
     ${
