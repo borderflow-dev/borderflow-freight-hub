@@ -4,1258 +4,737 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="BorderFlow freight, customs and AI trade document intelligence platform.">
-
-<meta name="theme-color" content="#101d35">
-<title>BorderFlow | Freight & Customs</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-
+<meta name="theme-color" content="#071b3a">
+<title>BorderFlow | AI Document Checker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
-:root{
-  --navy:#101d35;
-  --navy2:#192b49;
-  --blue:#2864e8;
-  --blue2:#174fc5;
-  --light:#f4f7fc;
-  --white:#fff;
-  --text:#17243a;
-  --muted:#718096;
-  --border:#e4eaf3;
-  --green:#16865b;
-  --red:#d94b4b;
-  --orange:#c47a18;
-  --shadow:0 8px 28px rgba(16,29,53,.07);
+:root {
+  --navy:#071b3a;
+  --blue:#1769ff;
+  --blue2:#3988ff;
+  --cyan:#42d7ff;
+  --bg:#07152d;
+  --panel:#102747;
+  --panel2:#15345b;
+  --text:#f4f8ff;
+  --muted:#a9bdd8;
+  --border:rgba(255,255,255,.1);
+  --green:#35d49a;
+  --orange:#ffbd59;
+  --red:#ff737d;
 }
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--light);color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.muted{color:var(--muted)}
-.small{font-size:12px}
+* {box-sizing:border-box}
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  font-weight:850;
-  font-size:23px;
-  letter-spacing:-.7px;
-  color:var(--white);
-  text-decoration:none;
-}
-.brand-name{display:flex;gap:0}
-.brand-border{color:#fff}
-.brand-flow{color:#3980ff}
-
-.brand-mark{
-  height:42px;
-  width:42px;
-  flex-shrink:0;
-  border-radius:11px;
-  background:var(--blue);
-  color:white;
-  display:grid;
-  place-items:center;
-  font-weight:900;
-  font-size:27px;
-  box-shadow:0 5px 18px #2864e855;
-}
-
-.btn{
-  border:0;
-  border-radius:9px;
-  padding:12px 18px;
-  background:var(--blue);
-  color:white;
-  font-weight:750;
-  transition:.2s;
-}
-.btn:hover{background:var(--blue2);transform:translateY(-1px)}
-.btn.secondary{background:#eaf0ff;color:var(--blue)}
-.btn.dark{background:var(--navy)}
-.btn.danger{background:#fff0f0;color:var(--red)}
-.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
-.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
-.field label{font-size:13px;font-weight:700;color:#394860}
-.field input,.field select,.field textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:white;
-  color:var(--text);
-  outline:none;
-}
-.field input:focus,.field select:focus,.field textarea:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px #2864e81a;
-}
-
-.card{
-  background:white;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:20px;
-  box-shadow:var(--shadow);
-}
-.page-title{font-size:24px;font-weight:800;margin:0 0 6px}
-.page-subtitle{font-size:14px;color:var(--muted);margin:0 0 22px}
-.tag{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:800;
-  background:#edf2ff;
-  color:var(--blue);
-}
-.tag.green{background:#e8f7ef;color:var(--green)}
-.tag.orange{background:#fff4e4;color:var(--orange)}
-.tag.red{background:#fff0f0;color:var(--red)}
-hr{border:0;border-top:1px solid var(--border);margin:18px 0}
-
-/* LANDING PAGE */
-
-.landing{
-  min-height:100vh;
-  background:#081326;
-  color:white;
-}
-.topbar{
-  height:78px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 7%;
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  z-index:5;
-  background:linear-gradient(180deg,rgba(5,13,27,.8),transparent);
-}
-.top-actions{display:flex;gap:10px;align-items:center}
-
-.hero{
-  position:relative;
-  min-height:720px;
-  height:min(850px,100vh);
-  display:flex;
-  align-items:center;
-  overflow:hidden;
-  padding:110px 8% 80px;
-  isolation:isolate;
-  background:#101d35;
-}
-.hero-video{
-  position:absolute;
-  z-index:-3;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:.72;
-}
-.hero-overlay{
-  position:absolute;
-  z-index:-2;
-  inset:0;
-  background:
-    linear-gradient(90deg,rgba(5,13,27,.94) 0%,rgba(5,13,27,.76) 42%,rgba(5,13,27,.2) 100%),
-    linear-gradient(0deg,rgba(5,13,27,.65),transparent 45%);
-}
-.hero-content{
-  position:relative;
-  z-index:1;
-  max-width:780px;
-}
-.hero-kicker{
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-  color:#9dbdff;
-  font-size:11px;
-  font-weight:850;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-.hero-kicker:before{
-  content:"";
-  width:27px;
-  height:2px;
-  background:#3980ff;
-}
-.hero h1{
-  font-size:clamp(44px,7vw,82px);
-  line-height:1.02;
-  letter-spacing:-3px;
-  margin:24px 0;
-  max-width:850px;
-  color:white;
-}
-.hero h1 .blue{color:#3980ff}
-.hero p{
-  color:#d0d9e8;
-  font-size:17px;
-  line-height:1.8;
-  max-width:620px;
-}
-.hero-buttons{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:30px;
-}
-.hero-buttons .btn{padding:14px 22px}
-.hero-buttons .btn.secondary{
-  background:rgba(255,255,255,.1);
-  color:white;
-  border:1px solid rgba(255,255,255,.3);
-}
-.hero-note{
-  margin-top:25px;
-  color:#aebbd0;
-  font-size:11px;
-  max-width:600px;
-  line-height:1.7;
-}
-.hero-bottom{
-  position:absolute;
-  bottom:27px;
-  left:8%;
-  right:8%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  color:#c0cde0;
-  font-size:11px;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-}
-.hero-bottom-line{
-  height:1px;
-  background:#ffffff50;
-  flex:1;
-  max-width:180px;
-}
-
-/* FEATURES */
-
-.feature-section{
-  background:#f4f7fc;
-  color:var(--text);
-  padding:65px 7%;
-}
-.feature-heading{
-  max-width:1100px;
-  margin:0 auto 25px;
-}
-.feature-heading h2{
-  font-size:30px;
-  letter-spacing:-1px;
-  margin:0 0 8px;
-}
-.feature-strip{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-}
-.feature{
-  background:white;
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:23px;
-}
-.feature-icon{
-  height:42px;
-  width:42px;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  background:#edf2ff;
-  color:var(--blue);
-  font-weight:900;
-  font-size:17px;
-  margin-bottom:15px;
-}
-.feature p{line-height:1.7}
-
-/* FREIGHT PHOTO GALLERY */
-
-.photo-section{
-  background:#fff;
-  color:var(--text);
-  padding:75px 7%;
-}
-.photo-heading{
-  max-width:1100px;
-  margin:0 auto 30px;
-}
-.photo-heading h2{
-  font-size:clamp(27px,4vw,36px);
-  letter-spacing:-1px;
-  margin:13px 0 10px;
-}
-.photo-heading p{
-  max-width:700px;
-  line-height:1.8;
-}
-.photo-grid{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px;
-}
-.photo-card{
-  overflow:hidden;
-  background:white;
-  border:1px solid var(--border);
-  border-radius:14px;
-  box-shadow:var(--shadow);
-  transition:transform .2s,box-shadow .2s;
-}
-.photo-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 14px 32px rgba(16,29,53,.12);
-}
-.photo-card img{
-  display:block;
-  width:100%;
-  height:205px;
-  object-fit:cover;
-  background:#e8edf5;
-}
-.photo-card-content{padding:19px}
-.photo-card h3{
-  font-size:16px;
-  margin:0 0 9px;
-}
-.photo-card p{
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.75;
+body {
   margin:0;
-}
-.photo-number{
-  display:inline-block;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:1px;
-  color:var(--blue);
-  background:#edf2ff;
-  padding:5px 8px;
-  border-radius:5px;
-  margin-bottom:12px;
-}
-.photo-card img.image-failed{
-  visibility:hidden;
-}
-.photo-image-wrap{
-  height:205px;
-  background:linear-gradient(135deg,#192b49,#2864e8);
-  overflow:hidden;
-}
-.photo-image-wrap img{
-  height:100%;
-}
-
-.landing-footer{
-  background:#081326;
-  color:#aebbd0;
-  padding:25px 7%;
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:12px;
-  font-size:12px;
-}
-
-/* AUTHENTICATION */
-
-.auth-screen{
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 80% 0%,#123c76 0,transparent 35%),
+    var(--bg);
+  color:var(--text);
   min-height:100vh;
+}
+
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+
+.app {
   display:grid;
-  place-items:center;
-  padding:20px;
-  background:linear-gradient(135deg,#f3f6fc,#e9f0ff);
+  grid-template-columns:245px minmax(0,1fr);
+  min-height:100vh;
 }
-.auth-card{
-  width:min(430px,100%);
-  background:white;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:30px;
-  box-shadow:var(--shadow);
-}
-.auth-card .brand{justify-content:center;margin-bottom:24px}
-.auth-card .brand-border{color:var(--navy)}
-.auth-card h2{text-align:center;margin:0 0 7px}
-.auth-card .muted{text-align:center;margin:0 0 24px}
-.auth-switch{text-align:center;font-size:13px;margin-top:18px}
-.auth-switch a{color:var(--blue);font-weight:700;cursor:pointer}
-#authMessage{font-size:13px;margin:10px 0;color:var(--red)}
 
-/* WORKSPACE */
-
-#appShell{min-height:100vh;display:flex}
-.sidebar{
-  width:245px;
-  background:var(--navy);
-  color:white;
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  padding:22px 14px;
-  overflow:auto;
-  z-index:10;
-}
-.sidebar .brand{padding:0 9px 25px}
-.nav-label{
-  font-size:10px;
-  letter-spacing:1.3px;
-  color:#8ea0bb;
-  padding:15px 12px 8px;
-  font-weight:800;
-}
-.nav-item{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:11px 12px;
-  border:0;
-  border-radius:8px;
-  background:transparent;
-  color:#c6d1e1;
-  text-align:left;
-  margin:2px 0;
-  font-size:13px;
-}
-.nav-item:hover,.nav-item.active{background:#263b5e;color:white}
-.nav-icon{width:19px;text-align:center;font-size:16px}
-.sidebar-bottom{margin-top:25px;border-top:1px solid #ffffff20;padding-top:15px}
-.main-area{margin-left:245px;width:calc(100% - 245px);min-height:100vh}
-.top-header{
-  height:70px;
-  background:white;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 28px;
+.sidebar {
+  background:rgba(5,19,42,.96);
+  border-right:1px solid var(--border);
+  padding:25px 17px;
   position:sticky;
   top:0;
-  z-index:5;
+  height:100vh;
+  overflow-y:auto;
 }
-.user-chip{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
-.avatar{
-  height:34px;
-  width:34px;
-  border-radius:50%;
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:4px 9px 30px;
+}
+
+.logo-mark {
+  width:42px;
+  height:42px;
+  border-radius:13px;
   display:grid;
   place-items:center;
-  background:#eaf0ff;
-  color:var(--blue);
+  background:linear-gradient(135deg,#1684ff,#35d7ff);
+  font-size:22px;
+  font-weight:900;
+  box-shadow:0 8px 25px #1769ff55;
+}
+
+.logo strong {font-size:21px;letter-spacing:.2px}
+.logo small {display:block;color:var(--muted);font-size:10px;margin-top:3px}
+
+.nav-label {
+  color:#7792b4;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  padding:12px 12px;
+}
+
+.nav-button {
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 14px;
+  margin:4px 0;
+  color:#b9cbe2;
+  background:transparent;
+  border:0;
+  border-radius:11px;
+  text-align:left;
+  transition:.2s;
+}
+
+.nav-button:hover,.nav-button.active {
+  color:white;
+  background:linear-gradient(100deg,#1769ff55,#1769ff12);
+}
+
+.nav-button.active {
+  border:1px solid #3988ff55;
+}
+
+.nav-icon {font-size:18px;width:22px;text-align:center}
+
+.sidebar-bottom {
+  margin-top:35px;
+  border-top:1px solid var(--border);
+  padding:18px 8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.main {min-width:0;padding:25px 32px 50px}
+
+.topbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:28px;
+}
+
+.page-title h1 {margin:0;font-size:26px}
+.page-title p {margin:7px 0 0;color:var(--muted);font-size:13px}
+
+.user-area {display:flex;align-items:center;gap:12px}
+.user-avatar {
+  width:39px;height:39px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#1769ff,#40d7ff);
   font-weight:800;
 }
-.content{padding:28px;max-width:1500px;margin:auto}
-.mobile-menu{
-  display:none;
-  border:0;
-  background:#edf2ff;
-  color:var(--blue);
-  padding:9px 12px;
-  border-radius:8px;
-}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
-.stat-card{background:white;border:1px solid var(--border);border-radius:13px;padding:18px}
-.stat-card .stat-label{font-size:12px;color:var(--muted);font-weight:700}
-.stat-card .stat-value{font-size:27px;font-weight:800;margin:9px 0 3px}
-.stat-icon{float:right;background:#edf2ff;color:var(--blue);padding:9px;border-radius:9px}
-.two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
-.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
-.section-head h3{font-size:16px;margin:0}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{
-  text-align:left;
-  color:var(--muted);
+
+.status-pill {
+  padding:7px 11px;
+  border-radius:30px;
+  color:#8df1c7;
+  background:#35d49a18;
+  border:1px solid #35d49a44;
   font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.5px;
+}
+
+.page {display:none}
+.page.active {display:block}
+
+.hero {
+  position:relative;
+  overflow:hidden;
+  padding:34px;
+  border-radius:22px;
+  background:linear-gradient(120deg,#1154bd,#087edb 58%,#16a8d2);
+  box-shadow:0 20px 50px #001b4480;
+  margin-bottom:23px;
+}
+
+.hero:after {
+  content:"";
+  position:absolute;
+  width:280px;height:280px;
+  right:-70px;top:-100px;
+  border:1px solid #ffffff30;
+  border-radius:50%;
+  box-shadow:0 0 0 35px #ffffff0c,0 0 0 75px #ffffff08;
+}
+
+.hero-content {position:relative;z-index:1;max-width:650px}
+.hero-tag {
+  display:inline-block;
+  background:#ffffff20;
+  padding:7px 12px;
+  border-radius:20px;
+  font-size:11px;
+  margin-bottom:14px;
+}
+.hero h2 {font-size:30px;margin:0 0 12px;line-height:1.2}
+.hero p {color:#e2f1ff;line-height:1.7;max-width:580px;font-size:14px}
+.hero-actions {display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+.btn {
+  border:0;
+  border-radius:10px;
+  padding:12px 17px;
+  font-weight:750;
+  font-size:13px;
+  transition:.2s;
+}
+
+.btn-primary {background:linear-gradient(135deg,#1684ff,#36b9ff);color:white}
+.btn-primary:hover {filter:brightness(1.12);transform:translateY(-1px)}
+.btn-light {background:white;color:#0752b8}
+.btn-outline {background:#ffffff12;color:white;border:1px solid #ffffff55}
+.btn-danger {background:#ff737d20;color:#ff9ca3;border:1px solid #ff737d55}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:23px;
+}
+
+.stat-card,.panel {
+  background:linear-gradient(145deg,#112b4d,#0d2341);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+}
+
+.stat-card small {color:var(--muted);font-size:12px}
+.stat-card strong {display:block;font-size:27px;margin:12px 0 5px}
+.stat-card span {color:#8cbaff;font-size:11px}
+
+.section-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:28px 0 15px;
+}
+
+.section-heading h2 {font-size:18px;margin:0}
+.section-heading p {font-size:12px;color:var(--muted);margin:5px 0 0}
+
+.panel {margin-bottom:18px}
+.panel h3 {margin:0 0 8px;font-size:16px}
+.panel-description {font-size:12px;color:var(--muted);line-height:1.6}
+
+.checker-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 310px;
+  gap:18px;
+  align-items:start;
+}
+
+.upload-zone {
+  border:1.5px dashed #3988ff88;
+  background:#1769ff0b;
+  border-radius:15px;
+  padding:28px 18px;
+  text-align:center;
+  margin:17px 0;
+}
+
+.upload-icon {font-size:36px;margin-bottom:10px}
+.upload-zone strong {display:block;margin-bottom:8px}
+.upload-zone p {font-size:12px;color:var(--muted);line-height:1.6}
+
+.field {margin:15px 0}
+.field label {display:block;font-size:12px;color:#c6d7ec;margin-bottom:8px}
+.field input,.field select,.field textarea {
+  width:100%;
+  background:#071b35;
+  border:1px solid #29496d;
+  color:white;
+  border-radius:9px;
   padding:12px;
+  outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus {border-color:#3988ff}
+.field select option {background:#102747}
+
+.file-name {font-size:12px;color:#8fc3ff;margin-top:10px;overflow-wrap:anywhere}
+.progress-track {height:7px;background:#203a5b;border-radius:10px;overflow:hidden;margin-top:12px}
+.progress-bar {height:100%;width:0;background:linear-gradient(90deg,#1769ff,#42d7ff);transition:width .3s}
+
+.result-box {
+  background:#071b35;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:17px;
+  margin-top:16px;
+  min-height:100px;
+  font-size:13px;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+
+.result-box h4 {margin:0 0 10px;color:#8fc3ff}
+.result-item {padding:10px 0;border-bottom:1px solid var(--border)}
+.result-item:last-child {border:0}
+.result-good {color:#71e5b5}
+.result-warning {color:#ffd17c}
+.result-error {color:#ff929a}
+
+.side-step {
+  display:flex;gap:12px;
+  padding:13px 0;
   border-bottom:1px solid var(--border);
 }
-td{padding:13px 12px;border-bottom:1px solid #edf0f5;vertical-align:middle}
-.empty{text-align:center;padding:35px 15px;color:var(--muted);font-size:13px}
-.page{display:none}
-.page.active{display:block}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}
-.upload-zone{
-  border:2px dashed #cbd7eb;
-  border-radius:13px;
-  padding:28px;
-  text-align:center;
-  background:#f9fbff;
+.side-step:last-child {border:0}
+.step-number {
+  width:27px;height:27px;flex-shrink:0;
+  border-radius:9px;display:grid;place-items:center;
+  background:#1769ff30;color:#78b4ff;font-size:12px;font-weight:800;
 }
-.upload-zone input{max-width:100%;margin-top:15px}
-.report-box{border:1px solid var(--border);border-radius:12px;padding:17px;margin-top:16px;background:#fbfcff}
-.finding{
-  border-left:4px solid var(--orange);
-  padding:12px 14px;
-  background:#fffaf2;
-  margin:10px 0;
-  border-radius:0 8px 8px 0;
-  font-size:13px;
-}
-.finding.High{border-color:var(--red);background:#fff6f6}
-.finding.Low{border-color:var(--blue);background:#f5f8ff}
-.report-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}
-pre{
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  font-size:12px;
-  background:#f3f5f9;
-  padding:12px;
-  border-radius:8px;
-}
-.toast{
-  position:fixed;
-  right:22px;
-  bottom:22px;
-  z-index:100;
-  background:var(--navy);
-  color:white;
-  padding:14px 18px;
-  border-radius:10px;
-  box-shadow:var(--shadow);
-  max-width:360px;
-  font-size:13px;
-}
-.loading{opacity:.65;pointer-events:none}
-.footer-note{font-size:11px;color:var(--muted);margin-top:15px;line-height:1.6}
+.side-step strong {font-size:12px}
+.side-step p {margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
 
-@media(max-width:1000px){
-  .grid-4{grid-template-columns:repeat(2,1fr)}
-  .two-col{grid-template-columns:1fr}
-  .photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.library-list {display:grid;gap:10px}
+.library-item {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:15px;padding:14px;
+  border:1px solid var(--border);
+  background:#071b35;border-radius:11px;
 }
-@media(max-width:720px){
-  .sidebar{transform:translateX(-100%);transition:.2s}
-  .sidebar.open{transform:translateX(0)}
-  .main-area{margin-left:0;width:100%}
-  .mobile-menu{display:inline-block}
-  .top-header{padding:0 15px}
-  .content{padding:18px}
-  .grid-4{grid-template-columns:1fr 1fr;gap:10px}
-  .feature-strip{grid-template-columns:1fr}
-  .topbar{padding:0 17px;height:70px}
-  .topbar .brand{font-size:19px}
-  .hero{min-height:680px;height:auto;padding:145px 22px 110px}
-  .hero h1{font-size:46px;letter-spacing:-2px}
-  .hero p{font-size:15px}
-  .hero-bottom{left:22px;right:22px;bottom:22px}
-  .form-grid{grid-template-columns:1fr}
-  .landing-footer{padding:22px}
-  .photo-section{padding:55px 20px}
-  .photo-grid{grid-template-columns:1fr}
+.library-item strong {font-size:12px;overflow-wrap:anywhere}
+.library-item small {display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.empty-state {text-align:center;color:var(--muted);padding:35px 10px;font-size:13px}
+
+.media-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
 }
-@media(prefers-reduced-motion:reduce){
-  *{scroll-behavior:auto!important;transition:none!important}
+.media-card {
+  background:#102747;border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+}
+.media-card video,.media-card img {
+  display:block;width:100%;aspect-ratio:16/9;
+  object-fit:cover;background:#06152b;
+}
+.media-card div {padding:13px}
+.media-card strong {font-size:12px}
+.media-card p {font-size:11px;color:var(--muted);line-height:1.5}
+
+.notice {
+  border:1px solid #ffbd5944;
+  background:#ffbd5910;
+  color:#f8d99e;
+  padding:13px 15px;border-radius:11px;
+  font-size:12px;line-height:1.6;margin-top:15px;
+}
+
+.auth-screen {
+  min-height:100vh;display:grid;place-items:center;padding:20px;
+  background:radial-gradient(circle at 50% 0%,#174b91,#07152d 65%);
+}
+.auth-card {
+  width:min(420px,100%);padding:30px;
+  background:#102747;border:1px solid var(--border);
+  border-radius:20px;box-shadow:0 25px 70px #0007;
+}
+.auth-card h1 {margin:0 0 8px}
+.auth-card p {color:var(--muted);font-size:13px;line-height:1.6}
+.auth-card .btn {width:100%;margin-top:10px}
+.auth-switch {text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
+.auth-switch button {background:none;border:0;color:#68b3ff}
+
+#appRoot {display:none}
+#message {font-size:12px;color:#8fc3ff;margin-top:12px;line-height:1.5}
+.hidden {display:none!important}
+
+@media(max-width:1050px) {
+  .stats {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .checker-layout {grid-template-columns:1fr}
+  .media-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px) {
+  .app {grid-template-columns:1fr}
+  .sidebar {height:auto;position:relative;padding:13px}
+  .logo {padding:4px 8px 12px}
+  .nav-label,.sidebar-bottom {display:none}
+  .nav-button {width:auto;display:inline-flex;padding:10px;margin:3px}
+  .sidebar nav {display:flex;flex-wrap:wrap}
+  .main {padding:18px 14px 35px}
+  .topbar {align-items:flex-start}
+  .hero {padding:24px}
+  .hero h2 {font-size:24px}
+  .stats {gap:9px}
+  .stat-card {padding:14px}
+  .stat-card strong {font-size:22px}
+  .media-grid {grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LANDING PAGE -->
-
-<section id="landingView" class="landing">
-
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">B</div>
-      <div class="brand-name">
-        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
-      </div>
-    </div>
-    <div class="top-actions">
-      <button class="btn secondary" onclick="showAuth('login')">Log in</button>
-      <button class="btn" onclick="showAuth('signup')">Get started</button>
-    </div>
-  </header>
-
-  <main class="hero">
-
-    <!-- LANDING PAGE BACKGROUND IMAGE -->
-    <img
-      class="hero-video"
-      src="trucks-at-Beitbridge-border.webp"
-      alt=""
-      aria-hidden="true"
-      fetchpriority="high">
-
-    <div class="hero-overlay"></div>
-
-    <div class="hero-content">
-      <div class="hero-kicker">Freight · Customs · Document Intelligence</div>
-
-      <h1>
-        Moving trade forward.<br>
-        <span class="blue">Across every border.</span>
-      </h1>
-
-      <p>
-        One digital workspace for freight operators and clearing agents.
-        Organise shipments, manage trade documents and use AI to identify
-        potential document problems before they slow down your operations.
-      </p>
-
-      <div class="hero-buttons">
-        <button class="btn" onclick="showAuth('signup')">Create your account</button>
-        <button class="btn secondary" onclick="showAuth('login')">Open dashboard</button>
-      </div>
-
-      <div class="hero-note">
-        BorderFlow AI supports document review and operational organisation.
-        It does not replace customs authorities, official declarations or
-        professional judgement.
-      </div>
-    </div>
-
-    <div class="hero-bottom">
-      <span>Built for cross-border trade</span>
-      <span class="hero-bottom-line"></span>
-      <span>BorderFlow · Freight intelligence</span>
-    </div>
-  </main>
-
-  <!-- FEATURES -->
-
-  <section class="feature-section">
-    <div class="feature-heading">
-      <span class="tag">THE BORDERFLOW WORKSPACE</span>
-      <h2>Trade operations, organised.</h2>
-      <p class="muted">Tools to help freight teams manage documents and shipments in one place.</p>
-    </div>
-
-    <div class="feature-strip">
-      <div class="feature">
-        <div class="feature-icon">AI</div>
-        <strong>Document Intelligence</strong>
-        <p class="muted small">Extract text and identify missing information, calculation concerns and inconsistencies.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">↗</div>
-        <strong>Shipment Management</strong>
-        <p class="muted small">Record trucks, drivers, cargo, border posts and shipment progress.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">▣</div>
-        <strong>Document Library</strong>
-        <p class="muted small">Keep uploaded trade documents and AI review reports organised.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ALL TEN BORDERFLOW PICTURES -->
-
-  <section class="photo-section">
-    <div class="photo-heading">
-      <span class="tag">THE REAL BORDER CHALLENGE</span>
-      <h2>Understanding the movement of African freight.</h2>
-      <p class="muted">
-        BorderFlow brings shipment records, document checks and border
-        operations into one organised digital workspace. These photographs
-        illustrate the freight and transport environment the platform is
-        designed to support.
-      </p>
-    </div>
-
-    <div class="photo-grid">
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="trucks-at-Beitbridge-border.webp"
-               alt="Trucks at Beitbridge border"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">01 · BORDER OPERATIONS</span>
-          <h3>Border congestion</h3>
-          <p>
-            Long truck queues can create pressure for clearing agents.
-            BorderFlow helps teams organise shipment references, document
-            checks and recorded progress in one workspace.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="Machipanda-camioes.jpg"
-               alt="Machipanda freight operations"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">02 · BORDER NETWORK</span>
-          <h3>Multiple border posts</h3>
-          <p>
-            Freight teams can record shipments at different border posts
-            and keep their operational information organised instead of
-            relying on scattered records.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="bernd-dittrich-Xk1IfNnEhRA-unsplash.jpg"
-               alt="Freight transport"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">03 · SHIPMENT MANAGEMENT</span>
-          <h3>Shipment management</h3>
-          <p>
-            Record truck registrations, driver information, cargo
-            descriptions and shipment references so teams can find
-            important shipment details more easily.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="haris-illahi-9VmKFc_c748-unsplash.jpg"
-               alt="Freight transport operations"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">04 · FREIGHT COORDINATION</span>
-          <h3>Freight coordination</h3>
-          <p>
-            A central shipment workspace helps clearing agents and
-            freight operators review recorded information and
-            coordinate their daily work.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="haris-illahi-Beg5nxwR9tA-unsplash.jpg"
-               alt="Cargo and freight operations"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">05 · CARGO OPERATIONS</span>
-          <h3>Cargo visibility</h3>
-          <p>
-            Record cargo descriptions and connect cargo information
-            to the correct shipment, helping teams keep their
-            operational records organised.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="img-6192822f03176.jpg"
-               alt="Transport and logistics"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">06 · TRANSPORT RECORDS</span>
-          <h3>Transport records</h3>
-          <p>
-            Keep shipment progress visible through recorded statuses
-            such as Arrived at Border, Docs Checked and Cleared to Go.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="JADBVW43RBK5XFTCVSG3Q7IEXQ.jpg"
-               alt="Logistics and cargo network"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">07 · LOGISTICS NETWORK</span>
-          <h3>Connected logistics</h3>
-          <p>
-            Cross-border freight involves many people and transport
-            locations. BorderFlow is designed to bring important
-            shipment information together.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="portcalls-asia-SNiJS7qENVw-unsplash.jpg"
-               alt="Shipping port operations"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">08 · PORT OPERATIONS</span>
-          <h3>Port and cargo operations</h3>
-          <p>
-            Border crossings form part of a larger international
-            freight journey. BorderFlow provides a place to organise
-            the shipment information associated with that journey.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="solomen-EoS4ZFRJCJ4-unsplash.jpg"
-               alt="Freight and cargo transport"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">09 · FREIGHT NETWORK</span>
-          <h3>Freight network</h3>
-          <p>
-            Keep freight details, document records and shipment
-            references organised as cargo moves between locations.
-          </p>
-        </div>
-      </article>
-
-      <article class="photo-card">
-        <div class="photo-image-wrap">
-          <img src="wolfgang-weiser-ke0YHcgZ5aQ-unsplash.jpg"
-               alt="Freight transport operations"
-               loading="lazy">
-        </div>
-        <div class="photo-card-content">
-          <span class="photo-number">10 · MOVING TRADE FORWARD</span>
-          <h3>Moving trade forward</h3>
-          <p>
-            BorderFlow aims to help freight operators manage
-            cross-border work through organised records, document
-            review and shipment progress information.
-          </p>
-        </div>
-      </article>
-
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-
-  <footer class="landing-footer">
-    <div class="brand" style="font-size:18px">
-      <div class="brand-mark" style="height:32px;width:32px;font-size:20px">B</div>
-      <div class="brand-name">
-        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
-      </div>
-    </div>
-    <span>© <span id="copyrightYear"></span> BorderFlow. Freight intelligence for connected trade.</span>
-  </footer>
-
-</section>
-
-<!-- LOGIN / SIGNUP -->
-
-<section id="authView" class="auth-screen hidden">
+<!-- LOGIN -->
+<div id="authScreen" class="auth-screen">
   <div class="auth-card">
-    <div class="brand">
-      <div class="brand-mark">B</div>
-      <div class="brand-name">
-        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
-      </div>
+    <div class="logo" style="padding:0 0 20px">
+      <div class="logo-mark">B</div>
+      <div><strong>BorderFlow</strong><small>AI DOCUMENT INTELLIGENCE</small></div>
     </div>
 
-    <h2 id="authTitle">Welcome back</h2>
-    <p class="muted" id="authSubtitle">Log in to your BorderFlow workspace.</p>
+    <h1 id="authTitle">Welcome back</h1>
+    <p>Sign in to your BorderFlow workspace and check your trade documents.</p>
 
-    <form id="authForm">
-      <div class="field hidden" id="nameField">
-        <label>Full name</label>
-        <input id="fullName" type="text" autocomplete="name" placeholder="Your full name">
-      </div>
-      <div class="field">
-        <label>Email address</label>
-        <input id="authEmail" type="email" required autocomplete="email" placeholder="you@example.com">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input id="authPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters">
-      </div>
-      <div id="authMessage"></div>
-      <button id="authSubmit" class="btn" style="width:100%" type="submit">Log in</button>
-    </form>
+    <div class="field">
+      <label>Email address</label>
+      <input id="email" type="email" placeholder="you@company.com">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Your password">
+    </div>
+
+    <button class="btn btn-primary" id="authButton" onclick="authenticate()">Sign in</button>
+    <div id="message"></div>
 
     <div class="auth-switch">
       <span id="authSwitchText">Don't have an account?</span>
-      <a id="authSwitchLink" onclick="toggleAuthMode()">Create one</a>
+      <button onclick="toggleAuth()" id="authSwitchButton">Create account</button>
     </div>
-    <div class="auth-switch"><a onclick="backToLanding()">Back to home</a></div>
+  </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="appRoot">
+<div class="app">
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">B</div>
+    <div><strong>BorderFlow</strong><small>TRADE DOCUMENT AI</small></div>
+  </div>
+
+  <div class="nav-label">WORKSPACE</div>
+  <nav>
+    <button class="nav-button active" data-page="dashboard" onclick="showPage('dashboard',this)">
+      <span class="nav-icon">⌂</span> Dashboard
+    </button>
+    <button class="nav-button" data-page="checker" onclick="showPage('checker',this)">
+      <span class="nav-icon">✧</span> AI Document Checker
+    </button>
+    <button class="nav-button" data-page="library" onclick="showPage('library',this)">
+      <span class="nav-icon">▤</span> Document Library
+    </button>
+    <button class="nav-button" data-page="media" onclick="showPage('media',this)">
+      <span class="nav-icon">▶</span> BorderFlow Media
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="status-pill">● Workspace</div>
+    <p>AI assistance for cross-border trade documents.</p>
+    <button class="nav-button" onclick="logout()">↪ Log out</button>
+  </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+  <div class="page-title">
+    <h1 id="pageHeading">Dashboard</h1>
+    <p id="pageSubtitle">Your document intelligence workspace</p>
+  </div>
+  <div class="user-area">
+    <span class="status-pill">● Connected workspace</span>
+    <div class="user-avatar" id="userAvatar">B</div>
+  </div>
+</header>
+
+<!-- DASHBOARD PAGE -->
+<section class="page active" id="dashboardPage">
+
+  <div class="hero">
+    <div class="hero-content">
+      <span class="hero-tag">✦ BORDERFLOW AI DOCUMENT INTELLIGENCE</span>
+      <h2>Make document checking simpler, faster and smarter.</h2>
+      <p>
+        Upload trade documents. BorderFlow reads the information,
+        checks for possible errors and helps clearing agents identify
+        missing details before documents are submitted.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-light" onclick="showPage('checker')">Start checking documents →</button>
+        <button class="btn btn-outline" onclick="showPage('library')">Open document library</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <small>Documents uploaded</small>
+      <strong id="statDocuments">0</strong>
+      <span>Your saved documents</span>
+    </div>
+    <div class="stat-card">
+      <small>AI checks completed</small>
+      <strong id="statChecks">0</strong>
+      <span>Reports generated</span>
+    </div>
+    <div class="stat-card">
+      <small>Documents needing review</small>
+      <strong id="statReview">0</strong>
+      <span>Check flagged findings</span>
+    </div>
+    <div class="stat-card">
+      <small>Document types</small>
+      <strong>6+</strong>
+      <span>Trade document categories</span>
+    </div>
+  </div>
+
+  <div class="section-heading">
+    <div>
+      <h2>Start your document workflow</h2>
+      <p>Choose the next step in your checking process.</p>
+    </div>
+  </div>
+
+  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+    <div class="panel">
+      <div style="font-size:27px">📄</div>
+      <h3>Upload documents</h3>
+      <p class="panel-description">Add invoices, packing lists, bills of lading and certificates.</p>
+      <button class="btn btn-primary" onclick="showPage('checker')">Upload document</button>
+    </div>
+    <div class="panel">
+      <div style="font-size:27px">✧</div>
+      <h3>Run AI checks</h3>
+      <p class="panel-description">Find missing details, mismatched values and possible document errors.</p>
+      <button class="btn btn-primary" onclick="showPage('checker')">Check documents</button>
+    </div>
+    <div class="panel">
+      <div style="font-size:27px">▤</div>
+      <h3>View saved reports</h3>
+      <p class="panel-description">Return to your uploaded documents and saved checking results.</p>
+      <button class="btn btn-primary" onclick="showPage('library')">Open library</button>
+    </div>
+  </div>
+
+  <div class="notice">
+    BorderFlow provides document-reading and checking assistance.
+    Always have a qualified clearing agent verify important findings and official customs requirements.
   </div>
 </section>
 
-<!-- MAIN APPLICATION -->
-
-<section id="appShell" class="hidden">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-mark">B</div>
-      <div class="brand-name">
-        <span class="brand-border">Border</span><span class="brand-flow">Flow</span>
-      </div>
-    </div>
-
-    <div class="nav-label">WORKSPACE</div>
-    <button class="nav-item active" data-page="overview"><span class="nav-icon">⌂</span>Overview</button>
-    <button class="nav-item" data-page="checker"><span class="nav-icon">✦</span>AI Document Checker</button>
-    <button class="nav-item" data-page="library"><span class="nav-icon">▣</span>Document Library</button>
-    <button class="nav-item" data-page="shipments"><span class="nav-icon">▤</span>Shipments</button>
-    <button class="nav-item" data-page="tracking"><span class="nav-icon">⌖</span>Tracking</button>
-    <button class="nav-item" data-page="agents">
-  <span class="nav-icon">🤖</span>AI Agents
-</button>
-
-    <div class="nav-label">OPERATIONS</div>
-    <button class="nav-item" data-page="customs"><span class="nav-icon">◇</span>Customs Management</button>
-    <button class="nav-item" data-page="customers"><span class="nav-icon">♙</span>Customers</button>
-    <button class="nav-item" data-page="invoices"><span class="nav-icon">▧</span>Invoices & Payments</button>
-    <button class="nav-item" data-page="reports"><span class="nav-icon">▥</span>Reports & Analytics</button>
-
-    <div class="nav-label">ACCOUNT</div>
-    <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
-
-    <div class="sidebar-bottom">
-      <button class="nav-item" id="logoutButton"><span class="nav-icon">⇥</span>Log out</button>
-    </div>
-  </aside>
-
-  <div class="main-area">
-    <header class="top-header">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
-        <div>
-          <strong id="headerTitle">Overview</strong>
-          <div class="small muted">BorderFlow workspace</div>
-        </div>
-      </div>
-      <div class="user-chip">
-        <div class="avatar" id="userAvatar">B</div>
-        <span id="userEmail">Account</span>
-      </div>
-    </header>
-
-    <main class="content">
-
-      <!-- OVERVIEW -->
-
-      <section class="page active" id="page-overview">
-        <h1 class="page-title">Overview</h1>
-        <p class="page-subtitle">Your freight and document operations at a glance.</p>
-
-        <div class="grid-4">
-          <div class="stat-card"><span class="stat-icon">▤</span><div class="stat-label">Total shipments</div><div class="stat-value" id="statShipments">0</div><div class="small muted">Saved shipment records</div></div>
-          <div class="stat-card"><span class="stat-icon">▣</span><div class="stat-label">Documents</div><div class="stat-value" id="statDocuments">0</div><div class="small muted">Uploaded documents</div></div>
-          <div class="stat-card"><span class="stat-icon">✦</span><div class="stat-label">AI checks</div><div class="stat-value" id="statChecks">0</div><div class="small muted">Saved AI reports</div></div>
-          <div class="stat-card"><span class="stat-icon">!</span><div class="stat-label">Needs review</div><div class="stat-value" id="statReview">0</div><div class="small muted">Reports requiring attention</div></div>
-        </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="section-head"><h3>Recent shipments</h3><button class="btn secondary" onclick="navigate('shipments')">View shipments</button></div>
-            <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Border post</th><th>Status</th></tr></thead><tbody id="recentShipments"><tr><td colspan="3" class="empty">Loading shipments...</td></tr></tbody></table></div>
-          </div>
-          <div class="card">
-            <div class="section-head"><h3>Recent documents</h3><button class="btn secondary" onclick="navigate('library')">View library</button></div>
-            <div id="recentDocuments" class="empty">Loading documents...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- DOCUMENT CHECKER -->
-
-      <section class="page" id="page-checker">
-        <h1 class="page-title">AI Document Checker</h1>
-        <p class="page-subtitle">Upload a trade document, extract its text and request an AI review.</p>
-
-        <div class="card">
-          <form id="documentForm">
-            <div class="form-grid">
-              <div class="field">
-                <label>Shipment reference</label>
-                <input id="docShipmentRef" required placeholder="Example: BF001">
-              </div>
-              <div class="field">
-                <label>Document type</label>
-                <select id="docType" required>
-                  <option value="">Select document type</option>
-                  <option>Commercial Invoice</option>
-                  <option>Packing List</option>
-                  <option>Bill of Lading</option>
-                  <option>Certificate of Origin</option>
-                  <option>Customs Declaration</option>
-                  <option>Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="upload-zone">
-              <div style="font-size:30px;color:var(--blue)">⇧</div>
-              <strong>Select your trade document</strong>
-              <p class="muted small">PDF, PNG, JPG, JPEG or WEBP. Maximum 10 MB.</p>
-              <input id="documentFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp" required>
-            </div>
-
-            <div id="documentProgress" class="small muted" style="margin:15px 0"></div>
-            <button class="btn" id="checkDocumentButton" type="submit">Upload and check document</button>
-          </form>
-        </div>
-
-        <div id="analysisResult" class="card hidden" style="margin-top:20px">
-          <div class="section-head"><h3>AI analysis report</h3><span id="analysisStatus" class="tag orange">Needs Review</span></div>
-          <p id="analysisSummary"></p>
-          <div id="analysisFindings"></div>
-          <div id="analysisMissing"></div>
-          <div id="analysisConsistency"></div>
-          <p class="footer-note">AI document review is an assistance tool. A qualified person must verify findings before making customs or financial decisions.</p>
-        </div>
-      </section>
-
-      <!-- DOCUMENT LIBRARY -->
-
-      <section class="page" id="page-library">
-        <h1 class="page-title">Document Library</h1>
-        <p class="page-subtitle">Your uploaded trade documents and their review status.</p>
-        <div class="card">
-          <div class="section-head"><h3>Saved documents</h3><button class="btn secondary" onclick="loadDocuments()">Refresh</button></div>
-          <div class="table-wrap"><table><thead><tr><th>File</th><th>Shipment</th><th>Type</th><th>Status</th><th>Date</th></tr></thead><tbody id="documentsTable"><tr><td colspan="5" class="empty">Loading documents...</td></tr></tbody></table></div>
-        </div>
-        <div class="card" style="margin-top:18px">
-          <div class="section-head"><h3>Saved AI reports</h3><button class="btn secondary" onclick="loadReports()">Refresh</button></div>
-          <div id="reportsList" class="empty">Loading reports...</div>
-        </div>
-      </section>
-
-      <!-- SHIPMENTS -->
-
-      <section class="page" id="page-shipments">
-        <h1 class="page-title">Shipments</h1>
-        <p class="page-subtitle">Create and manage your freight shipment records.</p>
-
-        <div class="card">
-          <h3 style="margin-top:0">Create shipment</h3>
-          <form id="shipmentForm">
-            <div class="form-grid">
-              <div class="field"><label>Shipment reference</label><input id="shipmentRef" required placeholder="BF001"></div>
-              <div class="field"><label>Truck registration</label><input id="truckRegistration" required placeholder="ABC 1234"></div>
-              <div class="field"><label>Driver name</label><input id="driverName" required placeholder="Driver's full name"></div>
-              <div class="field"><label>Driver WhatsApp</label><input id="driverWhatsapp" placeholder="+263..."></div>
-              <div class="field"><label>Border post</label><select id="borderPost" required><option value="">Select border post</option><option>Beitbridge</option><option>Chirundu</option><option>Forbes</option><option>Plumtree</option><option>Kasumbalesa</option><option>Other</option></select></div>
-              <div class="field"><label>Corridor / route</label><input id="corridor" placeholder="Harare - Johannesburg"></div>
-            </div>
-            <div class="field"><label>Cargo description</label><textarea id="cargoDescription" rows="3" required placeholder="Describe the cargo"></textarea></div>
-            <button class="btn" type="submit" id="saveShipmentButton">Save shipment</button>
-          </form>
-        </div>
-
-        <div class="card" style="margin-top:18px">
-          <div class="section-head"><h3>Shipment records</h3><button class="btn secondary" onclick="loadShipments()">Refresh</button></div>
-          <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Truck</th><th>Border</th><th>Status</th><th>Update status</th></tr></thead><tbody id="shipmentsTable"><tr><td colspan="5" class="empty">Loading shipments...</td></tr></tbody></table></div>
-        </div>
-      </section>
-
-      <!-- TRACKING -->
-
-      <section class="page" id="page-tracking">
-        <h1 class="page-title">Shipment Tracking</h1>
-        <p class="page-subtitle">Review the latest recorded shipment statuses.</p>
-        <div class="card">
-          <div class="section-head"><h3>Recorded shipment progress</h3><button class="btn secondary" onclick="loadShipments()">Refresh</button></div>
-          <div id="trackingList" class="empty">Loading tracking records...</div>
-          <p class="footer-note">This version records manually updated shipment statuses. Live GPS tracking requires a separate driver location integration.</p>
-        </div>
-      </section>
-
-     
-<!-- AI AGENTS PAGE -->
-
-<section class="page" id="page-agents">
-  <h1 class="page-title">BorderFlow AI Agents</h1>
-  <p class="page-subtitle">View your registered agents and submit work for AI coordination.</p>
-
-  <div class="grid-4">
-    <div class="stat-card">
-      <div class="stat-label">Registered agents</div>
-      <div class="stat-value" id="agentTotal">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Configured agents</div>
-      <div class="stat-value" id="agentConfigured">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Planned agents</div>
-      <div class="stat-value" id="agentPlanned">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">AI tasks</div>
-      <div class="stat-value" id="agentTaskTotal">0</div>
+<!-- DOCUMENT CHECKER PAGE -->
+<section class="page" id="checkerPage">
+  <div class="section-heading">
+    <div>
+      <h2>AI Document Checker</h2>
+      <p>Upload a document, extract its text and send it for AI analysis.</p>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:18px">
-    <h3>Give BorderFlow AI a task</h3>
-    <p class="small muted">Describe the work you want the coordinator to review.</p>
+  <div class="checker-layout">
+    <div class="panel">
+      <h3>1. Document information</h3>
+      <p class="panel-description">Tell BorderFlow what type of document you are checking.</p>
 
-    <form id="agentTaskForm">
       <div class="field">
-        <label>Task title</label>
-        <input id="agentTaskTitle" required maxlength="150"
-          placeholder="Example: Review shipment documents">
+        <label>Shipment reference</label>
+        <input id="shipmentRef" placeholder="Example: BF001">
       </div>
+
       <div class="field">
-        <label>Task description</label>
-        <textarea id="agentTaskDescription" required rows="4"
-          placeholder="Describe what BorderFlow should review..."></textarea>
+        <label>Document type</label>
+        <select id="documentType">
+          <option value="Commercial Invoice">Commercial Invoice</option>
+          <option value="Packing List">Packing List</option>
+          <option value="Bill of Lading">Bill of Lading</option>
+          <option value="Certificate of Origin">Certificate of Origin</option>
+          <option value="Customs Declaration">Customs Declaration</option>
+          <option value="Other">Other trade document</option>
+        </select>
       </div>
-      <button class="btn" id="agentTaskButton" type="submit">
-        Submit AI task
-      </button>
-    </form>
-    <p id="agentTaskMessage" class="small muted"></p>
-  </div>
 
-  <div class="card" style="margin-bottom:18px">
-    <div class="section-head">
-      <h3>Registered agents</h3>
-      <button class="btn secondary" onclick="loadAgents()">Refresh</button>
+      <h3 style="margin-top:25px">2. Upload your document</h3>
+      <div class="upload-zone">
+        <div class="upload-icon">☁</div>
+        <strong>Choose a document to check</strong>
+        <p>Supported: PDF, PNG, JPG and JPEG. Maximum file size: 10 MB.</p>
+        <input type="file" id="documentFile" accept=".pdf,.png,.jpg,.jpeg" onchange="fileSelected()">
+        <div class="file-name" id="fileName">No document selected</div>
+      </div>
+
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <p id="progressText" class="panel-description">Ready when you are.</p>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:17px">
+        <button class="btn btn-primary" id="checkButton" onclick="processDocument()">Read and check document</button>
+        <button class="btn btn-outline" onclick="clearChecker()">Clear</button>
+      </div>
+
+      <div id="ocrResult" class="result-box">
+        <h4>Document reading</h4>
+        Your extracted document text will appear here.
+      </div>
+
+      <div id="aiResult" class="result-box">
+        <h4>AI checking report</h4>
+        Your AI analysis will appear here after checking.
+      </div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Agent</th><th>Category</th><th>Status</th></tr>
-        </thead>
-        <tbody id="agentsTable">
-          <tr><td colspan="3" class="empty">Loading agents...</td></tr>
-        </tbody>
-      </table>
+
+    <div>
+      <div class="panel">
+        <h3>How it works</h3>
+        <div class="side-step">
+          <div class="step-number">1</div>
+          <div><strong>Upload</strong><p>Select a trade document from your computer.</p></div>
+        </div>
+        <div class="side-step">
+          <div class="step-number">2</div>
+          <div><strong>Read</strong><p>OCR attempts to extract the text from the document.</p></div>
+        </div>
+        <div class="side-step">
+          <div class="step-number">3</div>
+          <div><strong>Analyse</strong><p>AI checks the extracted information for potential issues.</p></div>
+        </div>
+        <div class="side-step">
+          <div class="step-number">4</div>
+          <div><strong>Review</strong><p>Read the findings and have a qualified person verify them.</p></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>What BorderFlow checks</h3>
+        <div class="result-item">✓ Missing document information</div>
+        <div class="result-item">✓ Invoice totals and calculations</div>
+        <div class="result-item">✓ Shipment and party details</div>
+        <div class="result-item">✓ Possible inconsistencies</div>
+        <div class="result-item">✓ Goods descriptions and HS-code suggestions</div>
+        <div class="result-item">✓ Items requiring human review</div>
+      </div>
+
+      <div class="notice">
+        OCR and AI can make mistakes. A result marked as passed does not guarantee customs acceptance or clearance.
+      </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="section-head">
-      <h3>AI task history</h3>
-      <button class="btn secondary" onclick="loadAgentTasks()">Refresh</button>
-    </div>
-    <div id="agentTasksList" class="empty">Loading tasks...</div>
-  </div>
-
-  <p class="footer-note">
-    Agent registration does not mean every specialist is independently executing tasks yet.
-    Task execution depends on the connected orchestration service.
-  </p>
-</section>
- 
-      <!-- CUSTOMS -->
-
-      <section class="page" id="page-customs">
-        <h1 class="page-title">Customs Management</h1>
-        <p class="page-subtitle">Organise document checks and customs-related operational work.</p>
-        <div class="card">
-          <h3>Document preparation</h3>
-          <p class="muted">Use the AI Document Checker to review commercial invoices, packing lists, bills of lading, certificates of origin and customs declarations.</p>
-          <button class="btn" onclick="navigate('checker')">Open Document Checker</button>
-          <hr>
-          <h3>Government system connections</h3>
-          <p class="muted small">Direct ASYCUDA or other government customs submission is not connected in this version. BorderFlow must not claim that a customs declaration has been officially submitted or cleared unless an authorised integration confirms it.</p>
-        </div>
-      </section>
-
-      <!-- CUSTOMERS -->
-
-      <section class="page" id="page-customers">
-        <h1 class="page-title">Customers</h1>
-        <p class="page-subtitle">Customer management workspace.</p>
-        <div class="card">
-          <h3>Customer records</h3>
-          <p class="muted">This section is ready for connection to your confirmed customer-table structure. Your existing customer records will not be changed by this website replacement.</p>
-        </div>
-      </section>
-
-      <!-- INVOICES -->
-
-      <section class="page" id="page-invoices">
-        <h1 class="page-title">Invoices & Payments</h1>
-        <p class="page-subtitle">Financial operations workspace.</p>
-        <div class="card">
-          <h3>Invoice management</h3>
-          <p class="muted">The invoice interface will be connected after the existing invoice-table columns and payment provider configuration are confirmed. No payments are collected by this version.</p>
-        </div>
-      </section>
-
-      <!-- REPORTS -->
-
-      <section class="page" id="page-reports">
-        <h1 class="page-title">Reports & Analytics</h1>
-        <p class="page-subtitle">A summary of your saved BorderFlow activity.</p>
-        <div class="grid-4">
-          <div class="stat-card"><div class="stat-label">Shipments</div><div class="stat-value" id="reportShipments">0</div></div>
-          <div class="stat-card"><div class="stat-label">Documents</div><div class="stat-value" id="reportDocuments">0</div></div>
-          <div class="stat-card"><div class="stat-label">AI checks</div><div class="stat-value" id="reportChecks">0</div></div>
-          <div class="stat-card"><div class="stat-label">Needs review</div><div class="stat-value" id="reportReview">0</div></div>
-        </div>
-        <div class="card"><p class="muted small">These figures are based on records accessible to your logged-in account.</p></div>
-      </section>
-
-      <!-- SETTINGS -->
-
-      <section class="page" id="page-settings">
-        <h1 class="page-title">Settings</h1>
-        <p class="page-subtitle">Your BorderFlow account information.</p>
-        <div class="card">
-          <h3>Account</h3>
-          <div class="field"><label>Email address</label><input id="settingsEmail" readonly></div>
-          <div class="field"><label>User ID</label><input id="settingsUserId" readonly></div>
-          <button class="btn danger" id="settingsLogout">Log out</button>
-          <hr>
-          <h3>Platform services</h3>
-          <p class="small muted">Database and authentication: Supabase</p>
-          <p class="small muted">Document analysis: Groq AI through a protected Supabase Edge Function</p>
-          <p class="small muted">File storage: private Supabase Storage bucket</p>
-        </div>
-      </section>
-
-    </main>
   </div>
 </section>
 
-<div id="toast" class="toast hidden"></div>
+<!-- DOCUMENT LIBRARY -->
+<section class="page" id="libraryPage">
+  <div class="section-heading">
+    <div>
+      <h2>Document Library</h2>
+      <p>Your saved BorderFlow documents.</p>
+    </div>
+    <button class="btn btn-primary" onclick="showPage('checker')">+ Upload document</button>
+  </div>
+  <div class="panel">
+    <div id="libraryList" class="library-list">
+      <div class="empty-state">Your saved documents will appear here.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MEDIA -->
+<section class="page" id="mediaPage">
+  <div class="section-heading">
+    <div>
+      <h2>BorderFlow Media</h2>
+      <p>Clearing-agent and transport videos from your repository.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Clearing-agent videos</h3>
+    <p class="panel-description">Your uploaded clearing-agent videos.</p>
+    <div class="media-grid">
+      <div class="media-card">
+        <video controls preload="metadata"><source src="clearent%20agent%201.mp4" type="video/mp4"></video>
+        <div><strong>Clearing Agent 1</strong><p>Clearing-agent video</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="clearent%20agent%202.mp4" type="video/mp4"></video>
+        <div><strong>Clearing Agent 2</strong><p>Clearing-agent video</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="clearent%20agent%203.mp4" type="video/mp4"></video>
+        <div><strong>Clearing Agent 3</strong><p>Clearing-agent video</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="clearent%20agent%204.mp4" type="video/mp4"></video>
+        <div><strong>Clearing Agent 4</strong><p>Clearing-agent video</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="clearent%20agent%205.mp4" type="video/mp4"></video>
+        <div><strong>Clearing Agent 5</strong><p>Clearing-agent video</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Truck and border videos</h3>
+    <div class="media-grid">
+      <div class="media-card">
+        <video controls preload="metadata"><source src="truck%201.mp4" type="video/mp4"></video>
+        <div><strong>Truck 1</strong><p>Transport and border operations</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="truck%202.mp4" type="video/mp4"></video>
+        <div><strong>Truck 2</strong><p>Transport and border operations</p></div>
+      </div>
+      <div class="media-card">
+        <video controls preload="metadata"><source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4"></video>
+        <div><strong>BorderFlow video</strong><p>Additional uploaded video</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>BorderFlow pictures</h3>
+    <p class="panel-description">Keep your existing picture files in the repository. Add their exact filenames here when we confirm them.</p>
+    <div class="media-grid">
+      <div class="media-card">
+        <img src="trucks-at-Beitbridge-border.webp" alt="Trucks at Beitbridge border" onerror="this.parentElement.style.display='none'">
+        <div><strong>Beitbridge border</strong><p>Cross-border transport</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
 
 <script>
-"use strict";
+<script>
 
-/* BORDERFLOW CONFIGURATION */
+// ==========================================
+// BORDERFLOW GROUP 2
+// SUPABASE + AUTH + OCR + DOCUMENT CHECKER
+// ==========================================
 
 const SUPABASE_URL = "https://ngkmbpbdaachqymnfffe.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_UEfSKMjLkzWn1L61-OIjJg_h7A5cLTW";
+
 const STORAGE_BUCKET = "freight-documents";
 const AI_FUNCTION = "document-intelligence";
 
@@ -1265,541 +744,263 @@ const db = window.supabase.createClient(
 );
 
 let currentUser = null;
+let selectedFile = null;
 let authMode = "login";
-let shipmentsCache = [];
-let documentsCache = [];
-let reportsCache = [];
+let extractedDocumentText = "";
 
-/* GENERAL HELPERS */
+// ==========================================
+// SAFE DISPLAY HELPERS
+// ==========================================
 
-function $(id){
-  return document.getElementById(id);
-}
-
-function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g,char=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   })[char]);
 }
 
-function toast(message,duration=4000){
-  const element=$("toast");
-  element.textContent=message;
-  element.classList.remove("hidden");
-  clearTimeout(window.borderFlowToastTimer);
-  window.borderFlowToastTimer=setTimeout(
-    ()=>element.classList.add("hidden"),
-    duration
-  );
+function showMessage(message, isError = false) {
+  const element = document.getElementById("message");
+  if (!element) return;
+
+  element.textContent = message;
+  element.style.color = isError ? "#ff929a" : "#8fc3ff";
 }
 
-function setBusy(button,busy,busyText="Please wait..."){
-  if(!button)return;
-  if(busy){
-    button.dataset.originalText=button.textContent;
-    button.textContent=busyText;
-    button.disabled=true;
-  }else{
-    button.textContent=button.dataset.originalText||button.textContent;
-    button.disabled=false;
+function setProgress(percent, message) {
+  const bar = document.getElementById("progressBar");
+  const text = document.getElementById("progressText");
+
+  if (bar) bar.style.width = `${percent}%`;
+  if (text) text.textContent = message;
+}
+
+function setHTML(id, html) {
+  const element = document.getElementById(id);
+  if (element) element.innerHTML = html;
+}
+
+// ==========================================
+// AUTHENTICATION
+// ==========================================
+
+function toggleAuth() {
+  authMode = authMode === "login" ? "signup" : "login";
+
+  document.getElementById("authTitle").textContent =
+    authMode === "login" ? "Welcome back" : "Create your account";
+
+  document.getElementById("authButton").textContent =
+    authMode === "login" ? "Sign in" : "Create account";
+
+  document.getElementById("authSwitchText").textContent =
+    authMode === "login"
+      ? "Don't have an account?"
+      : "Already have an account?";
+
+  document.getElementById("authSwitchButton").textContent =
+    authMode === "login" ? "Create account" : "Sign in";
+
+  showMessage("");
+}
+
+async function authenticate() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    showMessage("Enter your email and password.", true);
+    return;
   }
-}
 
-function formatDate(value){
-  if(!value)return "—";
-  const date=new Date(value);
-  return Number.isNaN(date.getTime())?"—":date.toLocaleDateString();
-}
+  if (password.length < 6) {
+    showMessage("Your password must contain at least 6 characters.", true);
+    return;
+  }
 
-function statusClass(status){
-  const value=String(status||"").toLowerCase();
-  if(value.includes("passed")||value.includes("cleared"))return "green";
-  if(value.includes("failed"))return "red";
-  return "orange";
-}
+  const button = document.getElementById("authButton");
+  button.disabled = true;
+  button.textContent = "Please wait...";
 
-/* LANDING AND AUTHENTICATION */
+  try {
+    let result;
 
-function showAuth(mode="login"){
-  authMode=mode;
-  $("landingView").classList.add("hidden");
-  $("appShell").classList.add("hidden");
-  $("authView").classList.remove("hidden");
-  updateAuthMode();
-}
-
-function backToLanding(){
-  $("authView").classList.add("hidden");
-  $("landingView").classList.remove("hidden");
-}
-
-function toggleAuthMode(){
-  authMode=authMode==="login"?"signup":"login";
-  updateAuthMode();
-}
-
-function updateAuthMode(){
-  const signup=authMode==="signup";
-  $("authTitle").textContent=signup?"Create your account":"Welcome back";
-  $("authSubtitle").textContent=signup
-    ?"Create your BorderFlow workspace."
-    :"Log in to your BorderFlow workspace.";
-  $("nameField").classList.toggle("hidden",!signup);
-  $("fullName").required=signup;
-  $("authSubmit").textContent=signup?"Create account":"Log in";
-  $("authSwitchText").textContent=signup
-    ?"Already have an account?"
-    :"Don't have an account?";
-  $("authSwitchLink").textContent=signup?"Log in":"Create one";
-  $("authMessage").textContent="";
-  $("authPassword").autocomplete=signup?"new-password":"current-password";
-}
-
-$("authForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-
-  const email=$("authEmail").value.trim();
-  const password=$("authPassword").value;
-  const fullName=$("fullName").value.trim();
-  const button=$("authSubmit");
-
-  $("authMessage").textContent="";
-  setBusy(button,true,"Connecting...");
-
-  try{
-    if(authMode==="signup"){
-      const {data,error}=await db.auth.signUp({
+    if (authMode === "signup") {
+      result = await db.auth.signUp({
         email,
-        password,
-        options:{data:{full_name:fullName}}
+        password
       });
-
-      if(error)throw error;
-
-      if(data.session){
-        toast("Your BorderFlow account has been created.");
-      }else{
-        $("authMessage").style.color="var(--green)";
-        $("authMessage").textContent=
-          "Account created. Check your email if confirmation is required, then log in.";
-      }
-    }else{
-      const {error}=await db.auth.signInWithPassword({email,password});
-      if(error)throw error;
+    } else {
+      result = await db.auth.signInWithPassword({
+        email,
+        password
+      });
     }
-  }catch(error){
-    $("authMessage").style.color="var(--red)";
-    $("authMessage").textContent=error.message||"Authentication failed.";
-  }finally{
-    setBusy(button,false);
-  }
-});
 
-async function logout(){
-  const {error}=await db.auth.signOut();
-  if(error)toast(error.message);
+    if (result.error) throw result.error;
+
+    if (result.data.session) {
+      currentUser = result.data.user;
+      await openWorkspace();
+    } else {
+      showMessage(
+        "Account created. Check your email if email confirmation is enabled."
+      );
+    }
+
+  } catch (error) {
+    showMessage(error.message || "Authentication failed.", true);
+  } finally {
+    button.disabled = false;
+    button.textContent =
+      authMode === "login" ? "Sign in" : "Create account";
+  }
 }
 
-$("logoutButton").addEventListener("click",logout);
-$("settingsLogout").addEventListener("click",logout);
+async function logout() {
+  const { error } = await db.auth.signOut();
 
-/* NAVIGATION */
+  if (error) {
+    alert(error.message);
+    return;
+  }
 
-const pageTitles={
-  overview:"Overview",
-  checker:"AI Document Checker",
-  agents:"AI Agents",
-  library:"Document Library",
-  shipments:"Shipments",
-  tracking:"Tracking",
-  customs:"Customs Management",
-  customers:"Customers",
-  invoices:"Invoices & Payments",
-  reports:"Reports & Analytics",
-  settings:"Settings"
-};
+  currentUser = null;
+  document.getElementById("appRoot").style.display = "none";
+  document.getElementById("authScreen").style.display = "grid";
+}
 
-function navigate(page){
-  if(!pageTitles[page])return;
+async function openWorkspace() {
+  if (!currentUser) return;
 
-  document.querySelectorAll(".page").forEach(section=>{
+  document.getElementById("authScreen").style.display = "none";
+  document.getElementById("appRoot").style.display = "block";
+
+  const email = currentUser.email || "BorderFlow User";
+
+  document.getElementById("userAvatar").textContent =
+    email.charAt(0).toUpperCase();
+
+  await loadDashboardData();
+  await loadLibrary();
+}
+
+// ==========================================
+// NAVIGATION
+// ==========================================
+
+function showPage(page, button) {
+  document.querySelectorAll(".page").forEach(section => {
     section.classList.remove("active");
   });
 
-  const target=$("page-"+page);
-  if(target)target.classList.add("active");
+  const target = document.getElementById(page + "Page");
 
-  document.querySelectorAll(".nav-item[data-page]").forEach(button=>{
-    button.classList.toggle("active",button.dataset.page===page);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll(".nav-button[data-page]").forEach(item => {
+    item.classList.remove("active");
   });
 
-  $("headerTitle").textContent=pageTitles[page];
-  $("sidebar").classList.remove("open");
-
-  if(page==="overview")loadDashboard();
-  if(page==="shipments")loadShipments();
-  if(page==="tracking")loadTracking();
-  if(page==="library"){
-    loadDocuments();
-    loadReports();
-  }
-    if(page==="agents"){
-    loadAgents();
-    loadAgentTasks();
-      }
+  if (button) {
+    button.classList.add("active");
+  } else {
+    const nav = document.querySelector(
+      `.nav-button[data-page="${page}"]`
+    );
+    if (nav) nav.classList.add("active");
   }
 
-document.querySelectorAll(".nav-item[data-page]").forEach(button=>{
-  button.addEventListener("click",()=>navigate(button.dataset.page));
-});
-
-function toggleSidebar(){
-  $("sidebar").classList.toggle("open");
-}
-
-/* WORKSPACE SESSION */
-
-function openWorkspace(user){
-  currentUser=user;
-  $("landingView").classList.add("hidden");
-  $("authView").classList.add("hidden");
-  $("appShell").classList.remove("hidden");
-
-  const email=user.email||"BorderFlow user";
-  $("userEmail").textContent=email;
-  $("userAvatar").textContent=email.charAt(0).toUpperCase();
-  $("settingsEmail").value=email;
-  $("settingsUserId").value=user.id;
-
-  navigate("overview");
-}
-
-function showSignedOut(){
-  currentUser=null;
-  $("appShell").classList.add("hidden");
-  $("authView").classList.add("hidden");
-  $("landingView").classList.remove("hidden");
-}
-
-db.auth.onAuthStateChange((event,session)=>{
-  if(session?.user){
-    openWorkspace(session.user);
-  }else if(event==="SIGNED_OUT"){
-    showSignedOut();
-  }
-});
-
-async function initialise(){
-  try{
-    const {data,error}=await db.auth.getSession();
-    if(error)throw error;
-    if(data.session?.user)openWorkspace(data.session.user);
-  }catch(error){
-    console.error("Session initialisation:",error);
-    toast("Could not check your login session. Please log in again.");
-  }
-}
-
-
-/* BORDERFLOW AI AGENT REGISTRY */
-
-async function loadAgents(){
-  if(!currentUser)return;
-
-  const table=$("agentsTable");
-  table.innerHTML='<tr><td colspan="3" class="empty">Loading agents...</td></tr>';
-
-  const {data,error}=await db
-    .from("agent_registry")
-    .select("id,name,role,category,status")
-    .order("category");
-
-  if(error){
-    table.innerHTML=
-      `<tr><td colspan="3" class="empty">${escapeHTML(error.message)}</td></tr>`;
-    return;
-  }
-
-  const agents=data||[];
-
-  $("agentTotal").textContent=agents.length;
-  $("agentConfigured").textContent=
-    agents.filter(agent=>agent.status==="configured").length;
-  $("agentPlanned").textContent=
-    agents.filter(agent=>agent.status==="planned").length;
-
-  table.innerHTML=agents.length
-    ?agents.map(agent=>`
-      <tr>
-        <td>
-          <strong>${escapeHTML(agent.name)}</strong>
-          <div class="small muted">${escapeHTML(agent.role||"")}</div>
-        </td>
-        <td>${escapeHTML(agent.category||"Other")}</td>
-        <td>
-          <span class="tag">
-            ${escapeHTML(agent.status||"Unknown")}
-          </span>
-        </td>
-      </tr>
-    `).join("")
-    :'<tr><td colspan="3" class="empty">No agents found.</td></tr>';
-}
-
-/* BORDERFLOW AI TASK HISTORY */
-
-async function loadAgentTasks(){
-  if(!currentUser)return;
-
-  const list=$("agentTasksList");
-  list.textContent="Loading tasks...";
-
-  const {data,error}=await db
-    .from("agent_tasks")
-    .select("id,task_title,status,created_at")
-    .order("created_at",{ascending:false})
-    .limit(20);
-
-  if(error){
-    list.textContent="Could not load tasks: "+error.message;
-    return;
-  }
-
-  const tasks=data||[];
-  $("agentTaskTotal").textContent=tasks.length;
-
-  list.innerHTML=tasks.length
-    ?tasks.map(task=>`
-      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
-        <strong>${escapeHTML(task.task_title||"Untitled task")}</strong>
-        <div class="small muted">
-          ${escapeHTML(task.status||"Unknown status")}
-          · ${formatDate(task.created_at)}
-        </div>
-      </div>
-    `).join("")
-    :"No AI tasks submitted yet.";
-}
-
-  /* SHIPMENT MANAGEMENT */
-
-async function loadShipments(){
-  if(!currentUser)return;
-
-  const tableBody=$("shipmentsTable");
-  tableBody.innerHTML='<tr><td colspan="5" class="empty">Loading...</td></tr>';
-
-  const {data,error}=await db
-    .from("shipments")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){
-    tableBody.innerHTML=
-      `<tr><td colspan="5" class="empty">${escapeHTML(error.message)}</td></tr>`;
-    return;
-  }
-
-  shipmentsCache=data||[];
-
-  if(!shipmentsCache.length){
-    tableBody.innerHTML=
-      '<tr><td colspan="5" class="empty">No shipments saved yet. Create your first shipment above.</td></tr>';
-  }else{
-    tableBody.innerHTML=shipmentsCache.map(item=>`
-      <tr>
-        <td><strong>${escapeHTML(item.reference_no||"—")}</strong></td>
-        <td>${escapeHTML(item.truck_registration||"—")}</td>
-        <td>${escapeHTML(item.border_post||"—")}</td>
-        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span></td>
-        <td>
-          <select aria-label="Update shipment status"
-            onchange="updateShipmentStatus('${escapeHTML(item.id)}',this.value)"
-            style="padding:7px;border:1px solid var(--border);border-radius:7px">
-            ${["Created","Arrived at Border","Docs Checked","Duty Paid","Cleared to Go"].map(status=>
-              `<option ${item.status===status?"selected":""}>${status}</option>`
-            ).join("")}
-          </select>
-        </td>
-      </tr>
-    `).join("");
-  }
-
-  updateShipmentStats();
-  loadRecentShipments();
-}
-
-$("shipmentForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-  if(!currentUser)return toast("Please log in first.");
-
-  const button=$("saveShipmentButton");
-  setBusy(button,true,"Saving shipment...");
-
-  const record={
-    user_id:currentUser.id,
-    reference_no:$("shipmentRef").value.trim(),
-    truck_registration:$("truckRegistration").value.trim(),
-    driver_name:$("driverName").value.trim(),
-    driver_whatsapp:$("driverWhatsapp").value.trim(),
-    border_post:$("borderPost").value,
-    cargo_description:$("cargoDescription").value.trim(),
-    corridor:$("corridor").value.trim(),
-    status:"Arrived at Border",
-    updated_at:new Date().toISOString()
+  const titles = {
+    dashboard: ["Dashboard", "Your document intelligence workspace"],
+    checker: ["AI Document Checker", "Read and analyse trade documents"],
+    library: ["Document Library", "Your saved trade documents"],
+    media: ["BorderFlow Media", "Clearing-agent and transport videos"]
   };
 
-  try{
-    const {error}=await db.from("shipments").insert(record);
-    if(error)throw error;
+  const heading = titles[page] || titles.dashboard;
 
-    $("shipmentForm").reset();
-    toast("Shipment saved successfully.");
-    await loadShipments();
-    await loadDashboard();
-  }catch(error){
-    toast("Could not save shipment: "+error.message,6000);
-  }finally{
-    setBusy(button,false);
-  }
-});
+  document.getElementById("pageHeading").textContent = heading[0];
+  document.getElementById("pageSubtitle").textContent = heading[1];
 
-async function updateShipmentStatus(id,status){
-  const {error}=await db
-    .from("shipments")
-    .update({status,updated_at:new Date().toISOString()})
-    .eq("id",id);
+  if (page === "library") loadLibrary();
+}
 
-  if(error){
-    toast("Status update failed: "+error.message);
-    await loadShipments();
+// ==========================================
+// FILE SELECTION
+// ==========================================
+
+function fileSelected() {
+  const input = document.getElementById("documentFile");
+  selectedFile = input.files && input.files[0]
+    ? input.files[0]
+    : null;
+
+  if (!selectedFile) return;
+
+  const allowedTypes = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg"
+  ];
+
+  if (!allowedTypes.includes(selectedFile.type)) {
+    alert("Please choose a PDF, PNG or JPG document.");
+    input.value = "";
+    selectedFile = null;
     return;
   }
 
-  toast("Shipment status updated.");
-  await loadShipments();
-  await loadDashboard();
-}
-
-function updateShipmentStats(){
-  $("statShipments").textContent=shipmentsCache.length;
-  $("reportShipments").textContent=shipmentsCache.length;
-}
-
-function loadRecentShipments(){
-  const recent=shipmentsCache.slice(0,5);
-
-  $("recentShipments").innerHTML=recent.length
-    ?recent.map(item=>`
-      <tr>
-        <td>${escapeHTML(item.reference_no||"—")}</td>
-        <td>${escapeHTML(item.border_post||"—")}</td>
-        <td><span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span></td>
-      </tr>
-    `).join("")
-    :'<tr><td colspan="3" class="empty">No shipments yet.</td></tr>';
-}
-
-
-/* DOCUMENT TEXT EXTRACTION — BORDERFLOW OCR */
-
-async function extractPdfText(file) {
-  if (!window.pdfjsLib) {
-    throw new Error("PDF reader did not load. Refresh and try again.");
+  if (selectedFile.size > 10 * 1024 * 1024) {
+    alert("The maximum file size is 10 MB.");
+    input.value = "";
+    selectedFile = null;
+    return;
   }
 
-  if (!window.Tesseract) {
-    throw new Error("OCR service did not load. Refresh and try again.");
-  }
+  document.getElementById("fileName").textContent =
+    selectedFile.name + " (" +
+    (selectedFile.size / 1024 / 1024).toFixed(2) +
+    " MB)";
+}
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
+// ==========================================
+// PDF.JS LOADER
+// ==========================================
+
+async function loadPDFLibrary() {
+  if (window.pdfjsLib) return window.pdfjsLib;
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+
+    script.onload = resolve;
+    script.onerror = () => reject(
+      new Error("Could not load the PDF reader. Check your internet connection.")
+    );
+
+    document.head.appendChild(script);
+  });
+
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-  const buffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-
-  let extractedPages = [];
-  const pagesToRead = Math.min(pdf.numPages, 30);
-
-  for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber++) {
-    $("documentProgress").textContent =
-      `Reading PDF page ${pageNumber} of ${pagesToRead}...`;
-
-    const page = await pdf.getPage(pageNumber);
-    const content = await page.getTextContent();
-
-    let pageText = content.items
-      .map(item => item.str || "")
-      .join(" ")
-      .trim();
-
-    // Use image OCR when a PDF page has no selectable text.
-    if (pageText.length < 10) {
-      const viewport = page.getViewport({ scale: 1.4 });
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      if (!context) {
-        throw new Error("Could not prepare the PDF page for OCR.");
-      }
-
-      canvas.width = Math.ceil(viewport.width);
-      canvas.height = Math.ceil(viewport.height);
-
-      await page.render({
-        canvasContext: context,
-        viewport
-      }).promise;
-
-      const result = await Tesseract.recognize(
-        canvas,
-        "eng",
-        {
-          logger: message => {
-            if (message.status === "recognizing text") {
-              const percent = Math.round(
-                (message.progress || 0) * 100
-              );
-
-              $("documentProgress").textContent =
-                `Reading PDF page ${pageNumber}: ${percent}%`;
-            }
-          }
-        }
-      );
-
-      pageText = String(result.data.text || "").trim();
-
-      canvas.width = 0;
-      canvas.height = 0;
-    }
-
-    if (pageText) {
-      extractedPages.push(
-        `PAGE ${pageNumber}\n${pageText}`
-      );
-    }
-  }
-
-  if (!extractedPages.length) {
-    throw new Error(
-      "No readable text was found. Please check the document quality."
-    );
-  }
-
-  return extractedPages.join("\n\n");
+  return window.pdfjsLib;
 }
 
-async function extractImageText(file) {
-  if (!window.Tesseract) {
-    throw new Error("OCR service did not load. Refresh and try again.");
-  }
+// ==========================================
+// OCR FOR IMAGES
+// ==========================================
 
-  $("documentProgress").textContent = "Preparing image OCR...";
+async function readImage(file) {
+  if (!window.Tesseract) {
+    throw new Error("OCR library did not load. Refresh and try again.");
+  }
 
   const result = await Tesseract.recognize(
     file,
@@ -1808,928 +1009,578 @@ async function extractImageText(file) {
       logger: message => {
         if (message.status === "recognizing text") {
           const percent = Math.round(
-            (message.progress || 0) * 100
+            20 + (message.progress || 0) * 35
           );
 
-          $("documentProgress").textContent =
-            "Reading image: " + percent + "%";
+          setProgress(percent, "Reading image: " + percent + "%");
         }
       }
     }
   );
 
-  const text = String(result.data.text || "").trim();
+  return result.data.text || "";
+}
 
-  if (text.length < 5) {
-    throw new Error(
-      "Very little text could be read. Please use a clearer document."
+// ==========================================
+// OCR FOR PDF DOCUMENTS
+// ==========================================
+
+async function readPDF(file) {
+  const pdfjs = await loadPDFLibrary();
+  const buffer = await file.arrayBuffer();
+
+  const pdf = await pdfjs.getDocument({
+    data: new Uint8Array(buffer)
+  }).promise;
+
+  let combinedText = "";
+  const pagesToRead = Math.min(pdf.numPages, 10);
+
+  for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber++) {
+    setProgress(
+      20 + Math.round((pageNumber / pagesToRead) * 30),
+      `Reading PDF page ${pageNumber} of ${pagesToRead}`
     );
+
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+
+    const pageText = content.items
+      .map(item => item.str || "")
+      .join(" ");
+
+    if (pageText.trim().length > 30) {
+      combinedText +=
+        "\n--- PAGE " + pageNumber + " ---\n" +
+        pageText + "\n";
+    } else {
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({
+        canvasContext: context,
+        viewport
+      }).promise;
+
+      const result = await Tesseract.recognize(
+        canvas,
+        "eng"
+      );
+
+      combinedText +=
+        "\n--- PAGE " + pageNumber + " ---\n" +
+        result.data.text + "\n";
+    }
   }
 
-  return text;
+  if (pdf.numPages > 10) {
+    combinedText +=
+      "\nOnly the first 10 pages were processed. Review the remaining pages separately.";
+  }
+
+  return combinedText;
 }
+
+// ==========================================
+// DOCUMENT TEXT EXTRACTION
+// ==========================================
 
 async function extractDocumentText(file) {
-  const isPdf =
-    file.type === "application/pdf" ||
-    file.name.toLowerCase().endsWith(".pdf");
-
-  if (isPdf) {
-    return extractPdfText(file);
+  if (file.type === "application/pdf") {
+    return await readPDF(file);
   }
 
-  return extractImageText(file);
+  return await readImage(file);
 }
 
+// ==========================================
+// DOCUMENT UPLOAD
+// ==========================================
 
-/* DOCUMENT UPLOAD AND GROQ AI CHECK */
-
-$("documentForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-
-  if(!currentUser)return toast("Please log in first.");
-
-  const file=$("documentFile").files[0];
-  const shipmentRef=$("docShipmentRef").value.trim();
-  const documentType=$("docType").value;
-  const button=$("checkDocumentButton");
-
-  if(!file)return toast("Please select a document.");
-  if(!shipmentRef||!documentType)return toast("Complete all document details.");
-  if(file.size>10*1024*1024)return toast("The file is larger than the 10 MB limit.");
-
-  const allowedTypes=[
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "image/webp"
-  ];
-
-  const extensionAllowed=/\.(pdf|png|jpe?g|webp)$/i.test(file.name);
-  if(!allowedTypes.includes(file.type)&&!extensionAllowed){
-    return toast("Unsupported file type.");
+async function uploadDocument(file, shipmentRef, documentType, text) {
+  if (!currentUser) {
+    throw new Error("Please sign in before uploading documents.");
   }
 
-  setBusy(button,true,"Preparing document...");
-  $("documentProgress").textContent="Starting document upload...";
-  $("analysisResult").classList.add("hidden");
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-  let storagePath=null;
+  const storagePath =
+    currentUser.id + "/" +
+    Date.now() + "_" +
+    safeName;
 
-  try{
-    $("documentProgress").textContent="Extracting document text...";
-    const extractedText=await extractDocumentText(file);
+  const { error: storageError } = await db.storage
+    .from(STORAGE_BUCKET)
+    .upload(storagePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
 
-    if(!extractedText||extractedText.length<5){
-      throw new Error("Very little text was extracted. Please use a clearer document.");
+  if (storageError) throw storageError;
+
+  const { data, error } = await db
+    .from("bf_documents")
+    .insert({
+      user_id: currentUser.id,
+      shipment_ref: shipmentRef || null,
+      document_type: documentType,
+      file_name: file.name,
+      storage_path: storagePath,
+      extracted_text: text,
+      status: "uploaded"
+    })
+    .select()
+    .single();
+
+  if (error) {
+    // Avoid leaving an orphaned uploaded file when the database insert fails.
+    await db.storage.from(STORAGE_BUCKET).remove([storagePath]);
+    throw error;
+  }
+
+  return data;
+}
+
+// ==========================================
+// AI DOCUMENT ANALYSIS
+// ==========================================
+
+async function analyseDocument(document, shipmentRef, documentType, text) {
+  const { data, error } = await db.functions.invoke(
+    AI_FUNCTION,
+    {
+      body: {
+        action: "check_document",
+        document_id: document.id,
+        shipment_ref: shipmentRef,
+        document_type: documentType,
+        extracted_text: text
+      }
     }
+  );
 
-    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-    storagePath=
-      `${currentUser.id}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+  if (error) throw error;
 
-    $("documentProgress").textContent="Uploading document to secure storage...";
+  if (!data || data.success !== true) {
+    throw new Error(
+      data?.error || data?.message ||
+      "The AI function did not return a successful result."
+    );
+  }
 
-    const {error:uploadError}=await db.storage
-      .from(STORAGE_BUCKET)
-      .upload(storagePath,file,{
-        contentType:file.type||"application/octet-stream",
-        upsert:false
-      });
+  return data.result ?? data.report ?? data;
+}
 
-    if(uploadError)throw uploadError;
+// ==========================================
+// MAIN DOCUMENT CHECKING WORKFLOW
+// ==========================================
 
-    $("documentProgress").textContent="Saving document record...";
+async function processDocument() {
+  if (!currentUser) {
+    alert("Please sign in first.");
+    return;
+  }
 
-    const {data:savedDocument,error:insertError}=await db
-      .from("bf_documents")
-      .insert({
-        user_id:currentUser.id,
-        shipment_ref:shipmentRef,
-        document_type:documentType,
-        file_name:file.name,
-        storage_path:storagePath,
-        extracted_text:extractedText,
-        status:"Uploaded"
-      })
-      .select("id")
-      .single();
+  const file = selectedFile;
+  const shipmentRef =
+    document.getElementById("shipmentRef").value.trim();
 
-    if(insertError||!savedDocument){
+  const documentType =
+    document.getElementById("documentType").value;
+
+  if (!file) {
+    alert("Choose a document first.");
+    return;
+  }
+
+  const button = document.getElementById("checkButton");
+  button.disabled = true;
+  button.textContent = "Processing...";
+
+  setHTML("ocrResult", `
+    <h4>Document reading</h4>
+    Preparing document...
+  `);
+
+  setHTML("aiResult", `
+    <h4>AI checking report</h4>
+    Waiting for document reading...
+  `);
+
+  try {
+    // Step 1: Read the document.
+    setProgress(10, "Starting document reading...");
+
+    extractedDocumentText = await extractDocumentText(file);
+
+    if (!extractedDocumentText.trim()) {
       throw new Error(
-        "The file reached storage, but its database record could not be saved: "+
-        (insertError?.message||"Unknown database error")
+        "No readable text was found. Try a clearer scan or image."
       );
     }
 
-    $("documentProgress").textContent=
-      "Document saved. Sending text to BorderFlow AI...";
+    setProgress(55, "Document reading completed.");
 
-    const {data:aiData,error:aiError}=await db.functions.invoke(
-      AI_FUNCTION,
-      {
-        body:{
-          action:"check_document",
-          document_id:savedDocument.id,
-          shipment_ref:shipmentRef,
-          document_type:documentType,
-          extracted_text:extractedText
-        }
+    setHTML("ocrResult", `
+      <h4>Extracted document text</h4>
+      <div>${escapeHTML(extractedDocumentText.slice(0, 12000))}</div>
+      ${
+        extractedDocumentText.length > 12000
+          ? "<p>Only the first part is displayed.</p>"
+          : ""
       }
+    `);
+
+    // Step 2: Upload the original file and extracted text.
+    setProgress(60, "Saving document to BorderFlow...");
+
+    const savedDocument = await uploadDocument(
+      file,
+      shipmentRef,
+      documentType,
+      extractedDocumentText
     );
 
-    if(aiError){
-      let message=aiError.message||"AI function request failed.";
-      if(aiError.context){
-        try{
-          const details=await aiError.context.json();
-          if(details.error)message=details.error;
-        }catch{}
-      }
-      throw new Error(
-        "Your document was uploaded and saved, but AI checking failed: "+message
-      );
-    }
+    // Step 3: Send the extracted information to AI.
+    setProgress(75, "Sending document to BorderFlow AI...");
 
-  const aiResult = aiData?.result ?? aiData?.report;
+    const report = await analyseDocument(
+      savedDocument,
+      shipmentRef,
+      documentType,
+      extractedDocumentText
+    );
 
-if(!aiData?.success || !aiResult){
-  throw new Error(
-    aiData?.error || "The AI service did not return a valid report."
-  );
+    // Step 4: Display the returned AI report.
+    displayAIReport(report);
+
+    setProgress(100, "Document checking completed.");
+
+    await loadDashboardData();
+    await loadLibrary();
+
+  } catch (error) {
+    console.error("BorderFlow document workflow:", error);
+
+    setHTML("aiResult", `
+      <h4>Document checking could not finish</h4>
+      <div class="result-error">${escapeHTML(error.message)}</div>
+      <p>Please check your Supabase tables, storage permissions and Edge Function logs.</p>
+    `);
+
+    setProgress(0, "There was a problem. Review the message above.");
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Read and check document";
+  }
 }
 
-displayAnalysis(aiResult, extractedText);
-    $("documentProgress").textContent=
-      "Upload and AI analysis completed successfully.";
+// ==========================================
+// DISPLAY AI REPORT
+// ==========================================
 
-    toast("Document uploaded and AI analysis completed.");
-    $("documentForm").reset();
-
-    await loadDocuments();
-    await loadReports();
-    await loadDashboard();
-
-  }catch(error){
-    console.error("Document workflow:",error);
-    $("documentProgress").textContent=error.message;
-    toast(error.message,7000);
-  }finally{
-    setBusy(button,false);
+function displayAIReport(report) {
+  if (typeof report === "string") {
+    setHTML("aiResult", `
+      <h4>BorderFlow AI Report</h4>
+      <div>${escapeHTML(report)}</div>
+    `);
+    return;
   }
-});
 
+  const safeReport = report || {};
 
+  const findings =
+    safeReport.findings ||
+    safeReport.issues ||
+    safeReport.checks ||
+    [];
 
+  const missing =
+    safeReport.missing_fields ||
+    safeReport.missing_information ||
+    [];
 
+  const status =
+    safeReport.overall_status ||
+    safeReport.status ||
+    "Review required";
 
-
-
-/* DISPLAY BORDERFLOW AI REPORT */
-
-function displayAnalysis(result, extractedText = "") {
-  const report = $("analysisResult");
-  report.classList.remove("hidden");
-
-  result = result || {};
-
-  const safe = value => {
-    const element = document.createElement("div");
-    element.textContent = String(value ?? "");
-    return element.innerHTML;
-  };
-
-  const show = value => {
-    if (value === null || value === undefined || value === "") return "—";
-    if (typeof value === "object") {
-      if (Array.isArray(value)) return value.map(show).join(", ");
-      if ("value" in value) return show(value.value);
-      return "—";
-    }
-    return String(value);
-  };
-
-  const status = String(result.overall_status || "needs_review")
-    .toLowerCase();
-
-  $("analysisStatus").textContent = status.replace(/_/g, " ");
-  $("analysisStatus").className = "tag " + statusClass(status);
-
-  $("analysisSummary").textContent =
-    result.summary || "Analysis completed. Please review the findings.";
-
-  const findings = Array.isArray(result.findings) ? result.findings : [];
-
-  const fields = result.extracted_data || {};
-
-  const fieldLabels = {
-    document_type: "Document Type",
-    shipment_reference: "Shipment Reference",
-    seller_name: "Seller / Exporter",
-    buyer_name: "Buyer / Importer",
-    exporter: "Exporter",
-    importer: "Importer",
-    invoice_number: "Invoice Number",
-    invoice_date: "Invoice Date",
-    currency: "Currency",
-    subtotal: "Subtotal",
-    freight: "Freight",
-    insurance: "Insurance",
-    taxes: "Taxes",
-    discount: "Discount",
-    total_amount: "Total Amount",
-    package_count: "Package Count",
-    gross_weight: "Gross Weight",
-    net_weight: "Net Weight",
-    goods_description: "Goods Description",
-    shipper: "Shipper",
-    consignee: "Consignee",
-    vessel_or_vehicle: "Vessel / Vehicle",
-    port_of_loading: "Port of Loading",
-    port_of_discharge: "Port of Discharge",
-    country_of_origin: "Country of Origin",
-    certificate_number: "Certificate Number",
-    declaration_number: "Declaration Number",
-    customs_value: "Customs Value"
-  };
-
-  const fieldRows = Object.entries(fieldLabels).map(([key, label]) => {
-    const field = fields[key];
-    const value = show(field);
-    const fieldStatus =
-      field && typeof field === "object" && field.status
-        ? String(field.status).toLowerCase()
-        : value !== "—" ? "found" : "missing";
-
-    return {
-      label,
-      value,
-      status: fieldStatus,
-      evidence: field && typeof field === "object"
-        ? field.evidence || ""
-        : ""
-    };
-  });
-
-  const foundCount = fieldRows.filter(f => f.status === "found").length;
-  const missingCount = fieldRows.filter(f => f.status === "missing").length;
-  const unreadableCount = fieldRows.filter(f => f.status === "unreadable").length;
-
-  const fieldHTML = `
-    <h4>Extracted Document Information</h4>
-    <p class="muted small">
-      Found: ${foundCount} · Missing: ${missingCount} · Unreadable: ${unreadableCount}
-    </p>
-    <div style="overflow-x:auto">
-      <table>
-        <thead>
-          <tr><th>Field</th><th>Extracted Value</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          ${fieldRows.map(field => `
-            <tr>
-              <td>${safe(field.label)}</td>
-              <td>${safe(field.value)}</td>
-              <td>${safe(field.status.replace(/_/g, " "))}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
+  let html = `
+    <h4>✧ BorderFlow AI Checking Report</h4>
+    <div class="result-item">
+      <strong>Overall status:</strong>
+      ${escapeHTML(status)}
     </div>
   `;
 
-  
-const items = Array.isArray(fields.items) ? fields.items : [];
+  if (safeReport.summary) {
+    html += `
+      <div class="result-item">
+        <strong>Summary</strong><br>
+        ${escapeHTML(safeReport.summary)}
+      </div>
+    `;
+  }
 
-/* RECOVER HS CODES FROM OCR TEXT */
+  if (Array.isArray(missing) && missing.length) {
+    html += `
+      <div class="result-item">
+        <strong class="result-warning">Missing information</strong>
+        <ul>
+          ${missing.map(item =>
+            `<li>${escapeHTML(
+              typeof item === "object"
+                ? JSON.stringify(item)
+                : item
+            )}</li>`
+          ).join("")}
+        </ul>
+      </div>
+    `;
+  }
 
-const ocrHsCodes = [
-  ...new Set(
-    (extractedText.match(/\b\d{4,8}\.\d{2,4}\b/g) || [])
-  )
-];
-
-
-  const goodsHTML = items.length ? `
-    <h4>Goods and Invoice Items</h4>
-    <div style="overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>HS Code</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Line Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map((item, index) => `
-            <tr>
-              <td>${safe(show(item.description))}</td>
-              <td>${safe(show(item.hs_code || item.hsCode || ocrHsCodes[index] || "Not extracted"))}</td>
-              <td>${safe(show(item.quantity))}</td>
-              <td>${safe(show(item.unit_price))}</td>
-              <td>${safe(show(item.line_total))}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  ` : "";
-
-  const findingHTML = findings.length
-    ? findings.map(item => {
-        const priority = String(
-          item.priority || item.severity || "medium"
-        ).toLowerCase();
-
-        return `
-          <div class="finding ${safe(priority)}">
-            <strong>${safe(priority.toUpperCase())} priority: ${safe(
-              item.title || item.issue || "Issue identified"
+  if (Array.isArray(findings) && findings.length) {
+    html += `
+      <div class="result-item">
+        <strong>Findings</strong>
+        ${findings.map(item => `
+          <div style="padding:9px 0;border-bottom:1px solid #ffffff15">
+            <strong>${escapeHTML(
+              item.title || item.name || item.category || "Finding"
             )}</strong>
-            <p>${safe(
-              item.description ||
-              item.recommendation ||
-              "Please review this finding."
+            <p>${escapeHTML(
+              item.description || item.message || item.details || item
             )}</p>
+            ${item.severity
+              ? `<small>Severity: ${escapeHTML(item.severity)}</small>`
+              : ""}
           </div>
-        `;
-      }).join("")
-    : "<p class='muted small'>No specific findings were returned. Human review is still required.</p>";
-
-  $("analysisFindings").innerHTML = `
-    ${fieldHTML}
-    ${goodsHTML}
-    <h4>AI Findings</h4>
-    ${findingHTML}
-  `;
-
-  const missing = Array.isArray(result.missing_fields)
-    ? result.missing_fields
-    : [];
-
-  $("analysisMissing").innerHTML = `
-    <h4>Missing or Unreadable Information</h4>
-    ${
-      missing.length
-        ? "<ul>" + missing.map(item => {
-            const label = typeof item === "object"
-              ? item.field || item.name || item.description || JSON.stringify(item)
-              : item;
-            return `<li>${safe(label)}</li>`;
-          }).join("") + "</ul>"
-        : "<p class='muted small'>No missing fields were specifically reported by the AI.</p>"
-    }
-  `;
-
-  const checks = Array.isArray(result.consistency_checks)
-    ? result.consistency_checks
-    : [];
-
-  $("analysisConsistency").innerHTML = `
-    <h4>Consistency Checks</h4>
-    ${
-      checks.length
-        ? checks.map(check => {
-            const checkStatus = String(
-              check.status || "insufficient_data"
-            ).toLowerCase();
-
-            return `
-              <div class="finding">
-                <strong>${safe(checkStatus.replace(/_/g, " ").toUpperCase())}:
-                  ${safe(check.title || check.check || "Document check")}
-                </strong>
-                <p>${safe(
-                  check.description ||
-                  check.message ||
-                  check.details ||
-                  "No additional details."
-                )}</p>
-              </div>
-            `;
-          }).join("")
-        : "<p class='muted small'>No consistency checks were returned.</p>"
-    }
-  `;
-
-  /* SPECIALIST AGENT RESULTS */
-
-  const agents = Array.isArray(result.agents) ? result.agents : [];
-
-  if (agents.length) {
-    $("analysisConsistency").innerHTML += `
-      <h4>BorderFlow Specialist Reviews</h4>
-      ${agents.map((agent, index) => `
-        <div class="finding">
-          <strong>${safe(
-            String(
-  agent.name ||
-  agent.agent_name ||
-  agent.agent ||
-  agent.specialist ||
-  agent.role ||
-  agent.agent_id ||
-  agent.type ||
-  `Specialist ${index + 1}`
-)
-              .replace(/_/g, " ")
-          )}</strong>
-          <p>Status: ${safe(agent.status || "Not reported")}</p>
-          ${agent.summary ? `<p>${safe(agent.summary)}</p>` : ""}
-        </div>
-      `).join("")}
+        `).join("")}
+      </div>
     `;
   }
 
-  /* OCR TEXT */
+  if (safeReport.recommendations) {
+    const recommendations = Array.isArray(safeReport.recommendations)
+      ? safeReport.recommendations
+      : [safeReport.recommendations];
 
-  if (extractedText) {
-    $("analysisConsistency").innerHTML += `
-      <details style="margin-top:15px">
-        <summary>View extracted OCR text</summary>
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${safe(
-          extractedText
-        )}</pre>
-      </details>
+    html += `
+      <div class="result-item">
+        <strong>Recommended next steps</strong>
+        <ul>
+          ${recommendations.map(item =>
+            `<li>${escapeHTML(item)}</li>`
+          ).join("")}
+        </ul>
+      </div>
     `;
   }
+
+  html += `
+    <div class="notice">
+      AI-generated findings are suggestions for review, not official customs approval.
+      Verify the original documents and applicable customs rules before submission.
+    </div>
+  `;
+
+  setHTML("aiResult", html);
 }
 
+// ==========================================
+// CLEAR CHECKER
+// ==========================================
 
+function clearChecker() {
+  selectedFile = null;
+  extractedDocumentText = "";
 
+  document.getElementById("documentFile").value = "";
+  document.getElementById("shipmentRef").value = "";
+  document.getElementById("fileName").textContent =
+    "No document selected";
 
-/* DOCUMENT LIBRARY */
+  setProgress(0, "Ready when you are.");
 
-async function loadDocuments(){
-  if(!currentUser)return;
+  setHTML("ocrResult", `
+    <h4>Document reading</h4>
+    Your extracted document text will appear here.
+  `);
 
-  const body=$("documentsTable");
-  body.innerHTML='<tr><td colspan="5" class="empty">Loading...</td></tr>';
+  setHTML("aiResult", `
+    <h4>AI checking report</h4>
+    Your AI analysis will appear here after checking.
+  `);
+}
 
-  const {data,error}=await db
+// ==========================================
+// DOCUMENT LIBRARY
+// ==========================================
+
+async function loadLibrary() {
+  if (!currentUser) return;
+
+  const list = document.getElementById("libraryList");
+
+  list.innerHTML = `
+    <div class="empty-state">Loading your documents...</div>
+  `;
+
+  const { data, error } = await db
     .from("bf_documents")
-    .select("*")
-    .order("created_at",{ascending:false});
+    .select("id,file_name,document_type,shipment_ref,status,created_at")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false })
+    .limit(50);
 
-  if(error){
-    body.innerHTML=
-      `<tr><td colspan="5" class="empty">${escapeHTML(error.message)}</td></tr>`;
-    return;
-  }
-
-  documentsCache=data||[];
-
-  body.innerHTML=documentsCache.length
-    ?documentsCache.map(doc=>`
-      <tr>
-        <td><strong>${escapeHTML(doc.file_name||"Document")}</strong></td>
-        <td>${escapeHTML(doc.shipment_ref||"—")}</td>
-        <td>${escapeHTML(doc.document_type||"—")}</td>
-        <td><span class="tag ${statusClass(doc.status)}">${escapeHTML(doc.status||"Uploaded")}</span></td>
-        <td>${formatDate(doc.created_at)}</td>
-      </tr>
-    `).join("")
-    :'<tr><td colspan="5" class="empty">No documents uploaded yet.</td></tr>';
-
-  $("statDocuments").textContent=documentsCache.length;
-  $("reportDocuments").textContent=documentsCache.length;
-
-  $("recentDocuments").innerHTML=documentsCache.length
-    ?documentsCache.slice(0,5).map(doc=>`
-      <div style="padding:11px 0;border-bottom:1px solid var(--border)">
-        <strong style="font-size:13px">${escapeHTML(doc.file_name||"Document")}</strong>
-        <div class="small muted">${escapeHTML(doc.shipment_ref||"No reference")} · ${escapeHTML(doc.document_type||"Other")}</div>
+  if (error) {
+    list.innerHTML = `
+      <div class="empty-state">
+        Could not load documents: ${escapeHTML(error.message)}
       </div>
-    `).join("")
-    :"No documents uploaded yet.";
-}
-
-/* SAVED AI REPORTS */
-
-async function loadReports(){
-  if(!currentUser)return;
-
-  const container=$("reportsList");
-  container.textContent="Loading reports...";
-
-  const {data,error}=await db
-    .from("bf_document_checks")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){
-    container.textContent="Could not load reports: "+error.message;
+    `;
     return;
   }
 
-  reportsCache=data||[];
-
-  const reviewCount=reportsCache.filter(report=>
-    report.overall_status!=="Passed"
-  ).length;
-
-  $("statChecks").textContent=reportsCache.length;
-  $("statReview").textContent=reviewCount;
-  $("reportChecks").textContent=reportsCache.length;
-  $("reportReview").textContent=reviewCount;
-
-  if(!reportsCache.length){
-    container.innerHTML='<div class="empty">No AI reports saved yet.</div>';
-    return;
-  }
-
-  container.innerHTML=reportsCache.map(report=>`
-    <div class="report-box">
-      <div class="report-heading">
-        <strong>Document check</strong>
-        <span class="tag ${statusClass(report.overall_status)}">${escapeHTML(report.overall_status||"Needs Review")}</span>
+  if (!data || data.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        No saved documents yet. Upload your first document using the AI Checker.
       </div>
-      <p class="small muted">${formatDate(report.created_at)}</p>
-      <p>${escapeHTML(report.summary||"Analysis report saved.")}</p>
-      <button class="btn secondary" onclick="openSavedReport('${escapeHTML(report.id)}')">View report</button>
+    `;
+    return;
+  }
+
+  list.innerHTML = data.map(document => `
+    <div class="library-item">
+      <div>
+        <strong>${escapeHTML(document.file_name)}</strong>
+        <small>
+          ${escapeHTML(document.document_type || "Document")}
+          · Shipment: ${escapeHTML(document.shipment_ref || "Not supplied")}
+          · ${escapeHTML(document.status || "Uploaded")}
+        </small>
+      </div>
+      <button class="btn btn-outline"
+        onclick="downloadDocument('${escapeHTML(document.id)}')">
+        Open
+      </button>
     </div>
   `).join("");
 }
 
-function openSavedReport(id){
-  const report=reportsCache.find(item=>String(item.id)===String(id));
-  if(!report)return toast("Report not found.");
+async function downloadDocument(documentId) {
+  if (!currentUser) return;
 
-  const result=report.raw_result||{
-    overall_status:report.overall_status,
-    summary:report.summary,
-    findings:report.findings||[],
-    missing_fields:[],
-    consistency_checks:[],
-    human_review_required:true
-  };
+  const { data: document, error } = await db
+    .from("bf_documents")
+    .select("storage_path")
+    .eq("id", documentId)
+    .eq("user_id", currentUser.id)
+    .single();
 
-  navigate("checker");
-  displayAnalysis(result);
+  if (error || !document) {
+    alert("Could not find that document.");
+    return;
+  }
+
+  const { data, error: downloadError } = await db.storage
+    .from(STORAGE_BUCKET)
+    .createSignedUrl(document.storage_path, 60);
+
+  if (downloadError) {
+    alert(downloadError.message);
+    return;
+  }
+
+  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
 }
 
-/* TRACKING AND DASHBOARD */
+// ==========================================
+// DASHBOARD COUNTS
+// ==========================================
 
-async function loadTracking(){
-  if(!currentUser)return;
+async function loadDashboardData() {
+  if (!currentUser) return;
 
-  const {data,error}=await db
-    .from("shipments")
+  const { count: documentCount, error: documentError } = await db
+    .from("bf_documents")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", currentUser.id);
+
+  const { data: reports, error: reportError } = await db
+    .from("bf_document_checks")
     .select("*")
-    .order("updated_at",{ascending:false});
+    .eq("user_id", currentUser.id)
+    .limit(200);
 
-  if(error){
-    $("trackingList").textContent=error.message;
-    return;
+  if (!documentError) {
+    document.getElementById("statDocuments").textContent =
+      documentCount ?? 0;
   }
 
-  const rows=data||[];
+  if (!reportError && reports) {
+    document.getElementById("statChecks").textContent =
+      reports.length;
 
-  $("trackingList").innerHTML=rows.length
-    ?rows.map(item=>`
-      <div style="padding:15px 0;border-bottom:1px solid var(--border)">
-        <div style="display:flex;justify-content:space-between;gap:10px">
-          <strong>${escapeHTML(item.reference_no||"Shipment")}</strong>
-          <span class="tag ${statusClass(item.status)}">${escapeHTML(item.status||"Created")}</span>
-        </div>
-        <p class="small muted">${escapeHTML(item.border_post||"Border not set")} · ${escapeHTML(item.truck_registration||"Truck not set")}</p>
-        <p class="small muted">Last update: ${formatDate(item.updated_at)}</p>
-      </div>
-    `).join("")
-    :'<div class="empty">No shipment tracking records yet.</div>';
+    const reviewCount = reports.filter(report => {
+      const status = String(
+        report.overall_status || report.status || ""
+      ).toLowerCase();
+
+      return status && !["passed", "clear", "approved"].includes(status);
+    }).length;
+
+    document.getElementById("statReview").textContent =
+      reviewCount;
+  }
 }
 
+// ==========================================
+// SESSION RESTORATION
+// ==========================================
 
-async function loadDashboard(){
-  if(!currentUser)return;
-  await Promise.all([
-    loadShipments(),
-    loadDocuments(),
-    loadReports()
-  ]);
-}
+async function initialise() {
+  try {
+    const { data, error } = await db.auth.getSession();
 
-/* AI AGENTS - LOAD REGISTERED AGENTS */
+    if (error) throw error;
 
-async function loadAgents(){
-  const table=$("agentsTable");
+    currentUser = data.session?.user || null;
 
-  try{
-    const {data,error}=await db
-      .from("agent_registry")
-      .select("id,name,category,status")
-      .order("name");
-
-    if(error)throw error;
-
-    const agents=data||[];
-
-    $("agentTotal").textContent=agents.length;
-    $("agentConfigured").textContent=
-      agents.filter(a=>a.status==="configured").length;
-    $("agentPlanned").textContent=
-      agents.filter(a=>a.status==="planned").length;
-
-    if(!agents.length){
-      table.innerHTML='<tr><td colspan="3">No agents found.</td></tr>';
-      return;
+    if (currentUser) {
+      await openWorkspace();
+    } else {
+      document.getElementById("authScreen").style.display = "grid";
+      document.getElementById("appRoot").style.display = "none";
     }
 
-    table.innerHTML=agents.map(agent=>`
-      <tr>
-        <td>${agent.name||agent.id}</td>
-        <td>${agent.category||"General"}</td>
-        <td>${agent.status||"Unknown"}</td>
-      </tr>
-    `).join("");
+    db.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null;
 
-  }catch(error){
-    console.error("Agent loading error:",error);
-    table.innerHTML=
-      '<tr><td colspan="3">Could not load agents. Check Supabase connection.</td></tr>';
-  }
-}
-
-/* AI AGENTS - LOAD TASK HISTORY */
-
-async function loadAgentTasks(){
-  const list=$("agentTasksList");
-
-  try{
-    const {data,error}=await db
-      .from("agent_tasks")
-      .select("id,task_title,task_description,status,created_at")
-      .order("created_at",{ascending:false})
-      .limit(10);
-
-    if(error)throw error;
-
-    const tasks=data||[];
-
-    $("agentTaskTotal").textContent=tasks.length;
-
-    if(!tasks.length){
-      list.textContent="No AI tasks submitted yet.";
-      return;
-    }
-
-    list.innerHTML=tasks.map(task=>`
-      <div class="card" style="margin-bottom:10px">
-        <strong>${task.task_title||"Untitled task"}</strong>
-        <p>${task.task_description||""}</p>
-        <small>Status: ${task.status||"Unknown"}</small>
-      </div>
-    `).join("");
-
-  }catch(error){
-    console.error("AI task history error:",error);
-    list.textContent="Could not load AI task history.";
-  }
-}
-
-
-/* BORDERFLOW AI TASK SUBMISSION */
-
-$("agentTaskForm").addEventListener("submit",async function(event){
-  event.preventDefault();
-
-  const title=$("agentTaskTitle").value.trim();
-  const description=$("agentTaskDescription").value.trim();
-  const button=$("agentTaskButton");
-  const message=$("agentTaskMessage");
-
-  if(!title||!description){
-    message.textContent="Please enter a task title and description.";
-    return;
-  }
-
-  button.disabled=true;
-  button.textContent="Sending task...";
-  message.textContent="BorderFlow is sending your task to the AI coordinator...";
-
-  try{
-    const {data,error}=await db.functions.invoke(
-      "clever-task",
-      {
-        body:{
-          task_title:title,
-          task_description:description
-        }
+      if (!currentUser) {
+        document.getElementById("appRoot").style.display = "none";
+        document.getElementById("authScreen").style.display = "grid";
       }
-    );
+    });
 
-    if(error)throw error;
-    if(data&&data.error)throw new Error(data.error);
-
-    message.textContent="Task submitted successfully! Check your AI task history.";
-
-    $("agentTaskForm").reset();
-
-    await loadAgentTasks();
-
-  }catch(error){
-    console.error("AI task submission error:",error);
-    message.textContent="Task submission failed: "+error.message;
-  }finally{
-    button.disabled=false;
-    button.textContent="Submit AI task";
+  } catch (error) {
+    console.error("BorderFlow startup:", error);
+    showMessage("Could not connect to your workspace: " + error.message, true);
   }
-});
-
-  /* PAGE STARTUP */
-
-$("copyrightYear").textContent=new Date().getFullYear();
-
-/* SHOW A CLEAR MESSAGE IF AN UPLOADED PICTURE CANNOT LOAD */
-
-document.querySelectorAll(".photo-card img").forEach(img=>{
-  img.addEventListener("error",()=>{
-    img.classList.add("image-failed");
-    img.alt="Picture could not be loaded. Check the filename in GitHub.";
-  });
-});
+}
 
 initialise();
 
+</script>
+</script>
 
-
-<!-- =========================================
-     BORDERFLOW VIDEO AND PHOTO SHOWCASE
-========================================= -->
-
-<style>
-#borderflow-media-showcase {
-    width: 100%;
-    padding: 45px 5%;
-    box-sizing: border-box;
-    background: #101d35;
-    color: #fff;
-}
-
-#borderflow-media-showcase .bf-heading {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-#borderflow-media-showcase .bf-heading h2 {
-    font-size: clamp(25px, 4vw, 38px);
-    margin-bottom: 10px;
-}
-
-#borderflow-media-showcase .bf-heading p {
-    color: #cbd5e1;
-}
-
-.bf-video-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-    max-width: 1400px;
-    margin: auto;
-}
-
-.bf-video-card {
-    background: #182b49;
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-.bf-video-card video {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-    background: #000;
-}
-
-.bf-video-info {
-    padding: 16px;
-}
-
-.bf-video-info h3 {
-    margin: 0 0 7px;
-    font-size: 18px;
-}
-
-.bf-video-info p {
-    margin: 0;
-    color: #cbd5e1;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-/* Keep existing BorderFlow pictures and make them wider */
-.photo-card img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-}
-
-@media (max-width: 750px) {
-    .bf-video-grid {
-        grid-template-columns: 1fr;
-    }
-
-    #borderflow-media-showcase {
-        padding: 30px 15px;
-    }
-}
-</style>
-
-<section id="borderflow-media-showcase">
-    <div class="bf-heading">
-        <h2>BorderFlow in Action</h2>
-        <p>Connecting clearing agents, trucks and cross-border trade.</p>
-    </div>
-
-    <div class="bf-video-grid">
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="clearent agent 1.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Clearing Agent 1</h3>
-                <p>Professional customs and clearing operations.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="clearent agent 2.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Clearing Agent 2</h3>
-                <p>Supporting efficient border documentation.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="clearent agent 3.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Clearing Agent 3</h3>
-                <p>Helping trade professionals manage their work.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="clearent agent 4.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Clearing Agent 4</h3>
-                <p>Supporting cross-border freight operations.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="clearent agent 5.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Clearing Agent 5</h3>
-                <p>Making customs processes more organised.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="truck 1.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Freight Transport 1</h3>
-                <p>Moving goods across borders and trade routes.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="truck 2.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>Freight Transport 2</h3>
-                <p>Connecting trucks, clearing agents and businesses.</p>
-            </div>
-        </div>
-
-        <div class="bf-video-card">
-            <video controls preload="metadata">
-                <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4">
-            </video>
-            <div class="bf-video-info">
-                <h3>BorderFlow Showcase</h3>
-                <p>A look at freight and logistics.</p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- END BORDERFLOW VIDEO AND PHOTO SHOWCASE -->
+</body>
+</html>
