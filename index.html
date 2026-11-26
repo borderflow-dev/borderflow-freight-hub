@@ -2555,162 +2555,181 @@ document.querySelectorAll(".photo-card img").forEach(img=>{
 initialise();
 
 
-/* BORDERFLOW FULL-WIDTH MEDIA SHOWCASE */
 
-const borderFlowVideos = [
-  {
-    title: "Clearing Agent 1",
-    file: "clearent agent 1.mp4",
-    description: "Discover the work of customs clearing professionals supporting cross-border cargo documentation and trade operations."
-  },
-  {
-    title: "Clearing Agent 2",
-    file: "clearent agent 2.mp4",
-    description: "Explore the people and processes involved in coordinating customs clearance and freight movement."
-  },
-  {
-    title: "Clearing Agent 3",
-    file: "clearent agent 3.mp4",
-    description: "See another perspective on professional clearing services and international trade operations."
-  },
-  {
-    title: "Clearing Agent 4",
-    file: "clearent agent 4.mp4",
-    description: "Discover how clearing professionals support documentation and cross-border logistics."
-  },
-  {
-    title: "Clearing Agent 5",
-    file: "clearent agent 5.mp4",
-    description: "Explore the important role of clearing agents in helping cargo move through border processes."
-  },
-  {
-    title: "Truck 1",
-    file: "truck 1.mp4",
-    description: "A look at freight transportation and the trucks that support regional and international trade."
-  },
-  {
-    title: "Truck 2",
-    file: "truck 2.mp4",
-    description: "Explore the vehicles and transport operations that keep cross-border freight moving."
-  },
-  {
-    title: "BorderFlow Freight Showcase",
-    file: "17899033-hd_1920_1080_24fps.mp4",
-    description: "Discover the world of freight, logistics and cross-border trade with BorderFlow."
-  }
-];
+<!-- =========================================
+     BORDERFLOW VIDEO AND PHOTO SHOWCASE
+========================================= -->
 
-const gallery = document.createElement("section");
-gallery.id = "borderflow-video-gallery";
-
-gallery.innerHTML = `
-  <h2>BorderFlow in Action</h2>
-  <p>People, trucks and operations powering cross-border trade.</p>
-
-  <div class="bf-video-grid">
-    ${borderFlowVideos.map(video => `
-      <article class="bf-video-card">
-        <video autoplay muted loop playsinline controls>
-          <source src="${encodeURI(video.file)}" type="video/mp4">
-          Your browser does not support video.
-        </video>
-        <h3>${video.title}</h3>
-        <p>${video.description}</p>
-      </article>
-    `).join("")}
-  </div>
-`;
-
-
-
-document.body.appendChild(gallery);
-
-const galleryStyle = document.createElement("style");
-galleryStyle.textContent = `
-#borderflow-video-gallery {
-  padding: 45px 5%;
-  background: #101d35;
-  color: white;
-}
-#borderflow-video-gallery h2 {
-  font-size: 30px;
+<style>
+#borderflow-media-showcase {
+    width: 100%;
+    padding: 45px 5%;
+    box-sizing: border-box;
+    background: #101d35;
+    color: #fff;
 }
 
-#borderflow-video-gallery {
-  width: 100%;
-  padding: 55px 4%;
-  background: #101d35;
-  color: white;
-  box-sizing: border-box;
+#borderflow-media-showcase .bf-heading {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-#borderflow-video-gallery h2 {
-  font-size: 32px;
-  margin-bottom: 12px;
+#borderflow-media-showcase .bf-heading h2 {
+    font-size: clamp(25px, 4vw, 38px);
+    margin-bottom: 10px;
+}
+
+#borderflow-media-showcase .bf-heading p {
+    color: #cbd5e1;
 }
 
 .bf-video-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
-  width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: 1400px;
+    margin: auto;
 }
 
 .bf-video-card {
-  background: #1b2b48;
-  padding: 18px;
-  border-radius: 16px;
-  width: 100%;
-  box-sizing: border-box;
+    background: #182b49;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px;
+    overflow: hidden;
 }
 
 .bf-video-card video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  object-fit: contain;
-  border-radius: 12px;
-  background: #000;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    background: #000;
 }
 
-.bf-video-card h3 {
-  font-size: 21px;
-  margin: 16px 0 8px;
+.bf-video-info {
+    padding: 16px;
 }
 
-.bf-video-card p {
-  color: #c4d3eb;
-  line-height: 1.6;
-  font-size: 15px;
+.bf-video-info h3 {
+    margin: 0 0 7px;
+    font-size: 18px;
 }
 
-/* KEEP OLD PICTURES AND MAKE THEM WIDE */
-.photo-card {
-  width: 100%;
+.bf-video-info p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
+/* Keep existing BorderFlow pictures and make them wider */
 .photo-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  object-fit: cover;
-  border-radius: 14px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
 }
 
 @media (max-width: 750px) {
-  .bf-video-grid {
-    grid-template-columns: 1fr;
-  }
+    .bf-video-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #borderflow-media-showcase {
+        padding: 30px 15px;
+    }
 }
+</style>
 
-document.head.appendChild(galleryStyle);
+<section id="borderflow-media-showcase">
+    <div class="bf-heading">
+        <h2>BorderFlow in Action</h2>
+        <p>Connecting clearing agents, trucks and cross-border trade.</p>
+    </div>
 
-</script>
-</body>
-</html>
+    <div class="bf-video-grid">
 
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="clearent agent 1.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Clearing Agent 1</h3>
+                <p>Professional customs and clearing operations.</p>
+            </div>
+        </div>
 
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="clearent agent 2.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Clearing Agent 2</h3>
+                <p>Supporting efficient border documentation.</p>
+            </div>
+        </div>
 
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="clearent agent 3.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Clearing Agent 3</h3>
+                <p>Helping trade professionals manage their work.</p>
+            </div>
+        </div>
 
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="clearent agent 4.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Clearing Agent 4</h3>
+                <p>Supporting cross-border freight operations.</p>
+            </div>
+        </div>
+
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="clearent agent 5.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Clearing Agent 5</h3>
+                <p>Making customs processes more organised.</p>
+            </div>
+        </div>
+
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="truck 1.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Freight Transport 1</h3>
+                <p>Moving goods across borders and trade routes.</p>
+            </div>
+        </div>
+
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="truck 2.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>Freight Transport 2</h3>
+                <p>Connecting trucks, clearing agents and businesses.</p>
+            </div>
+        </div>
+
+        <div class="bf-video-card">
+            <video controls preload="metadata">
+                <source src="17899033-hd_1920_1080_24fps.mp4" type="video/mp4">
+            </video>
+            <div class="bf-video-info">
+                <h3>BorderFlow Showcase</h3>
+                <p>A look at freight and logistics.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- END BORDERFLOW VIDEO AND PHOTO SHOWCASE -->
