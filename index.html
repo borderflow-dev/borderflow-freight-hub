@@ -1984,347 +1984,262 @@ displayAnalysis(aiResult, extractedText);
 
 
 
+
 /* DISPLAY BORDERFLOW AI REPORT */
 
 function displayAnalysis(result, extractedText = "") {
-  $("analysisResult").classList.remove("hidden");
+  const report = $("analysisResult");
+  report.classList.remove("hidden");
 
   result = result || {};
 
-  /* OVERALL STATUS */
+  const safe = value => {
+    const element = document.createElement("div");
+    element.textContent = String(value ?? "");
+    return element.innerHTML;
+  };
 
-  const status = result.overall_status || "needs_review";
+  const show = value => {
+    if (value === null || value === undefined || value === "") return "—";
+    if (typeof value === "object") {
+      if (Array.isArray(value)) return value.map(show).join(", ");
+      if ("value" in value) return show(value.value);
+      return "—";
+    }
+    return String(value);
+  };
 
-  $("analysisStatus").textContent = String(status).replace(/_/g, " ");
+  const status = String(result.overall_status || "needs_review")
+    .toLowerCase();
+
+  $("analysisStatus").textContent = status.replace(/_/g, " ");
   $("analysisStatus").className = "tag " + statusClass(status);
 
   $("analysisSummary").textContent =
     result.summary || "Analysis completed. Please review the findings.";
 
-  /* SAFE VALUE DISPLAY */
+  const findings = Array.isArray(result.findings) ? result.findings : [];
 
-  const displayValue = value => {
-    if (value === null || value === undefined || value === "") {
-      return "—";
-    }
+  const fields = result.extracted_data || {};
 
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        return value.map(displayValue).join(", ");
-      }
-
-      if (Object.prototype.hasOwnProperty.call(value, "value")) {
-        return displayValue(value.value);
-      }
-
-      return "—";
-    }
-
-    return String(value);
+  const fieldLabels = {
+    document_type: "Document Type",
+    shipment_reference: "Shipment Reference",
+    seller_name: "Seller / Exporter",
+    buyer_name: "Buyer / Importer",
+    exporter: "Exporter",
+    importer: "Importer",
+    invoice_number: "Invoice Number",
+    invoice_date: "Invoice Date",
+    currency: "Currency",
+    subtotal: "Subtotal",
+    freight: "Freight",
+    insurance: "Insurance",
+    taxes: "Taxes",
+    discount: "Discount",
+    total_amount: "Total Amount",
+    package_count: "Package Count",
+    gross_weight: "Gross Weight",
+    net_weight: "Net Weight",
+    goods_description: "Goods Description",
+    shipper: "Shipper",
+    consignee: "Consignee",
+    vessel_or_vehicle: "Vessel / Vehicle",
+    port_of_loading: "Port of Loading",
+    port_of_discharge: "Port of Discharge",
+    country_of_origin: "Country of Origin",
+    certificate_number: "Certificate Number",
+    declaration_number: "Declaration Number",
+    customs_value: "Customs Value"
   };
 
-  const getField = (keys) => {
-    for (const key of keys) {
-      const field = result.extracted_data?.[key];
+  const fieldRows = Object.entries(fieldLabels).map(([key, label]) => {
+    const field = fields[key];
+    const value = show(field);
+    const fieldStatus =
+      field && typeof field === "object" && field.status
+        ? String(field.status).toLowerCase()
+        : value !== "—" ? "found" : "missing";
 
-      if (field !== undefined && field !== null) {
-        return field;
-      }
-    }
+    return {
+      label,
+      value,
+      status: fieldStatus,
+      evidence: field && typeof field === "object"
+        ? field.evidence || ""
+        : ""
+    };
+  });
 
-    return null;
-  };
+  const foundCount = fieldRows.filter(f => f.status === "found").length;
+  const missingCount = fieldRows.filter(f => f.status === "missing").length;
+  const unreadableCount = fieldRows.filter(f => f.status === "unreadable").length;
 
-  const getFieldValue = field => {
-    if (field && typeof field === "object" &&
-        Object.prototype.hasOwnProperty.call(field, "value")) {
-      return field.value;
-    }
+  const fieldHTML = `
+    <h4>Extracted Document Information</h4>
+    <p class="muted small">
+      Found: ${foundCount} · Missing: ${missingCount} · Unreadable: ${unreadableCount}
+    </p>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Extracted Value</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          ${fieldRows.map(field => `
+            <tr>
+              <td>${safe(field.label)}</td>
+              <td>${safe(field.value)}</td>
+              <td>${safe(field.status.replace(/_/g, " "))}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
 
-    return field;
-  };
+  const items = Array.isArray(fields.items) ? fields.items : [];
 
-  const getFieldStatus = field => {
-    if (field && typeof field === "object" && field.status) {
-      return String(field.status).toLowerCase();
-    }
+  const goodsHTML = items.length ? `
+    <h4>Goods and Invoice Items</h4>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>HS Code</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(item => `
+            <tr>
+              <td>${safe(show(item.description))}</td>
+              <td>${safe(show(item.hs_code || item.hsCode))}</td>
+              <td>${safe(show(item.quantity))}</td>
+              <td>${safe(show(item.unit_price))}</td>
+              <td>${safe(show(item.line_total))}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  ` : "";
 
-    return getFieldValue(field) !== null &&
-      getFieldValue(field) !== undefined &&
-      getFieldValue(field) !== ""
-        ? "found"
-        : "missing";
-  };
-
-  const getEvidence = field => {
-    if (!field || typeof field !== "object") return "";
-
-    const evidence = field.evidence || "";
-
-    return typeof evidence === "string"
-      ? evidence
-      : JSON.stringify(evidence);
-  };
-
-  /* AI FINDINGS */
-
-  const findings = Array.isArray(result.findings)
-    ? result.findings
-    : [];
-
-  $("analysisFindings").innerHTML = findings.length
-    ? "<h4>Findings</h4>" + findings.map(item => {
+  const findingHTML = findings.length
+    ? findings.map(item => {
         const priority = String(
           item.priority || item.severity || "medium"
         ).toLowerCase();
 
-        const title = item.title || item.issue || "Issue identified";
-
-        const description =
-          item.description ||
-          item.recommendation ||
-          "Please review this finding.";
-
         return `
-          <div class="finding ${escapeHTML(priority)}">
-            <strong>
-              ${escapeHTML(priority.toUpperCase())} priority:
-              ${escapeHTML(title)}
-            </strong>
-            <p>${escapeHTML(description)}</p>
+          <div class="finding ${safe(priority)}">
+            <strong>${safe(priority.toUpperCase())} priority: ${safe(
+              item.title || item.issue || "Issue identified"
+            )}</strong>
+            <p>${safe(
+              item.description ||
+              item.recommendation ||
+              "Please review this finding."
+            )}</p>
           </div>
         `;
       }).join("")
-    : "<h4>Findings</h4><p class='muted small'>No specific findings were returned. Human review is still required.</p>";
+    : "<p class='muted small'>No specific findings were returned. Human review is still required.</p>";
 
-  /* STRUCTURED DOCUMENT EXTRACTION */
-
-  const fieldLabels = [
-    { label: "Document Type", keys: ["document_type"] },
-    { label: "Shipment Reference", keys: ["shipment_reference", "shipment_ref"] },
-    { label: "Seller / Exporter", keys: ["seller_name", "exporter_name", "exporter"] },
-    { label: "Buyer / Importer", keys: ["buyer_name", "importer_name", "importer"] },
-    { label: "Invoice Number", keys: ["invoice_number"] },
-    { label: "Invoice Date", keys: ["invoice_date"] },
-    { label: "Currency", keys: ["currency"] },
-    { label: "Subtotal", keys: ["subtotal"] },
-    { label: "Freight", keys: ["freight"] },
-    { label: "Insurance", keys: ["insurance"] },
-    { label: "Taxes", keys: ["taxes"] },
-    { label: "Discount", keys: ["discount", "discounts"] },
-    { label: "Total Amount", keys: ["total_amount"] },
-    { label: "Package Count", keys: ["package_count"] },
-    { label: "Gross Weight", keys: ["gross_weight"] },
-    { label: "Net Weight", keys: ["net_weight"] },
-    { label: "Goods Description", keys: ["goods_description"] },
-    { label: "Shipper", keys: ["shipper"] },
-    { label: "Consignee", keys: ["consignee"] },
-    { label: "Vessel / Vehicle", keys: ["vessel_or_vehicle", "vessel_name"] },
-    { label: "Port of Loading", keys: ["port_of_loading"] },
-    { label: "Port of Discharge", keys: ["port_of_discharge"] },
-    { label: "Country of Origin", keys: ["country_of_origin"] },
-    { label: "Certificate Number", keys: ["certificate_number"] },
-    { label: "Declaration Number", keys: ["declaration_number"] },
-    { label: "Customs Value", keys: ["customs_value"] }
-  ];
-
-  let foundCount = 0;
-  let missingCount = 0;
-  let unreadableCount = 0;
-
-  const extractedFields = fieldLabels.map(({ label, keys }) => {
-    const field = getField(keys);
-    const value = getFieldValue(field);
-    const state = getFieldStatus(field);
-
-    if (state === "found") foundCount++;
-    else if (state === "unreadable") unreadableCount++;
-    else missingCount++;
-
-    return `
-      <tr>
-        <td><strong>${escapeHTML(label)}</strong></td>
-        <td>${escapeHTML(displayValue(value))}</td>
-        <td>${escapeHTML(state.replace(/_/g, " "))}</td>
-        <td>${escapeHTML(getEvidence(field))}</td>
-      </tr>
-    `;
-  }).join("");
-
-  /* GOODS / INVOICE ITEMS */
-
-  const extracted = result.extracted_data || {};
-
-  const items = Array.isArray(extracted.items)
-    ? extracted.items
-    : [];
-
-  const itemRows = items.map((item, index) => `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${escapeHTML(displayValue(item.description))}</td>
-      <td>${escapeHTML(displayValue(item.hs_code))}</td>
-      <td>${escapeHTML(displayValue(item.quantity))}</td>
-      <td>${escapeHTML(displayValue(item.unit_price))}</td>
-      <td>${escapeHTML(displayValue(item.line_total))}</td>
-    </tr>
-  `).join("");
-
-  $("analysisFindings").innerHTML += `
-    <section class="extracted-data">
-      <h4>Extracted Document Information</h4>
-
-      <p class="muted small">
-        Information extracted by BorderFlow AI. Verify it against the original document.
-      </p>
-
-      <p>
-        <strong>Found:</strong> ${foundCount}
-        &nbsp; <strong>Missing:</strong> ${missingCount}
-        &nbsp; <strong>Unreadable:</strong> ${unreadableCount}
-      </p>
-
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Extracted Value</th>
-              <th>Status</th>
-              <th>Evidence</th>
-            </tr>
-          </thead>
-          <tbody>${extractedFields}</tbody>
-        </table>
-      </div>
-
-      ${
-        items.length
-          ? `
-            <h4>Extracted Goods / Invoice Items</h4>
-            <div style="overflow-x:auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Description</th>
-                    <th>HS Code</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Line Total</th>
-                  </tr>
-                </thead>
-                <tbody>${itemRows}</tbody>
-              </table>
-            </div>
-          `
-          : "<p class='muted small'>No individual goods items were returned.</p>"
-      }
-    </section>
+  $("analysisFindings").innerHTML = `
+    ${fieldHTML}
+    ${goodsHTML}
+    <h4>AI Findings</h4>
+    ${findingHTML}
   `;
-
-  /* MISSING FIELDS */
 
   const missing = Array.isArray(result.missing_fields)
     ? result.missing_fields
     : [];
 
   $("analysisMissing").innerHTML = `
-    <h4>Missing fields</h4>
+    <h4>Missing or Unreadable Information</h4>
     ${
       missing.length
-        ? `<ul>${missing.map(item => `
-            <li>${escapeHTML(
-              typeof item === "string" ? item : JSON.stringify(item)
-            )}</li>
-          `).join("")}</ul>`
-        : "<p class='muted small'>No missing fields were reported by the AI.</p>"
+        ? "<ul>" + missing.map(item => {
+            const label = typeof item === "object"
+              ? item.field || item.name || item.description || JSON.stringify(item)
+              : item;
+            return `<li>${safe(label)}</li>`;
+          }).join("") + "</ul>"
+        : "<p class='muted small'>No missing fields were specifically reported by the AI.</p>"
     }
   `;
-
-  /* CONSISTENCY CHECKS */
 
   const checks = Array.isArray(result.consistency_checks)
     ? result.consistency_checks
     : [];
 
   $("analysisConsistency").innerHTML = `
-    <h4>Consistency checks</h4>
+    <h4>Consistency Checks</h4>
     ${
       checks.length
-        ? checks.map(item => {
-            if (typeof item === "string") {
-              return `<p>${escapeHTML(item)}</p>`;
-            }
+        ? checks.map(check => {
+            const checkStatus = String(
+              check.status || "insufficient_data"
+            ).toLowerCase();
 
             return `
               <div class="finding">
-                <strong>${escapeHTML(item.check || "Document check")}</strong>
-                <p>Status: ${escapeHTML(item.status || "Not verified")}</p>
-                <p>${escapeHTML(item.details || item.issue || "")}</p>
+                <strong>${safe(checkStatus.replace(/_/g, " ").toUpperCase())}:
+                  ${safe(check.title || check.check || "Document check")}
+                </strong>
+                <p>${safe(
+                  check.description ||
+                  check.message ||
+                  check.details ||
+                  "No additional details."
+                )}</p>
               </div>
             `;
           }).join("")
-        : "<p class='muted small'>No additional consistency warnings.</p>"
+        : "<p class='muted small'>No consistency checks were returned.</p>"
     }
   `;
 
-  /* AI SPECIALIST RESULTS */
+  /* SPECIALIST AGENT RESULTS */
 
-  const agents = Array.isArray(result.agents)
-    ? result.agents
-    : [];
+  const agents = Array.isArray(result.agents) ? result.agents : [];
 
-  $("analysisConsistency").innerHTML += `
-    <h4>BorderFlow AI Specialist Team</h4>
+  if (agents.length) {
+    $("analysisConsistency").innerHTML += `
+      <h4>BorderFlow Specialist Reviews</h4>
+      ${agents.map(agent => `
+        <div class="finding">
+          <strong>${safe(
+            String(agent.name || agent.agent || agent.role || "Specialist")
+              .replace(/_/g, " ")
+          )}</strong>
+          <p>Status: ${safe(agent.status || "Not reported")}</p>
+          ${agent.summary ? `<p>${safe(agent.summary)}</p>` : ""}
+        </div>
+      `).join("")}
+    `;
+  }
 
-    <p class="muted small">
-      ${agents.length} specialist results returned.
-    </p>
-
-    ${
-      agents.length
-        ? agents.map(agent => `
-            <div class="finding">
-              <strong>${escapeHTML(agent.agent_name || agent.agent_id || "AI Specialist")}</strong>
-              <p>Status: ${escapeHTML(agent.status || "Not verified")}</p>
-              <p>${escapeHTML(agent.summary || "No assessment returned.")}</p>
-
-              ${
-                Array.isArray(agent.findings) && agent.findings.length
-                  ? `<ul>${agent.findings.map(item =>
-                      `<li>${escapeHTML(
-                        typeof item === "string" ? item : JSON.stringify(item)
-                      )}</li>`
-                    ).join("")}</ul>`
-                  : ""
-              }
-
-              ${
-                Array.isArray(agent.next_steps) && agent.next_steps.length
-                  ? `<p><strong>Next steps:</strong></p>
-                     <ul>${agent.next_steps.map(item =>
-                       `<li>${escapeHTML(item)}</li>`
-                     ).join("")}</ul>`
-                  : ""
-              }
-            </div>
-          `).join("")
-        : "<p class='muted small'>No specialist results were returned.</p>"
-    }
-  `;
-
-  /* EXTRACTED OCR TEXT */
+  /* OCR TEXT */
 
   if (extractedText) {
-    $("analysisFindings").innerHTML += `
-      <details class="ocr-result">
-        <summary><strong>View extracted OCR text</strong></summary>
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${escapeHTML(extractedText)}</pre>
+    $("analysisConsistency").innerHTML += `
+      <details style="margin-top:15px">
+        <summary>View extracted OCR text</summary>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${safe(
+          extractedText
+        )}</pre>
       </details>
     `;
   }
 }
+
+
 
 
 /* DOCUMENT LIBRARY */
