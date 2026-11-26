@@ -2630,30 +2630,76 @@ galleryStyle.textContent = `
 #borderflow-video-gallery h2 {
   font-size: 30px;
 }
+
+#borderflow-video-gallery {
+  width: 100%;
+  padding: 55px 4%;
+  background: #101d35;
+  color: white;
+  box-sizing: border-box;
+}
+
+#borderflow-video-gallery h2 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
 .bf-video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  width: 100%;
 }
+
 .bf-video-card {
   background: #1b2b48;
-  padding: 14px;
-  border-radius: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .bf-video-card video {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 10px;
-  background: black;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #000;
 }
+
 .bf-video-card h3 {
-  margin-bottom: 5px;
+  font-size: 21px;
+  margin: 16px 0 8px;
 }
+
 .bf-video-card p {
-  color: #aebfda;
+  color: #c4d3eb;
+  line-height: 1.6;
+  font-size: 15px;
 }
-`;
+
+/* KEEP OLD PICTURES AND MAKE THEM WIDE */
+.photo-card {
+  width: 100%;
+}
+
+.photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+@media (max-width: 750px) {
+  .bf-video-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 document.head.appendChild(galleryStyle);
 
 </script>
