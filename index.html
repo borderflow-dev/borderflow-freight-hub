@@ -2222,10 +2222,19 @@ const ocrHsCodes = [
   if (agents.length) {
     $("analysisConsistency").innerHTML += `
       <h4>BorderFlow Specialist Reviews</h4>
-      ${agents.map(agent => `
+      ${agents.map((agent, index) => `
         <div class="finding">
           <strong>${safe(
-            String(agent.name || agent.agent || agent.role || "Specialist")
+            String(
+  agent.name ||
+  agent.agent_name ||
+  agent.agent ||
+  agent.specialist ||
+  agent.role ||
+  agent.agent_id ||
+  agent.type ||
+  `Specialist ${index + 1}`
+)
               .replace(/_/g, " ")
           )}</strong>
           <p>Status: ${safe(agent.status || "Not reported")}</p>
