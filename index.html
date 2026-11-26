@@ -2098,7 +2098,17 @@ function displayAnalysis(result, extractedText = "") {
     </div>
   `;
 
-  const items = Array.isArray(fields.items) ? fields.items : [];
+  
+const items = Array.isArray(fields.items) ? fields.items : [];
+
+/* RECOVER HS CODES FROM OCR TEXT */
+
+const ocrHsCodes = [
+  ...new Set(
+    (extractedText.match(/\b\d{4,8}\.\d{2,4}\b/g) || [])
+  )
+];
+
 
   const goodsHTML = items.length ? `
     <h4>Goods and Invoice Items</h4>
@@ -2114,10 +2124,10 @@ function displayAnalysis(result, extractedText = "") {
           </tr>
         </thead>
         <tbody>
-          ${items.map(item => `
+          ${items.map((item, index) => `
             <tr>
               <td>${safe(show(item.description))}</td>
-              <td>${safe(show(item.hs_code || item.hsCode))}</td>
+              <td>${safe(show(item.hs_code || item.hsCode || ocrHsCodes[index] || "Not extracted"))}</td>
               <td>${safe(show(item.quantity))}</td>
               <td>${safe(show(item.unit_price))}</td>
               <td>${safe(show(item.line_total))}</td>
